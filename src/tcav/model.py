@@ -6,6 +6,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
 from captum.concept._utils.classifier import Classifier
+from torch.utils.data import DataLoader
+from transformers import MusicgenModel, MusicgenProcessor
 
 
 class ConceptClassifier(Classifier):
@@ -16,7 +18,7 @@ class ConceptClassifier(Classifier):
             random_state=random_state,
         )
 
-    def train_and_eval(self, dataloader, test_split_ratio = 0.33, random_state: int = 42, **kwargs) -> dict:
+    def train_and_eval(self, dataloader: DataLoader, test_split_ratio = 0.33, random_state: int = 42, **kwargs) -> dict:
         X = []
         y = []
         for batch in dataloader:
@@ -57,7 +59,7 @@ class ConceptClassifier(Classifier):
 
 
 class CustomMusicGen:
-    def __init__(self, model, processor, max_new_tokens=256, device: str = "cpu"):
+    def __init__(self, model: MusicgenModel, processor: MusicgenProcessor, max_new_tokens=256, device: str = "cpu"):
         self.model = model
         self.processor = processor
         self.max_new_tokens = max_new_tokens
