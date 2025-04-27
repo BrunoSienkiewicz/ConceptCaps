@@ -2,16 +2,14 @@ site_name: "Praca inżynierska - Bruno Sienkiewicz"
 
 theme:
   name: "material"
+  features:
+    - content.code.annotate
+    - navigation.tabs
+  palette: "dark"
 
 plugins:
   - search
   - mermaid2
-  # - autorefs
-  # - gen-files:
-  #     scripts:
-  #       - docs/scripts/gen_ref_pages.py
-  - literate-nav:
-      nav_file: SUMMARY.md
   - section-index
   - mkdocstrings:
       handlers:
@@ -31,6 +29,7 @@ plugins:
             show_symbol_type_toc: true
             show_symbol_type_heading: true
             show_if_no_docstring: true
+
 markdown_extensions:
   - admonition
   - pymdownx.details
@@ -40,3 +39,6 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:mermaid2.fence_mermaid
+        - name: plot
+          class: plot
+          format: !!python/name:matplotlib.pyplot.figure
