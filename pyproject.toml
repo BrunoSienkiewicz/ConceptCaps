@@ -8,11 +8,31 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 
-[tool.poetry.dev-dependencies]
-mkdocs = "^1.5.3"
-mkdocs-material = "^9.5.3"
-mkdocs-section-index = "^0.3.8"
-mkdocstrings = "^0.24.0"
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.6.1"
+mkdocs-material = "^9.6.12"
+mkdocs-section-index = "^0.3.10"
+mkdocstrings = "^0.29.1"
+
+
+[tool.poetry.group.dev.dependencies]
+matplotlib = "^3.10.1"
+seaborn = "^0.13.2"
+
+
+[[tool.poetry.source]]
+name = "pytorch_cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+
+[[tool.poetry.source]]
+name = "pytorch_cuda"
+url = "https://download.pytorch.org/whl/cu128"
+priority = "explicit"
 
 [build-system]
 requires = ["poetry-core"]

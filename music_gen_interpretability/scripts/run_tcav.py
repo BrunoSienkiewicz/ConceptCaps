@@ -11,8 +11,8 @@ from captum.attr import LayerFeatureAblation
 
 from transformers import MusicgenForConditionalGeneration, AutoProcessor
 
-from src.tcav.transform import select_samples, create_experimental_set
-from src.tcav.model import CustomMusicGen, ConceptClassifier
+from music_gen_interpretability.tcav.transform import select_samples, create_experimental_set
+from music_gen_interpretability.tcav.model import CustomMusicGen, ConceptClassifier
 
 def format_float(f):
     return float('{:.3f}'.format(f) if abs(f) >= 0.0005 else '{:.3e}'.format(f))
