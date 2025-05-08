@@ -12,9 +12,11 @@ from captum.attr import LayerFeatureAblation
 
 from transformers import MusicgenForConditionalGeneration, AutoProcessor
 
-from music_gen_interpretability.tcav.transform import select_samples, create_experimental_set
+from music_gen_interpretability.tcav.transform import select_samples
+from music_gen_interpretability.tcav.concept import create_experimental_set
 from music_gen_interpretability.tcav.model import CustomMusicGen, ConceptClassifier
 from music_gen_interpretability.tcav.config import TCAVConfig
+
 
 def format_float(f):
     return float('{:.3f}'.format(f) if abs(f) >= 0.0005 else '{:.3e}'.format(f))
@@ -74,6 +76,7 @@ def run_tcav(cfg: TCAVConfig):
 
     # Create the experimental set
     experimental_set = create_experimental_set(
+        processor=processor,
         concept_name=cfg.concept_name,
         genre=cfg.genre,
         data_path=cfg.data_path,
@@ -135,3 +138,5 @@ def run_tcav(cfg: TCAVConfig):
     tcav_scores_df.to_csv(cfg.output_path, index=False)
     print(f"TCAV scores saved to {cfg.output_path}")
 
+if __name__ == "__main__":
+    run_tcav()
