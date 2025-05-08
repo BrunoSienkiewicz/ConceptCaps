@@ -52,7 +52,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 
-@hydra.main(config_path="config", config_name="tcav_config")
+@hydra.main(version_base=None, config_path="config", config_name="tcav_config")
 def run_tcav(cfg: TCAVConfig):
     random_state = cfg.random_state
     np.random.seed(random_state)
