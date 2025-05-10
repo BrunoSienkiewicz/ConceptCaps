@@ -3,18 +3,31 @@ from dataclasses import dataclass
 import hydra
 from hydra.core.config_store import ConfigStore
 
+from music_gen_interpretability.data.generic_data_module import GenericDataModule
+from music_gen_interpretability.tcav.model import ConceptClassifier
+from transformers import AutoProcessor, MusicGenForConditionalGeneration
+
 @dataclass
-class TCAVConfig:
+class ModelConfig:
     model_id: str
-    data_path: str
+    processor: AutoProcessor
+    model: MusicGenForConditionalGeneration
+    model_name: str
+    processor_name: str
+    layer_attr_method: str
+    classifier: ConceptClassifier
+
+@dataclass
+class ExperimentConfig:
+    random_state: int
     concept_name: str
     genre: str
     layers: list[str]
-    random_state: int = 42
-    batch_size: int = 1
-    num_samples: int = 100
-    experimental_set_size: int = 5
-    n_groups: int = 10
-    model_name: str = "facebook/musicgen-small"
-    processor_name: str = "facebook/musicgen-small"
-    output_path: str = "output"
+    layer_attr_method: str
+    n_groups: int
+
+@dataclass
+class TCAVConfig:
+    model: ModelConfig
+    experiment: ExperimentConfig
+    data: GenericDataModule

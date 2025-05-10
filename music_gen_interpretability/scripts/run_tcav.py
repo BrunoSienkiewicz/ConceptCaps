@@ -51,7 +51,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 
-@hydra.main(version_base=None, config_path="config", config_name="tcav_config")
+@hydra.main(version_base=None, config_path="../../config", config_name="tcav_config")
 def run_tcav(cfg: TCAVConfig):
     random_state = cfg.parameters.random_state
     np.random.seed(random_state)
@@ -100,7 +100,7 @@ def run_tcav(cfg: TCAVConfig):
     instrument_tcav = TCAV(
         model=custom_model,
         model_id=cfg.model.model_id,
-        classifier=ConceptClassifier(),
+        classifier=hydra.utils.instantiate(cfg.model.classifier),
         # layer_attr_method=LayerFeatureAblation(custom_model.forward, None),
         layer_attr_method=hydra.utils.instantiate(cfg.model.layer_attr_method, custom_model.forward, None),
         layers=layers,
