@@ -1,0 +1,5 @@
+_target_: "music-gen-interpretability.data.text_conditioning.TextConditioning"
+data_path: "data/music_caps_transformed_instrument.csv"
+batch_size: 10
+num_samples: 50
+experimental_set_size: 5

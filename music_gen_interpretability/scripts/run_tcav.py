@@ -8,9 +8,6 @@ from functools import reduce
 
 from captum.concept._utils.common import concepts_to_str
 from captum.concept import TCAV
-from captum.attr import LayerFeatureAblation
-
-from transformers import MusicgenForConditionalGeneration, AutoProcessor
 
 from music_gen_interpretability.tcav.transform import select_samples
 from music_gen_interpretability.tcav.concept import create_experimental_set

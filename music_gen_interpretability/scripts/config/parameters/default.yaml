@@ -1,5 +1,0 @@
-random_state: 42
-batch_size: 10
-num_samples: 50
-experimental_set_size: 5
-n_groups: 10
