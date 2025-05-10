@@ -1,0 +1,7 @@
+processor:
+  _target_: "transformers.AutoProcessor"
+model:
+  _target_: "transformers.MusicgenForConditionalGeneration"
+processor_name: "facebook/musicgen-small"
+model_name: "facebook/musicgen-small"
+model_id: "musicgen-small"

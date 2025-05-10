@@ -1,0 +1,4 @@
+data_path: "data/music_caps_transformed_instrument.csv"
+concept_name: "instrument_guitar"
+genre: "rock"
+layers: ["model.decoder.lm_heads.0", "model.decoder.lm_heads.1"]

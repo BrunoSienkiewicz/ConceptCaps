@@ -1,0 +1,4 @@
+default:
+  model: musicgen-small
+  experiment: instrument_genre__guitar_rock
+  parameters: default
