@@ -63,8 +63,8 @@ def run_tcav(cfg: TCAVConfig):
     torch.backends.cudnn.benchmark = False
     torch.cuda.manual_seed_all(random_state)
 
-    processor = hydra.utils.instantiate(cfg.processor).from_pretrained(cfg.model.processor_name)
-    model = hydra.utils.instantiate(cfg.model).from_pretrained(cfg.model.model_name)
+    processor = hydra.utils.instantiate(cfg.model.processor).from_pretrained(cfg.model.processor_name)
+    model = hydra.utils.instantiate(cfg.model.model).from_pretrained(cfg.model.model_name)
 
     model.to(device)
     model = model.half()
@@ -97,14 +97,15 @@ def run_tcav(cfg: TCAVConfig):
     )
 
     inputs = inputs.to(device)
-    layers = cfg.layers
+    layers = cfg.experiment.layers
 
     custom_model = CustomMusicGen(model, processor, max_new_tokens=256)
     instrument_tcav = TCAV(
         model=custom_model,
         model_id=cfg.model.model_id,
         classifier=ConceptClassifier(),
-        layer_attr_method=LayerFeatureAblation(custom_model.forward, None),
+        # layer_attr_method=LayerFeatureAblation(custom_model.forward, None),
+        layer_attr_method=hydra.utils.instantiate(cfg.model.layer_attr_method, custom_model.forward, None),
         layers=layers,
         show_progress=True,
     )
