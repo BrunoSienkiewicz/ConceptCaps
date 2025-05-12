@@ -1,20 +1,17 @@
 from dataclasses import dataclass
 
-import hydra
-from hydra.core.config_store import ConfigStore
-
 from music_gen_interpretability.data.generic_data_module import GenericDataModule
 from music_gen_interpretability.tcav.model import ConceptClassifier
-from transformers import AutoProcessor, MusicGenForConditionalGeneration
+from transformers import MusicgenForConditionalGeneration, AutoProcessor
+
 
 @dataclass
 class ModelConfig:
     model_id: str
     processor: AutoProcessor
-    model: MusicGenForConditionalGeneration
+    model: MusicgenForConditionalGeneration
     model_name: str
     processor_name: str
-    layer_attr_method: str
     classifier: ConceptClassifier
 
 @dataclass

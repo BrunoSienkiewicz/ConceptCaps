@@ -1,3 +1,4 @@
+_target_: "music-gen-interpretability.tcav.config.ExperimentConfig"
 random_state: 42
 concept_name: "instrument_guitar"
 genre: "rock"

@@ -51,40 +51,44 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 
-@hydra.main(version_base=None, config_path="../../config", config_name="tcav_config")
+@hydra.main(version_base=None, config_path="../../config", config_name="config")
 def run_tcav(cfg: TCAVConfig):
-    random_state = cfg.parameters.random_state
+    from omegaconf import OmegaConf
+
+    print(OmegaConf.to_yaml(cfg))
+
+    random_state = cfg.experiment.random_state
     np.random.seed(random_state)
     torch.manual_seed(random_state)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
     torch.cuda.manual_seed_all(random_state)
 
-    processor = hydra.utils.instantiate(cfg.model.processor).from_pretrained(cfg.model.processor_name)
-    model = hydra.utils.instantiate(cfg.model.model).from_pretrained(cfg.model.model_name)
+    processor = hydra.utils.instantiate(cfg.model.processor, cfg.model.processor_name)
+    model = hydra.utils.instantiate(cfg.model.model, cfg.model.model_name)
 
     model.to(device)
     model = model.half()
     model.eval()
 
     # Load the dataset
-    df = pd.read_csv(cfg.experiment.data_path)
+    df = pd.read_csv(cfg.data.data_path)
 
     # Create the experimental set
     experimental_set = create_experimental_set(
         processor=processor,
         concept_name=cfg.experiment.concept_name,
         genre=cfg.experiment.genre,
-        data_path=cfg.experiment.data_path,
-        batch_size=cfg.parameters.batch_size,
-        num_samples=cfg.parameters.num_samples,
-        experimental_set_size=cfg.parameters.experimental_set_size,
+        data_path=cfg.data.data_path,
+        batch_size=cfg.data.batch_size,
+        num_samples=cfg.data.num_samples,
+        experimental_set_size=cfg.data.experimental_set_size,
     )
     genre_samples = select_samples(
         df=df,
         concept=cfg.experiment.concept_name,
         genre=cfg.experiment.genre,
-        num_samples=cfg.parameters.num_samples,
+        num_samples=cfg.data.num_samples,
     )
     genre_text = [row["caption_without_genre"] for _, row in genre_samples.iterrows()]
     inputs = processor(
@@ -102,12 +106,12 @@ def run_tcav(cfg: TCAVConfig):
         model_id=cfg.model.model_id,
         classifier=hydra.utils.instantiate(cfg.model.classifier),
         # layer_attr_method=LayerFeatureAblation(custom_model.forward, None),
-        layer_attr_method=hydra.utils.instantiate(cfg.model.layer_attr_method, custom_model.forward, None),
+        layer_attr_method=hydra.utils.instantiate(cfg.experiment.layer_attr_method, custom_model.forward, None),
         layers=layers,
         show_progress=True,
     )
 
-    n_groups = cfg.parameters.n_groups
+    n_groups = cfg.experiment.n_groups
     layer_masks = []
 
     for layer in layers:
