@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from music_gen_interpretability.data.generic_data_module import GenericDataModule
+from music_gen_interpretability.data.generic_data_module import GenericConceptDataModule
 from music_gen_interpretability.tcav.model import ConceptClassifier
 from transformers import MusicgenForConditionalGeneration, AutoProcessor
 
@@ -22,9 +22,10 @@ class ExperimentConfig:
     layers: list[str]
     layer_attr_method: str
     n_groups: int
+    experimental_set_size: int
 
 @dataclass
 class TCAVConfig:
     model: ModelConfig
     experiment: ExperimentConfig
-    data: GenericDataModule
+    data: GenericConceptDataModule

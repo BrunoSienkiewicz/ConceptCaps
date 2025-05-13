@@ -71,28 +71,18 @@ def run_tcav(cfg: TCAVConfig):
     model = model.half()
     model.eval()
 
-    df = pd.read_csv(cfg.data.data_path)
+    data_module = hydra.utils.instantiate(cfg.data.data_module)
 
     experimental_set = create_experimental_set(
-        processor=processor,
         concept_name=cfg.experiment.concept_name,
         genre=cfg.experiment.genre,
-        data_path=cfg.data.data_path,
-        batch_size=cfg.data.batch_size,
-        num_samples=cfg.data.num_samples,
-        experimental_set_size=cfg.data.experimental_set_size,
+        data_module=data_module,
+        experimental_set_size=cfg.experiment.experimental_set_size,
     )
-    genre_samples = select_samples(
-        df=df,
+    inputs = data_module.select_samples(
         concept=cfg.experiment.concept_name,
         genre=cfg.experiment.genre,
         num_samples=cfg.data.num_samples,
-    )
-    genre_text = [row["caption_without_genre"] for _, row in genre_samples.iterrows()]
-    inputs = processor(
-        text=genre_text,
-        padding=True,
-        return_tensors="pt",
     )
 
     inputs = inputs.to(device)
