@@ -6,6 +6,8 @@ import hydra
 
 from functools import reduce
 
+from pathlib import Path
+
 from captum.concept._utils.common import concepts_to_str
 from captum.concept import TCAV
 
@@ -13,7 +15,7 @@ from omegaconf import OmegaConf
 
 from music_gen_interpretability.tcav.transform import select_samples
 from music_gen_interpretability.tcav.concept import create_experimental_set
-from music_gen_interpretability.tcav.model import CustomMusicGen, ConceptClassifier
+from music_gen_interpretability.tcav.model import CustomMusicGen
 from music_gen_interpretability.tcav.config import TCAVConfig
 
 
@@ -38,12 +40,9 @@ def plot_tcav_scores(experimental_sets, tcav_scores, layers):
             val = [format_float(scores['sign_count'][i]) for layer, scores in tcav_scores[concepts_key].items()]
             _ax.bar(pos[i], val, width=barWidth, edgecolor='white', label=concepts[i].name)
 
-        # Add xticks on the middle of the group bars
         _ax.set_xlabel('Set {}'.format(str(idx_es)), fontweight='bold', fontsize=16)
         _ax.set_xticks([r + 0.3 * barWidth for r in range(len(layers))])
         _ax.set_xticklabels(layers, fontsize=16, rotation=45)
-
-        # Create legend & Show graphic
         _ax.legend(fontsize=16)
 
     plt.tight_layout()
@@ -72,10 +71,8 @@ def run_tcav(cfg: TCAVConfig):
     model = model.half()
     model.eval()
 
-    # Load the dataset
     df = pd.read_csv(cfg.data.data_path)
 
-    # Create the experimental set
     experimental_set = create_experimental_set(
         processor=processor,
         concept_name=cfg.experiment.concept_name,
@@ -106,7 +103,6 @@ def run_tcav(cfg: TCAVConfig):
         model=custom_model,
         model_id=cfg.model.model_id,
         classifier=hydra.utils.instantiate(cfg.model.classifier),
-        # layer_attr_method=LayerFeatureAblation(custom_model.forward, None),
         layer_attr_method=hydra.utils.instantiate(cfg.experiment.layer_attr_method, custom_model.forward, None),
         layers=layers,
         show_progress=True,
@@ -132,12 +128,13 @@ def run_tcav(cfg: TCAVConfig):
         layer_mask=layer_masks,
     )
 
-    # Plot the TCAV scores
     plot_tcav_scores(experimental_set, tcav_scores, layers)
 
-    # Save the TCAV scores to a CSV file
+    output_dir = Path(cfg.output_path)
+
     tcav_scores_df = pd.DataFrame.from_dict(tcav_scores, orient='index')
-    tcav_scores_df.to_csv(cfg.output_path, index=False)
+    tcav_scores_df.to_csv(output_dir / "tcav.csv", index=False)
+    plt.savefig(output_dir / "tcav_scores.png", bbox_inches='tight', dpi=300)
     print(f"TCAV scores saved to {cfg.output_path}")
 
 if __name__ == "__main__":
