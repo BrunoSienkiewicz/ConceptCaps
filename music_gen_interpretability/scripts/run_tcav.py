@@ -51,7 +51,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 
-@hydra.main(version_base=None, config_path="../../config", config_name="config")
+@hydra.main(version_base=None, config_path="../../config", config_name="tcav")
 def run_tcav(cfg: TCAVConfig):
     from omegaconf import OmegaConf
 
