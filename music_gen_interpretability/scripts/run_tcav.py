@@ -9,6 +9,8 @@ from functools import reduce
 from captum.concept._utils.common import concepts_to_str
 from captum.concept import TCAV
 
+from omegaconf import OmegaConf
+
 from music_gen_interpretability.tcav.transform import select_samples
 from music_gen_interpretability.tcav.concept import create_experimental_set
 from music_gen_interpretability.tcav.model import CustomMusicGen, ConceptClassifier
@@ -53,8 +55,7 @@ print(f"Using device: {device}")
 
 @hydra.main(version_base=None, config_path="../../config", config_name="tcav")
 def run_tcav(cfg: TCAVConfig):
-    from omegaconf import OmegaConf
-
+    print("Running TCAV with the following configuration:")
     print(OmegaConf.to_yaml(cfg))
 
     random_state = cfg.experiment.random_state
