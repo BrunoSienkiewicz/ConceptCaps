@@ -1,6 +1,7 @@
 import pandas as pd
 
 from datasets import load_dataset
+from transformers import AutoProcessor
 from music_gen_interpretability.data.generic_data_module import GenericDataModule
 
 
@@ -33,8 +34,8 @@ class TextConditioning(GenericDataModule):
     def __init__(
         self,
         dataset: str,
-        processor: str,
         batch_size: int,
+        processor: AutoProcessor,
         emotions: list[str],
         instruments: list[str],
         genres: list[str],
@@ -44,10 +45,8 @@ class TextConditioning(GenericDataModule):
         self.instruments = instruments
         self.genres = genres
 
-    def prepare_data(self):
-        self.dataset = load_dataset(self.dataset)
-        self.dataset = self.dataset["train"].to_pandas()
-        self.dataset = self.dataset.drop(
+    def _tranform(self, dataset: pd.DataFrame):
+        dataset = dataset.drop(
             columns=[
                 "start_s",
                 "end_s",
@@ -58,20 +57,59 @@ class TextConditioning(GenericDataModule):
             ]
         )
 
-        self.dataset = transform_concept(self.dataset, self.emotions, "emotion")
-        self.dataset = transform_concept(self.dataset, self.instruments, "instrument")
-        self.dataset = transform_concept(self.dataset, self.genres, "genre")
+        dataset = transform_concept(dataset, self.emotions, "emotion")
+        dataset = transform_concept(dataset, self.instruments, "instrument")
+        dataset = transform_concept(dataset, self.genres, "genre")
 
-        is_any_genre = self.dataset.filter(like="is_genre_").sum(axis=1) > 0
-        is_any_instrument = self.dataset.filter(like="is_instrument_").sum(axis=1) > 0
-        is_any_emotion = self.dataset.filter(like="is_emotion_").sum(axis=1) > 0
+        is_any_genre = dataset.filter(like="is_genre_").sum(axis=1) > 0
+        is_any_instrument = dataset.filter(like="is_instrument_").sum(axis=1) > 0
+        is_any_emotion = dataset.filter(like="is_emotion_").sum(axis=1) > 0
 
-        self.dataset = self.dataset[
+        dataset = dataset[
             is_any_genre & is_any_instrument & is_any_emotion
         ].reset_index(drop=True)
 
-        self.dataset_genre = remove_concept(self.dataset, self.genres, "genre")
-        self.dataset_instrument = remove_concept(
-            self.dataset, self.instruments, "instrument"
+        dataset = remove_concept(dataset, self.genres, "genre")
+        dataset = remove_concept(
+            dataset, self.instruments, "instrument"
         )
-        self.dataset_emotion = remove_concept(self.dataset, self.emotions, "emotion")
+        dataset = remove_concept(dataset, self.emotions, "emotion")
+        return dataset
+
+    def _tokenize(self, text: list[str]):
+        inputs = self.processor(
+            text=text,
+            max_length=256,
+            padding=True,
+            return_tensors="pt",
+            truncation=True,
+        )
+        input_ids = inputs["input_ids"]
+        attention_mask = inputs["attention_mask"]
+        return input_ids, attention_mask
+
+    def prepare_data(self):
+        self.dataset = load_dataset(self.dataset)
+
+        self.dataset_train = self._tranform(self.dataset["train"])
+        self.dataset_test = self._tranform(self.dataset["test"])
+        self.dataset_valid = self._tranform(self.dataset["validation"])
+
+    def setup(self, stage=None):
+        if stage == "fit" or stage is None:
+            self.train_dataset = {
+                "genre": self._tokenize(self.dataset_train["caption_without_genre"].tolist()),
+                "emotion": self._tokenize(self.dataset_train["caption_without_emotion"].tolist()),
+                "instrument": self._tokenize(self.dataset_train["caption_without_instrument"].tolist()),
+            }
+            self.val_dataset = {
+                "genre": self._tokenize(self.dataset_train["caption_without_genre"].tolist()),
+                "emotion": self._tokenize(self.dataset_train["caption_without_emotion"].tolist()),
+                "instrument": self._tokenize(self.dataset_train["caption_without_instrument"].tolist()),
+            } 
+        if stage == "test" or stage is None:
+            self.train_dataset = {
+                "genre": self._tokenize(self.dataset_train["caption_without_genre"].tolist()),
+                "emotion": self._tokenize(self.dataset_train["caption_without_emotion"].tolist()),
+                "instrument": self._tokenize(self.dataset_train["caption_without_instrument"].tolist()),
+            }
