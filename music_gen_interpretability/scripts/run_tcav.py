@@ -65,8 +65,8 @@ def main(cfg: TCAVConfig):
     torch.backends.cudnn.benchmark = False
     torch.cuda.manual_seed_all(random_state)
 
-    processor = hydra.utils.instantiate(cfg.model.processor, cfg.model.processor_name)
-    model = hydra.utils.instantiate(cfg.model.model, cfg.model.model_name)
+    processor = hydra.utils.instantiate(cfg.model.processor)
+    model = hydra.utils.instantiate(cfg.model.model)
 
     model.to(device)
     model = model.half()
@@ -74,20 +74,20 @@ def main(cfg: TCAVConfig):
 
     data_module = hydra.utils.instantiate(cfg.data.data_module)
 
-    experimental_set = create_experimental_set(
+    experimental_set = data_module.create_experimental_set(
         influential_concept_name=cfg.experiment.influential_concept_name,
         influential_concept_category=cfg.experiment.influential_concept_category,
         target_concept_name=cfg.experiment.target_concept_name,
         target_concept_category=cfg.experiment.target_concept_category,
-        data_module=data_module,
         experimental_set_size=cfg.experiment.experimental_set_size,
+        num_samples=cfg.experiment.num_samples,
     )
     inputs = data_module.select_samples(
         influential_concept_name=cfg.experiment.influential_concept_name,
         influential_concept_category=cfg.experiment.influential_concept_category,
         target_concept_name=cfg.experiment.target_concept_name,
         target_concept_category=cfg.experiment.target_concept_category,
-        num_samples=cfg.data.num_samples,
+        num_samples=cfg.experiment.num_samples,
     )
 
     inputs = inputs.to(device)

@@ -1,10 +1,10 @@
 _target_: "music-gen-interpretability.tcav.config.ModelConfig"
 processor:
   _target_: "transformers.AutoProcessor.from_pretrained"
+  pretrained_model_name_or_path: "facebook/musicgen-small"
 model:
   _target_: "transformers.MusicgenForConditionalGeneration.from_pretrained"
-processor_name: "facebook/musicgen-small"
-model_name: "facebook/musicgen-small"
+  pretrained_model_name_or_path: "facebook/musicgen-small"
 model_id: "musicgen-small"
 classifier:
   _target_: "music_gen_interpretability.tcav.model.ConceptClassifier"
