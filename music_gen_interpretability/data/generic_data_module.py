@@ -25,10 +25,6 @@ class GenericDataModule(L.LightningDataModule):
 
     def select_random_samples(
         self,
-        influential_concept_name: str,
-        influential_concept_category: str,
-        target_concept_name: str,
-        target_concept_category: str,
         num_samples: int,
     ):
         raise NotImplementedError("This method should be implemented by subclasses.")
