@@ -5,4 +5,5 @@ genre: "rock"
 layers: ["model.decoder.lm_heads.0", "model.decoder.lm_heads.1"]
 layer_attr_method:
   _target_: "captum.attr.LayerFeatureAblation"
+experimental_set_size: 5
 n_groups: 10
