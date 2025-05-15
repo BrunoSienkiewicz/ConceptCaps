@@ -19,7 +19,10 @@ class ModelConfig:
 @dataclass
 class ExperimentConfig:
     random_state: int
-    concept_name: str
+    influential_concept_category: str
+    influential_concept_name: str
+    target_concept_category: str
+    target_concept_name: str
     genre: str
     layers: list[str]
     layer_attr_method: str
