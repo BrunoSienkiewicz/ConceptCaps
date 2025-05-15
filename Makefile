@@ -18,3 +18,12 @@ format: ## Run pre-commit hooks
 sync: ## Merge changes from main branch to your current branch
 	git pull
 	git pull origin main
+
+env: ## Create virtual environment
+	conda create -n $(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2) --file environment.yml --yes
+	conda activate $(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2)
+	poetry install
+
+update: ## Update dependencies
+	poetry update
+
