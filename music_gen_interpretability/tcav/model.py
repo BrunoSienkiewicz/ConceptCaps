@@ -1,11 +1,9 @@
 import numpy as np
 import torch
-
-from sklearn.linear_model import SGDClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-
 from captum.concept._utils.classifier import Classifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 from transformers import MusicgenModel, MusicgenProcessor
 
@@ -18,7 +16,9 @@ class ConceptClassifier(Classifier):
             random_state=random_state,
         )
 
-    def train_and_eval(self, dataloader: DataLoader, test_split_ratio = 0.33, random_state: int = 42, **kwargs) -> dict:
+    def train_and_eval(
+        self, dataloader: DataLoader, test_split_ratio=0.33, random_state: int = 42, **kwargs
+    ) -> dict:
         X = []
         y = []
         for batch in dataloader:
@@ -28,7 +28,7 @@ class ConceptClassifier(Classifier):
 
         # Pad the sequences to the same length
         max_len = max([x.shape[1] for x in X])
-        X = [np.pad(x, ((0, 0), (0, max_len - x.shape[1])), mode='constant') for x in X]
+        X = [np.pad(x, ((0, 0), (0, max_len - x.shape[1])), mode="constant") for x in X]
 
         X = np.concatenate(X)
         y = np.concatenate(y)
@@ -59,7 +59,13 @@ class ConceptClassifier(Classifier):
 
 
 class CustomMusicGen:
-    def __init__(self, model: MusicgenModel, processor: MusicgenProcessor, max_new_tokens=256, device: str = "cpu"):
+    def __init__(
+        self,
+        model: MusicgenModel,
+        processor: MusicgenProcessor,
+        max_new_tokens=256,
+        device: str = "cpu",
+    ):
         self.model = model
         self.processor = processor
         self.max_new_tokens = max_new_tokens
@@ -72,7 +78,7 @@ class CustomMusicGen:
 
     def forward(self, input_ids, attention_mask, concept_tensor):
         torch.cuda.empty_cache()
-        with torch.amp.autocast('cuda'):
+        with torch.amp.autocast("cuda"):
             audio_values = self.model.generate(
                 input_ids=input_ids,
                 attention_mask=attention_mask,

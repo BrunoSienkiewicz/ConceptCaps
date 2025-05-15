@@ -1,52 +1,53 @@
-import numpy as np
-import torch
-import pandas as pd
-import matplotlib.pyplot as plt
-import hydra
-
 from functools import reduce
-
 from pathlib import Path
 
-from captum.concept._utils.common import concepts_to_str
+import hydra
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import torch
 from captum.concept import TCAV
-
+from captum.concept._utils.common import concepts_to_str
 from omegaconf import OmegaConf
 
-from music_gen_interpretability.tcav.transform import select_samples
 from music_gen_interpretability.tcav.concept import create_experimental_set
-from music_gen_interpretability.tcav.model import CustomMusicGen
 from music_gen_interpretability.tcav.config import TCAVConfig
+from music_gen_interpretability.tcav.model import CustomMusicGen
+from music_gen_interpretability.tcav.transform import select_samples
 
 
 def format_float(f):
-    return float('{:.3f}'.format(f) if abs(f) >= 0.0005 else '{:.3e}'.format(f))
+    return float(f"{f:.3f}" if abs(f) >= 0.0005 else f"{f:.3e}")
+
 
 def plot_tcav_scores(experimental_sets, tcav_scores, layers):
-    fig, ax = plt.subplots(1, len(experimental_sets), figsize = (25, 7))
+    fig, ax = plt.subplots(1, len(experimental_sets), figsize=(25, 7))
 
     barWidth = 1 / (len(experimental_sets[0]) + 1)
 
     for idx_es, concepts in enumerate(experimental_sets):
-
         concepts = experimental_sets[idx_es]
         concepts_key = concepts_to_str(concepts)
 
         pos = [np.arange(len(layers))]
         for i in range(1, len(concepts)):
-            pos.append([(x + barWidth) for x in pos[i-1]])
-        _ax = (ax[idx_es] if len(experimental_sets) > 1 else ax)
+            pos.append([(x + barWidth) for x in pos[i - 1]])
+        _ax = ax[idx_es] if len(experimental_sets) > 1 else ax
         for i in range(len(concepts)):
-            val = [format_float(scores['sign_count'][i]) for layer, scores in tcav_scores[concepts_key].items()]
-            _ax.bar(pos[i], val, width=barWidth, edgecolor='white', label=concepts[i].name)
+            val = [
+                format_float(scores["sign_count"][i])
+                for layer, scores in tcav_scores[concepts_key].items()
+            ]
+            _ax.bar(pos[i], val, width=barWidth, edgecolor="white", label=concepts[i].name)
 
-        _ax.set_xlabel('Set {}'.format(str(idx_es)), fontweight='bold', fontsize=16)
+        _ax.set_xlabel(f"Set {str(idx_es)}", fontweight="bold", fontsize=16)
         _ax.set_xticks([r + 0.3 * barWidth for r in range(len(layers))])
         _ax.set_xticklabels(layers, fontsize=16, rotation=45)
         _ax.legend(fontsize=16)
 
     plt.tight_layout()
     plt.show()
+
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
@@ -93,7 +94,9 @@ def run_tcav(cfg: TCAVConfig):
         model=custom_model,
         model_id=cfg.model.model_id,
         classifier=hydra.utils.instantiate(cfg.model.classifier),
-        layer_attr_method=hydra.utils.instantiate(cfg.experiment.layer_attr_method, custom_model.forward, None),
+        layer_attr_method=hydra.utils.instantiate(
+            cfg.experiment.layer_attr_method, custom_model.forward, None
+        ),
         layers=layers,
         show_progress=True,
     )
@@ -102,11 +105,11 @@ def run_tcav(cfg: TCAVConfig):
     layer_masks = []
 
     for layer in layers:
-        layer_shape = reduce(getattr, layer.split('.'), custom_model).weight.shape[0]
+        layer_shape = reduce(getattr, layer.split("."), custom_model).weight.shape[0]
         layer_mask = torch.zeros(layer_shape).to(device)
         group_size = layer_mask.shape[0] // n_groups
-        for i in range(n_groups+1):
-            layer_mask[i * group_size:(i + 1) * group_size] = i
+        for i in range(n_groups + 1):
+            layer_mask[i * group_size : (i + 1) * group_size] = i
         layer_masks.append(layer_mask)
 
     layer_masks = (*layer_masks,)
@@ -122,10 +125,11 @@ def run_tcav(cfg: TCAVConfig):
 
     output_dir = Path(cfg.output_path)
 
-    tcav_scores_df = pd.DataFrame.from_dict(tcav_scores, orient='index')
+    tcav_scores_df = pd.DataFrame.from_dict(tcav_scores, orient="index")
     tcav_scores_df.to_csv(output_dir / "tcav.csv", index=False)
-    plt.savefig(output_dir / "tcav_scores.png", bbox_inches='tight', dpi=300)
+    plt.savefig(output_dir / "tcav_scores.png", bbox_inches="tight", dpi=300)
     print(f"TCAV scores saved to {cfg.output_path}")
+
 
 if __name__ == "__main__":
     run_tcav()

@@ -1,11 +1,13 @@
 import pandas as pd
 import torch
-
-from torch.utils.data import DataLoader
 from captum.concept import Concept
+from torch.utils.data import DataLoader
 
 from music_gen_interpretability.tcav.dataset import ConceptDataset
-from music_gen_interpretability.tcav.transform import select_samples, select_random_samples
+from music_gen_interpretability.tcav.transform import (
+    select_random_samples,
+    select_samples,
+)
 
 
 def create_experimental_set(
