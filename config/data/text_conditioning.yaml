@@ -1,7 +1,6 @@
 _target_: "music-gen-interpretability.data.text_conditioning.TextConditioning"
 dataset: "google/MusicCaps"
 batch_size: 10
-num_samples: 50
 emotions:
   - happy
   - sad
