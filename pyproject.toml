@@ -31,7 +31,7 @@ pytest = "^8.3.5"
 pre-commit = "^4.2.0"
 
 [tool.poetry.scripts]
-run_tcav = "music_gen_interpretability.scripts.run_tcav:run_tcav"
+run_tcav = "music_gen_interpretability.scripts.run_tcav:main"
 
 [build-system]
 requires = ["poetry-core"]

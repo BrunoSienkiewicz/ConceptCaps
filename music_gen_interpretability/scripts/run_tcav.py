@@ -54,7 +54,7 @@ print(f"Using device: {device}")
 
 
 @hydra.main(version_base=None, config_path="../../config", config_name="tcav")
-def run_tcav(cfg: TCAVConfig):
+def main(cfg: TCAVConfig):
     print("Running TCAV with the following configuration:")
     print(OmegaConf.to_yaml(cfg))
 
@@ -132,4 +132,4 @@ def run_tcav(cfg: TCAVConfig):
 
 
 if __name__ == "__main__":
-    run_tcav()
+    main()
