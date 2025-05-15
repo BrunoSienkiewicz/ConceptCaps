@@ -75,14 +75,18 @@ def main(cfg: TCAVConfig):
     data_module = hydra.utils.instantiate(cfg.data.data_module)
 
     experimental_set = create_experimental_set(
-        concept_name=cfg.experiment.concept_name,
-        genre=cfg.experiment.genre,
+        influential_concept_name=cfg.experiment.influential_concept_name,
+        influential_concept_category=cfg.experiment.influential_concept_category,
+        target_concept_name=cfg.experiment.target_concept_name,
+        target_concept_category=cfg.experiment.target_concept_category,
         data_module=data_module,
         experimental_set_size=cfg.experiment.experimental_set_size,
     )
     inputs = data_module.select_samples(
-        concept=cfg.experiment.concept_name,
-        genre=cfg.experiment.genre,
+        influential_concept_name=cfg.experiment.influential_concept_name,
+        influential_concept_category=cfg.experiment.influential_concept_category,
+        target_concept_name=cfg.experiment.target_concept_name,
+        target_concept_category=cfg.experiment.target_concept_category,
         num_samples=cfg.data.num_samples,
     )
 
