@@ -40,7 +40,7 @@ repos:
 
   # python docstring formatting
   - repo: https://github.com/myint/docformatter
-    rev: v1.7.4
+    rev: v1.7.7
     hooks:
       - id: docformatter
         args:
@@ -96,12 +96,6 @@ repos:
       - id: prettier
         types: [yaml]
         exclude: "environment.yaml"
-
-  # shell scripts linter
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.9.0.2
-    hooks:
-      - id: shellcheck
 
   # md formatting
   - repo: https://github.com/executablebooks/mdformat
