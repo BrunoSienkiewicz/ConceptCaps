@@ -45,7 +45,7 @@ class TextConditioning(GenericDataModule):
         self.instruments = instruments
         self.genres = genres
 
-    def _tranform(self, dataset: pd.DataFrame):
+    def _transform(self, dataset: pd.DataFrame):
         dataset = dataset.drop(
             columns=[
                 "start_s",
@@ -91,9 +91,9 @@ class TextConditioning(GenericDataModule):
     def prepare_data(self):
         self.dataset = load_dataset(self.dataset)
 
-        self.dataset_train = self._tranform(self.dataset["train"])
-        self.dataset_test = self._tranform(self.dataset["test"])
-        self.dataset_valid = self._tranform(self.dataset["validation"])
+        self.dataset_train = self._transform(self.dataset["train"])
+        self.dataset_test = self._transform(self.dataset["test"])
+        self.dataset_valid = self._transform(self.dataset["validation"])
 
     def setup(self, stage=None):
         if stage == "fit" or stage is None:
