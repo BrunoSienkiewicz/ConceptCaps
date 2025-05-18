@@ -28,6 +28,7 @@ class ExperimentConfig:
     layer_attr_method: str
     n_groups: int
     experimental_set_size: int
+    num_samples: int
 
 
 @dataclass
