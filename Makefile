@@ -21,7 +21,6 @@ sync: ## Merge changes from main branch to your current branch
 
 env: ## Create virtual environment
 	conda env create -n $(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2) --file environment.yml --yes
-	conda init
 	conda activate $(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2)
 	poetry install
 
