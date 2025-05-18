@@ -1,5 +1,9 @@
 _target_: "music-gen-interpretability.data.text_conditioning.TextConditioning"
 dataset: "google/MusicCaps"
+influential_concept_category: "instrument"
+influential_concept_name: "guitar"
+target_concept_category: "genre"
+target_concept_name: "rock"
 batch_size: 10
 emotions:
   - happy

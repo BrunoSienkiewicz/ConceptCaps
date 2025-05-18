@@ -39,11 +39,19 @@ class TextConditioning(GenericDataModule):
         emotions: list[str],
         instruments: list[str],
         genres: list[str],
+        influential_concept_name: str,
+        influential_concept_category: str,
+        target_concept_name: str,
+        target_concept_category: str,
     ):
-        super().__init__(dataset, processor, batch_size)
         self.emotions = emotions
         self.instruments = instruments
         self.genres = genres
+        self.influential_concept_name = influential_concept_name
+        self.influential_concept_category = influential_concept_category
+        self.target_concept_name = target_concept_name
+        self.target_concept_category = target_concept_category
+        super().__init__(dataset, batch_size, processor)
 
     def _transform(self, dataset: pd.DataFrame):
         dataset = dataset.drop(
@@ -69,11 +77,13 @@ class TextConditioning(GenericDataModule):
             is_any_genre & is_any_instrument & is_any_emotion
         ].reset_index(drop=True)
 
-        dataset = remove_concept(dataset, self.genres, "genre")
-        dataset = remove_concept(
-            dataset, self.instruments, "instrument"
-        )
-        dataset = remove_concept(dataset, self.emotions, "emotion")
+        if self.target_concept_category == "emotion":
+            target_category_words = self.emotions
+        elif self.target_concept_category == "instrument":
+            target_category_words = self.instruments
+        elif self.target_concept_category == "genre":
+            target_category_words = self.genres
+        dataset = remove_concept(dataset, target_category_words, self.target_category)
         return dataset
 
     def _tokenize(self, text: list[str]):
@@ -89,27 +99,19 @@ class TextConditioning(GenericDataModule):
         return input_ids, attention_mask
 
     def prepare_data(self):
-        self.dataset = load_dataset(self.dataset)
+        self.dataset_loaded = load_dataset(self.dataset)
 
-        self.dataset_train = self._transform(self.dataset["train"])
-        self.dataset_test = self._transform(self.dataset["test"])
-        self.dataset_valid = self._transform(self.dataset["validation"])
+        self.dataset_train = self._transform(self.dataset_loaded["train"].to_pandas())
+        self.dataset_test = self._transform(self.dataset_loaded["test"].to_pandas())
+        self.dataset_valid = self._transform(self.dataset_loaded["validation"].to_pandas())
 
-    def setup(self, stage=None):
-        if stage == "fit" or stage is None:
-            self.train_dataset = {
-                "genre": self._tokenize(self.dataset_train["caption_without_genre"].tolist()),
-                "emotion": self._tokenize(self.dataset_train["caption_without_emotion"].tolist()),
-                "instrument": self._tokenize(self.dataset_train["caption_without_instrument"].tolist()),
-            }
-            self.val_dataset = {
-                "genre": self._tokenize(self.dataset_train["caption_without_genre"].tolist()),
-                "emotion": self._tokenize(self.dataset_train["caption_without_emotion"].tolist()),
-                "instrument": self._tokenize(self.dataset_train["caption_without_instrument"].tolist()),
-            } 
-        if stage == "test" or stage is None:
-            self.train_dataset = {
-                "genre": self._tokenize(self.dataset_train["caption_without_genre"].tolist()),
-                "emotion": self._tokenize(self.dataset_train["caption_without_emotion"].tolist()),
-                "instrument": self._tokenize(self.dataset_train["caption_without_instrument"].tolist()),
-            }
+    def setup(self):
+        self.train_dataset = self._tokenize(self.dataset_train[f"caption_without_{self.target_concept_category}"].tolist())
+        self.val_dataset = self._tokenize(self.dataset_valid[f"caption_without_{self.target_concept_category}"].tolist())   
+        self.test_dataset = self._tokenize(self.dataset_test[f"caption_without_{self.target_concept_category}"].tolist())
+
+    def select_samples(self):
+        pass
+
+    def select_random_samples(self):
+        pass

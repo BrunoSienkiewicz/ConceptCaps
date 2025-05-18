@@ -13,7 +13,6 @@ from omegaconf import OmegaConf
 from music_gen_interpretability.tcav.concept import create_experimental_set
 from music_gen_interpretability.tcav.config import TCAVConfig
 from music_gen_interpretability.tcav.model import CustomMusicGen
-from music_gen_interpretability.tcav.transform import select_samples
 
 
 def format_float(f):
@@ -74,19 +73,12 @@ def main(cfg: TCAVConfig):
 
     data_module = hydra.utils.instantiate(cfg.data.data_module)
 
-    experimental_set = data_module.create_experimental_set(
-        influential_concept_name=cfg.experiment.influential_concept_name,
-        influential_concept_category=cfg.experiment.influential_concept_category,
-        target_concept_name=cfg.experiment.target_concept_name,
-        target_concept_category=cfg.experiment.target_concept_category,
+    experimental_set = create_experimental_set(
+        data_module,
         experimental_set_size=cfg.experiment.experimental_set_size,
         num_samples=cfg.experiment.num_samples,
     )
     inputs = data_module.select_samples(
-        influential_concept_name=cfg.experiment.influential_concept_name,
-        influential_concept_category=cfg.experiment.influential_concept_category,
-        target_concept_name=cfg.experiment.target_concept_name,
-        target_concept_category=cfg.experiment.target_concept_category,
         num_samples=cfg.experiment.num_samples,
     )
 
@@ -105,9 +97,11 @@ def main(cfg: TCAVConfig):
         show_progress=True,
     )
 
+    # For now I am creating the layer masks by grouping adjacent neurons
+    # into groups of size n_groups. Later we can add a more sophisticated
+    # approach to create the layer masks.
     n_groups = cfg.experiment.n_groups
     layer_masks = []
-
     for layer in layers:
         layer_shape = reduce(getattr, layer.split("."), custom_model).weight.shape[0]
         layer_mask = torch.zeros(layer_shape).to(device)

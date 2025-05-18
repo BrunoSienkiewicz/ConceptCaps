@@ -1,9 +1,5 @@
 _target_: "music-gen-interpretability.tcav.config.ExperimentConfig"
 random_state: 42
-influential_concept_category: "instrument"
-influential_concept_name: "guitar"
-target_concept_category: "genre"
-target_concept_name: "rock"
 layers: ["model.decoder.lm_heads.0", "model.decoder.lm_heads.1"]
 layer_attr_method:
   _target_: "captum.attr.LayerFeatureAblation"
