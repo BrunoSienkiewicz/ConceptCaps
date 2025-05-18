@@ -20,10 +20,12 @@ sync: ## Merge changes from main branch to your current branch
 	git pull origin main
 
 env: ## Create virtual environment
-	conda create -n $(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2) --file environment.yml --yes
+	conda env create -n $(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2) --file environment.yml --yes
+	conda init
 	conda activate $(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2)
 	poetry install
 
 update: ## Update dependencies
+	conda env update --file environment.yml --prune
 	poetry update
 
