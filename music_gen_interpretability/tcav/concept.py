@@ -34,8 +34,8 @@ def create_experimental_set(
         num_samples=num_samples
     )
     concept_dataset = ConceptDataset(
-        input_ids=data.input_ids,
-        attention_mask=data.attention_mask,
+        input_ids=data["input_ids"],
+        attention_mask=data["attention_mask"],
         concept_tensor=concept_tensor,
     )
     concept_dataloader = DataLoader(
@@ -55,8 +55,8 @@ def create_experimental_set(
             num_samples=num_samples
         )
         concept_dataset = ConceptDataset(
-            input_ids=data.input_ids,
-            attention_mask=data.attention_mask,
+            input_ids=data["input_ids"],
+            attention_mask=data["attention_mask"],
             concept_tensor=random_concept_tensor,
         )
         concept_dataloader = DataLoader(

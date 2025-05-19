@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
+import rich
+
+from rich.traceback import install
 from captum.concept import TCAV
 from captum.concept._utils.common import concepts_to_str
 from omegaconf import OmegaConf
@@ -47,15 +50,17 @@ def plot_tcav_scores(experimental_sets, tcav_scores, layers):
     plt.tight_layout()
     plt.show()
 
+install(show_locals=True)
+
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"Using device: {device}")
+rich.print(f"Using device: {device}")
 
 
 @hydra.main(version_base=None, config_path="../../config", config_name="tcav")
 def main(cfg: TCAVConfig):
-    print("Running TCAV with the following configuration:")
-    print(OmegaConf.to_yaml(cfg))
+    rich.print("Running TCAV with the following configuration:")
+    rich.print(OmegaConf.to_yaml(cfg))
 
     random_state = cfg.experiment.random_state
     np.random.seed(random_state)
@@ -82,7 +87,6 @@ def main(cfg: TCAVConfig):
         num_samples=cfg.experiment.num_samples,
     )
 
-    inputs = inputs.to(device)
     layers = cfg.experiment.layers
 
     custom_model = CustomMusicGen(model, processor, max_new_tokens=256)
@@ -113,7 +117,7 @@ def main(cfg: TCAVConfig):
     layer_masks = (*layer_masks,)
 
     tcav_scores = instrument_tcav.interpret(
-        inputs=(inputs.input_ids, inputs.attention_mask, None),
+        inputs=(inputs["input_ids"].to(device), inputs["attention_mask"].to(device), None),
         experimental_sets=experimental_set,
         target=0,
         layer_mask=layer_masks,
@@ -126,8 +130,16 @@ def main(cfg: TCAVConfig):
     tcav_scores_df = pd.DataFrame.from_dict(tcav_scores, orient="index")
     tcav_scores_df.to_csv(output_dir / "tcav.csv", index=False)
     plt.savefig(output_dir / "tcav_scores.png", bbox_inches="tight", dpi=300)
-    print(f"TCAV scores saved to {cfg.output_path}")
+    rich.print(f"TCAV scores saved to {cfg.output_path}")
 
 
 if __name__ == "__main__":
-    main()
+    from rich.console import Console
+    console = Console()
+
+    console.log("Starting TCAV analysis...")
+
+    try:
+        main()
+    except Exception:
+        console.print_exception()
