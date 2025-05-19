@@ -7,10 +7,11 @@ from typing import Tuple
 from music_gen_interpretability.data.generic_data_module import GenericDataModule
 
 class ConceptDataset(Dataset):
-    def __init__(self, input_ids: torch.Tensor, attention_mask: torch.Tensor, concept_tensor: torch.Tensor):
-        self.input_ids = input_ids
-        self.attention_mask = attention_mask
-        self.concept_tensor = concept_tensor
+    def __init__(self, input_ids: torch.Tensor, attention_mask: torch.Tensor, concept_tensor: torch.Tensor, device: torch.device = torch.device("cpu")):
+        self.device = device
+        self.concept_tensor = concept_tensor.to(device)
+        self.input_ids = input_ids.to(device)
+        self.attention_mask = attention_mask.to(device)
 
     def __len__(self) -> int:
         return len(self.input_ids)
@@ -23,6 +24,7 @@ def create_experimental_set(
     data_module: GenericDataModule,
     num_samples: int,
     experimental_set_size: int,
+    device: torch.device = torch.device("cpu"),
 ):
     experimental_set = []
     concept_tensor = torch.full(
@@ -37,6 +39,7 @@ def create_experimental_set(
         input_ids=data["input_ids"],
         attention_mask=data["attention_mask"],
         concept_tensor=concept_tensor,
+        device=device,
     )
     concept_dataloader = DataLoader(
         dataset=concept_dataset,
@@ -58,6 +61,7 @@ def create_experimental_set(
             input_ids=data["input_ids"],
             attention_mask=data["attention_mask"],
             concept_tensor=random_concept_tensor,
+            device=device,
         )
         concept_dataloader = DataLoader(
             dataset=concept_dataset,

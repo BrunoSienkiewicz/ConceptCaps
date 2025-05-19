@@ -64,14 +64,12 @@ class CustomMusicGen:
         model: MusicgenModel,
         processor: MusicgenProcessor,
         max_new_tokens=256,
-        device: str = "cpu",
     ):
         self.model = model
         self.processor = processor
         self.max_new_tokens = max_new_tokens
 
         self.model.eval()
-        self.model.to(device)
 
     def __call__(self, input_ids, attention_mask, concept_tensor):
         return self.forward(input_ids, attention_mask, concept_tensor)

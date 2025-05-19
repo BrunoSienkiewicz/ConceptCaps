@@ -82,6 +82,7 @@ def main(cfg: TCAVConfig):
         data_module,
         experimental_set_size=cfg.experiment.experimental_set_size,
         num_samples=cfg.experiment.num_samples,
+        device=device,
     )
     inputs = data_module.select_samples(
         num_samples=cfg.experiment.num_samples,
@@ -116,8 +117,11 @@ def main(cfg: TCAVConfig):
 
     layer_masks = (*layer_masks,)
 
+    input_ids = inputs["input_ids"].to(device)
+    attention_mask = inputs["attention_mask"].to(device)
+
     tcav_scores = instrument_tcav.interpret(
-        inputs=(inputs["input_ids"].to(device), inputs["attention_mask"].to(device), None),
+        inputs=(input_ids, attention_mask, None),
         experimental_sets=experimental_set,
         target=0,
         layer_mask=layer_masks,
