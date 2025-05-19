@@ -129,12 +129,13 @@ def main(cfg: TCAVConfig):
 
     plot_tcav_scores(experimental_set, tcav_scores, layers)
 
-    output_dir = Path(cfg.output_path)
+    output_dir = Path(cfg.experiment.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     tcav_scores_df = pd.DataFrame.from_dict(tcav_scores, orient="index")
     tcav_scores_df.to_csv(output_dir / "tcav.csv", index=False)
     plt.savefig(output_dir / "tcav_scores.png", bbox_inches="tight", dpi=300)
-    rich.print(f"TCAV scores saved to {cfg.output_path}")
+    rich.print(f"TCAV scores saved to {output_dir / 'tcav.csv'}")
 
 
 if __name__ == "__main__":
