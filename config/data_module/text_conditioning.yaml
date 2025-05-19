@@ -1,5 +1,8 @@
-_target_: "music-gen-interpretability.data.text_conditioning.TextConditioning"
+_target_: "music_gen_interpretability.data.text_conditioning.TextConditioning"
 dataset: "google/MusicCaps"
+processor:
+  _target_: "transformers.AutoProcessor.from_pretrained"
+  pretrained_model_name_or_path: "facebook/musicgen-small"
 influential_concept_category: "instrument"
 influential_concept_name: "guitar"
 target_concept_category: "genre"
@@ -78,7 +81,7 @@ instruments:
   - bassoon
   - oboe
   - horn
-music_genres:
+genres:
   - pop
   - rock
   - jazz

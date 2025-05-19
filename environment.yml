@@ -28,7 +28,6 @@ dependencies:
   - torchmetrics=0.*
   - transformers=4.*
   - hydra-core=1.*
-  - captum=0.8.*
 
   # --------- loggers --------- #
   # - wandb
@@ -39,6 +38,7 @@ dependencies:
 
   - pip>=23
   - pip:
+      - captum
       - hydra-optuna-sweeper
       - hydra-colorlog
       - rootutils

@@ -71,7 +71,7 @@ def main(cfg: TCAVConfig):
     model = model.half()
     model.eval()
 
-    data_module = hydra.utils.instantiate(cfg.data.data_module)
+    data_module = hydra.utils.instantiate(cfg.data_module)
 
     experimental_set = create_experimental_set(
         data_module,

@@ -1,4 +1,4 @@
 defaults:
   - model: musicgen-small
-  - data: text_conditioning
+  - data_module: text_conditioning
   - experiment: instrument_genre__guitar_rock

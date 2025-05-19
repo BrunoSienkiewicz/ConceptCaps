@@ -1,4 +1,6 @@
+import torch
 import pandas as pd
+import numpy as np
 
 from datasets import load_dataset
 from transformers import AutoProcessor
@@ -44,6 +46,7 @@ class TextConditioning(GenericDataModule):
         target_concept_name: str,
         target_concept_category: str,
     ):
+        self.processor = processor
         self.emotions = emotions
         self.instruments = instruments
         self.genres = genres
@@ -51,7 +54,7 @@ class TextConditioning(GenericDataModule):
         self.influential_concept_category = influential_concept_category
         self.target_concept_name = target_concept_name
         self.target_concept_category = target_concept_category
-        super().__init__(dataset, batch_size, processor)
+        super().__init__(dataset, batch_size)
 
     def _transform(self, dataset: pd.DataFrame):
         dataset = dataset.drop(
@@ -86,7 +89,7 @@ class TextConditioning(GenericDataModule):
         dataset = remove_concept(dataset, target_category_words, self.target_category)
         return dataset
 
-    def _tokenize(self, text: list[str]):
+    def _tokenize(self, text: list[str]) -> dict[str, torch.Tensor]:
         inputs = self.processor(
             text=text,
             max_length=256,
@@ -94,24 +97,38 @@ class TextConditioning(GenericDataModule):
             return_tensors="pt",
             truncation=True,
         )
-        input_ids = inputs["input_ids"]
-        attention_mask = inputs["attention_mask"]
-        return input_ids, attention_mask
+        # {"input_ids": ..., "attention_mask": ...}
+        return inputs
 
     def prepare_data(self):
         self.dataset_loaded = load_dataset(self.dataset)
-
-        self.dataset_train = self._transform(self.dataset_loaded["train"].to_pandas())
-        self.dataset_test = self._transform(self.dataset_loaded["test"].to_pandas())
-        self.dataset_valid = self._transform(self.dataset_loaded["validation"].to_pandas())
+        self.dataset_transformed = self._transform(self.dataset_loaded["train"].to_pandas())
 
     def setup(self):
-        self.train_dataset = self._tokenize(self.dataset_train[f"caption_without_{self.target_concept_category}"].tolist())
-        self.val_dataset = self._tokenize(self.dataset_valid[f"caption_without_{self.target_concept_category}"].tolist())   
-        self.test_dataset = self._tokenize(self.dataset_test[f"caption_without_{self.target_concept_category}"].tolist())
+        self.dataset_concept = self.dataset_transformed[
+            (self.dataset_transformed[f"is_{self.influential_concept_category}_" + self.influential_concept_name] == 1 &
+                self.dataset_transformed[f"is_{self.target_concept_category}_" + self.target_concept_name] == 1)
+        ].reset_index(drop=True)
+        self.dataset_concept = self._tokenize(self.dataset_concept[f"caption_without_{self.target_concept_category}"].tolist())
+        self.dataset_all = self.dataset_transformed
+        self.dataset_all = self._tokenize(self.dataset_all[f"caption_without_{self.target_concept_category}"].tolist())   
 
-    def select_samples(self):
-        pass
+    def select_samples(self, num_samples: int):
+        if num_samples > len(self.dataset_concept):
+            raise ValueError("Number of samples requested exceeds the dataset size.")
+        indices = np.random.choice(len(self.dataset_concept), num_samples, replace=False)
+        selected_samples = {
+            "input_ids": self.dataset_concept["input_ids"][indices],
+            "attention_mask": self.dataset_concept["attention_mask"][indices],
+        }
+        return selected_samples
 
-    def select_random_samples(self):
-        pass
+    def select_random_samples(self, num_samples: int):
+        if num_samples > len(self.dataset_all):
+            raise ValueError("Number of samples requested exceeds the dataset size.")
+        indices = np.random.choice(len(self.dataset_all), num_samples, replace=False)
+        random_samples = {
+            "input_ids": self.dataset_all["input_ids"][indices],
+            "attention_mask": self.dataset_all["attention_mask"][indices],
+        }
+        return random_samples
