@@ -28,7 +28,25 @@ class ExperimentConfig:
 
 
 @dataclass
+class LoggerConfig:
+    name: str
+    version: str
+    log_dir: str
+    experiment_name: str
+
+
+@dataclass
+class PathsConfig:
+    output_dir: str
+    log_dir: str
+    model_dir: str
+    data_dir: str
+
+
+@dataclass
 class TCAVConfig:
     model: ModelConfig
     experiment: ExperimentConfig
     data: GenericDataModule
+    logger: LoggerConfig
+    paths: PathsConfig

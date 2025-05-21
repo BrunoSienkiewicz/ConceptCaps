@@ -15,7 +15,6 @@ from omegaconf import OmegaConf
 
 from music_gen_interpretability.tcav.concept import create_experimental_set
 from music_gen_interpretability.tcav.config import TCAVConfig
-from music_gen_interpretability.tcav.model import CustomMusicGen
 
 
 def format_float(f):
@@ -89,15 +88,17 @@ def main(cfg: TCAVConfig):
     layers = cfg.experiment.layers
 
     model = hydra.utils.instantiate(cfg.model.model)
+    classifier = hydra.utils.instantiate(cfg.model.classifier)
     instrument_tcav = TCAV(
         model=model,
         model_id=cfg.model.model_id,
-        classifier=hydra.utils.instantiate(cfg.model.classifier),
+        classifier=classifier,
         layer_attr_method=hydra.utils.instantiate(
             cfg.experiment.layer_attr_method, model.forward, None
         ),
         layers=layers,
         show_progress=True,
+        save_path=cfg.paths.output_dir,
     )
 
     # For now I am creating the layer masks by grouping adjacent neurons
@@ -127,7 +128,7 @@ def main(cfg: TCAVConfig):
 
     plot_tcav_scores(experimental_set, tcav_scores, layers)
 
-    output_dir = Path(cfg.experiment.output_dir)
+    output_dir = Path(cfg.paths.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     tcav_scores_df = pd.DataFrame.from_dict(tcav_scores, orient="index")
