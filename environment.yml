@@ -30,7 +30,7 @@ dependencies:
   - hydra-core=1.*
 
   # --------- loggers --------- #
-  # - wandb
+  - wandb
   # - neptune-client
   # - mlflow
   # - comet-ml

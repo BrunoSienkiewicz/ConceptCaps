@@ -8,10 +8,10 @@ import pandas as pd
 import torch
 import rich
 
-from rich.traceback import install
 from captum.concept import TCAV
 from captum.concept._utils.common import concepts_to_str
 from omegaconf import OmegaConf
+from lightning.pytorch.loggers.wandb import WandbLogger
 
 from music_gen_interpretability.tcav.concept import create_experimental_set
 from music_gen_interpretability.tcav.config import TCAVConfig
@@ -52,15 +52,13 @@ def plot_tcav_scores(experimental_sets, tcav_scores, layers):
     plt.show()
 
 
-install(show_locals=True)
-
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 rich.print(f"Using device: {device}")
 
 
 @hydra.main(version_base=None, config_path="../../config", config_name="tcav")
 def main(cfg: TCAVConfig):
+    wandb: WandbLogger = hydra.utils.instantiate(cfg.logger.wandb)
     rich.print("Running TCAV with the following configuration:")
     rich.print(OmegaConf.to_yaml(cfg))
 
@@ -88,6 +86,7 @@ def main(cfg: TCAVConfig):
     layers = cfg.experiment.layers
 
     model = hydra.utils.instantiate(cfg.model.model)
+    wandb.watch(model, log="all", log_graph=True)
     classifier = hydra.utils.instantiate(cfg.model.classifier)
     instrument_tcav = TCAV(
         model=model,
