@@ -72,13 +72,6 @@ def main(cfg: TCAVConfig):
     torch.backends.cudnn.benchmark = False
     torch.cuda.manual_seed_all(random_state)
 
-    processor = hydra.utils.instantiate(cfg.model.processor)
-    model = hydra.utils.instantiate(cfg.model.model)
-
-    model.to(device)
-    model = model.half()
-    model.eval()
-
     data_module = hydra.utils.instantiate(cfg.data)
     data_module.prepare_data()
     data_module.setup()
@@ -95,13 +88,13 @@ def main(cfg: TCAVConfig):
 
     layers = cfg.experiment.layers
 
-    custom_model = CustomMusicGen(model, processor, max_new_tokens=256)
+    model = hydra.utils.instantiate(cfg.model.model)
     instrument_tcav = TCAV(
-        model=custom_model,
+        model=model,
         model_id=cfg.model.model_id,
         classifier=hydra.utils.instantiate(cfg.model.classifier),
         layer_attr_method=hydra.utils.instantiate(
-            cfg.experiment.layer_attr_method, custom_model.forward, None
+            cfg.experiment.layer_attr_method, model.forward, None
         ),
         layers=layers,
         show_progress=True,
@@ -113,7 +106,7 @@ def main(cfg: TCAVConfig):
     n_groups = cfg.experiment.n_groups
     layer_masks = []
     for layer in layers:
-        layer_shape = reduce(getattr, layer.split("."), custom_model).weight.shape[0]
+        layer_shape = reduce(getattr, layer.split("."), model).weight.shape[0]
         layer_mask = torch.zeros(layer_shape).to(device)
         group_size = layer_mask.shape[0] // n_groups
         for i in range(n_groups + 1):

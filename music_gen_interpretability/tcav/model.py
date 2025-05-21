@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import pytorch_lightning as pl
 from captum.concept._utils.classifier import Classifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import accuracy_score
@@ -8,8 +9,12 @@ from torch.utils.data import DataLoader
 from transformers import MusicgenModel, MusicgenProcessor
 
 
-class ConceptClassifier(Classifier):
+class ConceptClassifier(Classifier, pl.LightningModule):
     def __init__(self, random_state: int = 42, *args, **kwargs):
+        super().__init__()
+
+        self.save_hyperparameters()
+
         self.lm = SGDClassifier(
             *args,
             **kwargs,
@@ -17,7 +22,11 @@ class ConceptClassifier(Classifier):
         )
 
     def train_and_eval(
-        self, dataloader: DataLoader, test_split_ratio=0.33, random_state: int = 42, **kwargs
+        self,
+        dataloader: DataLoader,
+        test_split_ratio=0.33,
+        random_state: int = 42,
+        **kwargs,
     ) -> dict:
         X = []
         y = []
@@ -58,17 +67,24 @@ class ConceptClassifier(Classifier):
         return list(self.lm.classes_)
 
 
-class CustomMusicGen:
+class CustomMusicGen(pl.LightningModule):
     def __init__(
         self,
         model: MusicgenModel,
         processor: MusicgenProcessor,
         max_new_tokens=256,
+        device: torch.device = torch.device("cpu"),
     ):
+        super().__init__()
+
+        self.save_hyperparameters()
+
         self.model = model
         self.processor = processor
         self.max_new_tokens = max_new_tokens
 
+        self.model.to(device)
+        self.model = self.model.half()
         self.model.eval()
 
     def __call__(self, input_ids, attention_mask, concept_tensor):
