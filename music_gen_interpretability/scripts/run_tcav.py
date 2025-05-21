@@ -40,7 +40,9 @@ def plot_tcav_scores(experimental_sets, tcav_scores, layers):
                 format_float(scores["sign_count"][i])
                 for layer, scores in tcav_scores[concepts_key].items()
             ]
-            _ax.bar(pos[i], val, width=barWidth, edgecolor="white", label=concepts[i].name)
+            _ax.bar(
+                pos[i], val, width=barWidth, edgecolor="white", label=concepts[i].name
+            )
 
         _ax.set_xlabel(f"Set {str(idx_es)}", fontweight="bold", fontsize=16)
         _ax.set_xticks([r + 0.3 * barWidth for r in range(len(layers))])
@@ -49,6 +51,7 @@ def plot_tcav_scores(experimental_sets, tcav_scores, layers):
 
     plt.tight_layout()
     plt.show()
+
 
 install(show_locals=True)
 
@@ -76,7 +79,9 @@ def main(cfg: TCAVConfig):
     model = model.half()
     model.eval()
 
-    data_module = hydra.utils.instantiate(cfg.data_module)
+    data_module = hydra.utils.instantiate(cfg.data)
+    data_module.prepare_data()
+    data_module.setup()
 
     experimental_set = create_experimental_set(
         data_module,
@@ -140,6 +145,7 @@ def main(cfg: TCAVConfig):
 
 if __name__ == "__main__":
     from rich.console import Console
+
     console = Console()
 
     console.log("Starting TCAV analysis...")

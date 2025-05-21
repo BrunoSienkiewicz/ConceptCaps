@@ -31,4 +31,4 @@ class ExperimentConfig:
 class TCAVConfig:
     model: ModelConfig
     experiment: ExperimentConfig
-    data_module: GenericDataModule
+    data: GenericDataModule
