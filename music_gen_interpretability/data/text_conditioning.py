@@ -2,9 +2,31 @@ import torch
 import pandas as pd
 import numpy as np
 
+from typing import Tuple
 from datasets import load_dataset
 from transformers import AutoProcessor
+from torch.utils.data import Dataset, DataLoader
 from music_gen_interpretability.data.generic_data_module import GenericDataModule
+
+
+class ConceptDataset(Dataset):
+    def __init__(
+        self,
+        input_ids: torch.Tensor,
+        attention_mask: torch.Tensor,
+        concept_tensor: torch.Tensor,
+        device: torch.device = torch.device("cpu"),
+    ):
+        self.device = device
+        self.concept_tensor = concept_tensor.to(device)
+        self.input_ids = input_ids.to(device)
+        self.attention_mask = attention_mask.to(device)
+
+    def __len__(self) -> int:
+        return len(self.input_ids)
+
+    def __getitem__(self, idx) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        return self.input_ids[idx], self.attention_mask[idx], self.concept_tensor
 
 
 def transform_concept(df, concept_list, concept_name):
@@ -110,7 +132,7 @@ class TextConditioning(GenericDataModule):
             self.dataset_loaded["train"].to_pandas()
         )
 
-    def setup(self):
+    def setup(self, stage=None):
         self.dataset_concept = self.dataset_transformed[
             self.dataset_transformed[
                 f"is_{self.influential_concept_category}_"
@@ -158,3 +180,29 @@ class TextConditioning(GenericDataModule):
             "attention_mask": self.dataset_all["attention_mask"][indices],
         }
         return random_samples
+
+    def concept_dataloader(self, num_samples: int, concept_tensor: torch.Tensor):
+        selected_samples = self.select_samples(num_samples)
+        concept_dataset = ConceptDataset(
+            input_ids=selected_samples["input_ids"],
+            attention_mask=selected_samples["attention_mask"],
+            concept_tensor=concept_tensor,
+        )
+        return DataLoader(
+            dataset=concept_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+        )
+
+    def random_dataloader(self, num_samples: int, concept_tensor: torch.Tensor):
+        random_samples = self.select_random_samples(num_samples)
+        concept_dataset = ConceptDataset(
+            input_ids=random_samples["input_ids"],
+            attention_mask=random_samples["attention_mask"],
+            concept_tensor=concept_tensor,
+        )
+        return DataLoader(
+            dataset=concept_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+        )
