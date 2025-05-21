@@ -45,8 +45,10 @@ class TextConditioning(GenericDataModule):
         influential_concept_category: str,
         target_concept_name: str,
         target_concept_category: str,
+        max_sequence_length: int = 256,
     ):
         self.processor = processor
+        self.max_sequence_length = max_sequence_length
         self.emotions = emotions
         self.instruments = instruments
         self.genres = genres
@@ -86,13 +88,15 @@ class TextConditioning(GenericDataModule):
             target_category_words = self.instruments
         elif self.target_concept_category == "genre":
             target_category_words = self.genres
-        dataset = remove_concept(dataset, target_category_words, self.target_concept_category)
+        dataset = remove_concept(
+            dataset, target_category_words, self.target_concept_category
+        )
         return dataset
 
     def _tokenize(self, text: list[str]) -> dict[str, torch.Tensor]:
         inputs = self.processor(
             text=text,
-            max_length=256,
+            max_length=self.max_sequence_length,
             padding=True,
             return_tensors="pt",
             truncation=True,
@@ -102,20 +106,41 @@ class TextConditioning(GenericDataModule):
 
     def prepare_data(self):
         self.dataset_loaded = load_dataset(self.dataset)
-        self.dataset_transformed = self._transform(self.dataset_loaded["train"].to_pandas())
+        self.dataset_transformed = self._transform(
+            self.dataset_loaded["train"].to_pandas()
+        )
 
     def setup(self):
-        self.dataset_concept = self.dataset_transformed[self.dataset_transformed[f"is_{self.influential_concept_category}_" + self.influential_concept_name] == 1].reset_index(drop=True)
-        self.dataset_concept = self.dataset_concept[self.dataset_transformed[f"is_{self.target_concept_category}_" + self.target_concept_name] == 1].reset_index(drop=True)
-        self.dataset_concept = self._tokenize(self.dataset_concept[f"caption_without_{self.target_concept_category}"].tolist())
+        self.dataset_concept = self.dataset_transformed[
+            self.dataset_transformed[
+                f"is_{self.influential_concept_category}_"
+                + self.influential_concept_name
+            ]
+            == 1
+        ].reset_index(drop=True)
+        self.dataset_concept = self.dataset_concept[
+            self.dataset_transformed[
+                f"is_{self.target_concept_category}_" + self.target_concept_name
+            ]
+            == 1
+        ].reset_index(drop=True)
+        self.dataset_concept = self._tokenize(
+            self.dataset_concept[
+                f"caption_without_{self.target_concept_category}"
+            ].tolist()
+        )
         self.dataset_all = self.dataset_transformed
-        self.dataset_all = self._tokenize(self.dataset_all[f"caption_without_{self.target_concept_category}"].tolist())   
+        self.dataset_all = self._tokenize(
+            self.dataset_all[f"caption_without_{self.target_concept_category}"].tolist()
+        )
 
     def select_samples(self, num_samples: int):
         if num_samples > len(self.dataset_concept["input_ids"]):
             print(num_samples, len(self.dataset_concept))
             raise ValueError("Number of samples requested exceeds the dataset size.")
-        indices = np.random.choice(len(self.dataset_concept["input_ids"]), num_samples, replace=False)
+        indices = np.random.choice(
+            len(self.dataset_concept["input_ids"]), num_samples, replace=False
+        )
         selected_samples = {
             "input_ids": self.dataset_concept["input_ids"][indices],
             "attention_mask": self.dataset_concept["attention_mask"][indices],
@@ -125,7 +150,9 @@ class TextConditioning(GenericDataModule):
     def select_random_samples(self, num_samples: int):
         if num_samples > len(self.dataset_all["input_ids"]):
             raise ValueError("Number of samples requested exceeds the dataset size.")
-        indices = np.random.choice(len(self.dataset_all["input_ids"]), num_samples, replace=False)
+        indices = np.random.choice(
+            len(self.dataset_all["input_ids"]), num_samples, replace=False
+        )
         random_samples = {
             "input_ids": self.dataset_all["input_ids"][indices],
             "attention_mask": self.dataset_all["attention_mask"][indices],
