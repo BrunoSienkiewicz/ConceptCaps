@@ -2,3 +2,5 @@ defaults:
   - model: musicgen-small
   - data_module: text_conditioning_guitar_rock
   - experiment: small
+  - paths: default
+  - logger: wandb
