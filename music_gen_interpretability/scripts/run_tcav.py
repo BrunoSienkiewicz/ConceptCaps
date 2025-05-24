@@ -3,18 +3,17 @@ from pathlib import Path
 
 import hydra
 import matplotlib.pyplot as plt
+from music_gen_interpretability.utils.logging import log_hyperparameters
 import numpy as np
 import pandas as pd
 import torch
-import rich
 import rootutils
 import pytorch_lightning as pl
 
 from captum.concept import TCAV
 from captum.concept._utils.common import concepts_to_str
-from omegaconf import OmegaConf
-from lightning.pytorch.loggers.wandb import WandbLogger
 
+from music_gen_interpretability.utils import RankedLogger, instantiate_loggers
 from music_gen_interpretability.tcav.concept import create_experimental_set
 from music_gen_interpretability.tcav.config import TCAVConfig
 
@@ -22,6 +21,8 @@ from music_gen_interpretability.tcav.config import TCAVConfig
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
+
+log = RankedLogger(__name__, rank_zero_only=True)
 
 def format_float(f):
     return float(f"{f:.3f}" if abs(f) >= 0.0005 else f"{f:.3e}")
@@ -59,16 +60,51 @@ def plot_tcav_scores(experimental_sets, tcav_scores, layers):
 
 
 def tcav(cfg: TCAVConfig):
-    wandb: WandbLogger = hydra.utils.instantiate(cfg.logger.wandb)
-    rich.print("Running TCAV with the following configuration:")
-    rich.print(OmegaConf.to_yaml(cfg))
-
     random_state = cfg.experiment.random_state
     pl.seed_everything(random_state)
 
     device = torch.device(cfg.device)
+    log.info(f"Using device: {device}")
 
+    log.info(f"Instantiating datamodule <{cfg.data}>")
     data_module = hydra.utils.instantiate(cfg.data)
+
+    log.info(f"Instantiating model <{cfg.model.model._target_}>")
+    model = hydra.utils.instantiate(cfg.model.model)
+
+    log.info("Instantiating loggers...")
+    logger = instantiate_loggers(cfg.get("logger"))
+
+    log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
+    trainer = hydra.utils.instantiate(
+        cfg.trainer,
+        logger=logger,
+        callbacks=None,  # No callbacks needed for TCAV
+        enable_progress_bar=False,  # Disable progress bar for cleaner output
+    )
+
+    log.info(f"Instantiating classifier <{cfg.model.classifier._target_}>")
+    classifier = hydra.utils.instantiate(cfg.model.classifier, trainer=trainer)
+
+    object_dict = {
+        "cfg": cfg,
+        "datamodule": data_module,
+        "model": model,
+        "logger": logger,
+        "trainer": trainer,
+        "classifier": classifier,
+    }
+
+    if logger:
+        log.info("Logging hyperparameters!")
+        log_hyperparameters(object_dict)
+
+
+    if logger:
+        log.info("Logging hyperparameters!")
+        log_hyperparameters(object_dict)
+
+    log.info("Preparing data...")
     data_module.prepare_data()
     data_module.setup()
 
@@ -84,9 +120,6 @@ def tcav(cfg: TCAVConfig):
 
     layers = cfg.experiment.layers
 
-    model = hydra.utils.instantiate(cfg.model.model)
-    wandb.watch(model, log="all", log_graph=True)
-    classifier = hydra.utils.instantiate(cfg.model.classifier)
     instrument_tcav = TCAV(
         model=model,
         model_id=cfg.model.model_id,
@@ -132,7 +165,6 @@ def tcav(cfg: TCAVConfig):
     tcav_scores_df = pd.DataFrame.from_dict(tcav_scores, orient="index")
     tcav_scores_df.to_csv(output_dir / "tcav.csv", index=False)
     plt.savefig(output_dir / "tcav_scores.png", bbox_inches="tight", dpi=300)
-    rich.print(f"TCAV scores saved to {output_dir / 'tcav.csv'}")
 
 @hydra.main(version_base=None, config_path="../../config", config_name="tcav")
 def main(cfg: TCAVConfig):

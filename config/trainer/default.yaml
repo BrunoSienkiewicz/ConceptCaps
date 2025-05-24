@@ -1,0 +1,6 @@
+accelerator: "auto"
+devices: "auto"
+strategy: "auto"
+precision: "16-mixed"
+max_epochs: 5
+deterministic: false

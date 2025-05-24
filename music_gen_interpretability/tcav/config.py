@@ -4,6 +4,8 @@ from typing import Optional, Union
 
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
 
+from omegaconf import DictConfig
+
 from music_gen_interpretability.data.generic_data_module import GenericDataModule
 from music_gen_interpretability.tcav.model import ConceptClassifier
 
@@ -39,6 +41,7 @@ class LoggerConfig:
 
 @dataclass
 class TrainerConfig:
+    _target_: str = "pytorch_lightning.Trainer"
     accelerator: str = "auto"  # Trainer flag
     devices: Union[int, str] = "auto"  # Trainer flag
     strategy: str = "auto"  # Trainer flag
@@ -56,7 +59,7 @@ class PathsConfig:
 
 
 @dataclass
-class TCAVConfig:
+class TCAVConfig(DictConfig):
     model: ModelConfig
     experiment: ExperimentConfig
     data: GenericDataModule
