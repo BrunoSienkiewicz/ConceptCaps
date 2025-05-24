@@ -107,12 +107,13 @@ class CustomNet(pl.LightningModule):
 
 
 class NetClassifier(Classifier):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__()
 
     def train_and_eval(
         self,
         dataloader: DataLoader
+        , *args, **kwargs
     ) -> dict:
         trainer = pl.Trainer(
             max_epochs=10,

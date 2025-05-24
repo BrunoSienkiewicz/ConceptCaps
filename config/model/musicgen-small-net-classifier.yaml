@@ -1,0 +1,13 @@
+_target_: "src.tcav.config.ModelConfig"
+model:
+  _target_: "src.tcav.model.CustomMusicGen"
+  processor:
+    _target_: "transformers.AutoProcessor.from_pretrained"
+    pretrained_model_name_or_path: "facebook/musicgen-small"
+    device: ${device}
+  model:
+    _target_: "transformers.MusicgenForConditionalGeneration.from_pretrained"
+    pretrained_model_name_or_path: "facebook/musicgen-small"
+model_id: "musicgen-small"
+classifier:
+  _target_: "src.tcav.model.NetClassifier"
