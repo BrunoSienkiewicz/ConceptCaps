@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from typing import Optional, Union
+
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
 
 from music_gen_interpretability.data.generic_data_module import GenericDataModule
@@ -36,6 +38,16 @@ class LoggerConfig:
 
 
 @dataclass
+class TrainerConfig:
+    accelerator: str = "auto"  # Trainer flag
+    devices: Union[int, str] = "auto"  # Trainer flag
+    strategy: str = "auto"  # Trainer flag
+    precision: Optional[str] = "16-mixed"  # Trainer flag
+    max_epochs: int = 5  # Trainer flag
+    deterministic: bool = False  # Trainer flag
+
+
+@dataclass
 class PathsConfig:
     output_dir: str
     log_dir: str
@@ -48,5 +60,7 @@ class TCAVConfig:
     model: ModelConfig
     experiment: ExperimentConfig
     data: GenericDataModule
+    trainer: TrainerConfig
     logger: LoggerConfig
     paths: PathsConfig
+    device: str = "cuda:0"

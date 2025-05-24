@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 import torch
 import rich
+import rootutils
+import pytorch_lightning as pl
 
 from captum.concept import TCAV
 from captum.concept._utils.common import concepts_to_str
@@ -15,6 +17,10 @@ from lightning.pytorch.loggers.wandb import WandbLogger
 
 from music_gen_interpretability.tcav.concept import create_experimental_set
 from music_gen_interpretability.tcav.config import TCAVConfig
+
+
+
+rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 
 def format_float(f):
@@ -52,22 +58,15 @@ def plot_tcav_scores(experimental_sets, tcav_scores, layers):
     plt.show()
 
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-rich.print(f"Using device: {device}")
-
-
-@hydra.main(version_base=None, config_path="../../config", config_name="tcav")
-def main(cfg: TCAVConfig):
+def tcav(cfg: TCAVConfig):
     wandb: WandbLogger = hydra.utils.instantiate(cfg.logger.wandb)
     rich.print("Running TCAV with the following configuration:")
     rich.print(OmegaConf.to_yaml(cfg))
 
     random_state = cfg.experiment.random_state
-    np.random.seed(random_state)
-    torch.manual_seed(random_state)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    torch.cuda.manual_seed_all(random_state)
+    pl.seed_everything(random_state)
+
+    device = torch.device(cfg.device)
 
     data_module = hydra.utils.instantiate(cfg.data)
     data_module.prepare_data()
@@ -135,15 +134,9 @@ def main(cfg: TCAVConfig):
     plt.savefig(output_dir / "tcav_scores.png", bbox_inches="tight", dpi=300)
     rich.print(f"TCAV scores saved to {output_dir / 'tcav.csv'}")
 
+@hydra.main(version_base=None, config_path="../../config", config_name="tcav")
+def main(cfg: TCAVConfig):
+    tcav(cfg)
 
 if __name__ == "__main__":
-    from rich.console import Console
-
-    console = Console()
-
-    console.log("Starting TCAV analysis...")
-
-    try:
-        main()
-    except Exception:
-        console.print_exception()
+    main()
