@@ -7,10 +7,12 @@ class GenericDataModule(pl.LightningDataModule):
         self,
         dataset: str,
         batch_size: int,
+        device: torch.device = torch.device("cpu")
     ):
         super().__init__()
         self.dataset = dataset
         self.batch_size = batch_size
+        self.device = device
 
     def select_samples(self, num_samples: int):
         # This method should return a subset of the dataset with the specified number of samples

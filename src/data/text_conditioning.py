@@ -68,6 +68,7 @@ class TextConditioning(GenericDataModule):
         target_concept_name: str,
         target_concept_category: str,
         max_sequence_length: int = 256,
+        device: torch.device = torch.device("cpu")
     ):
         self.processor = processor
         self.max_sequence_length = max_sequence_length
@@ -78,7 +79,7 @@ class TextConditioning(GenericDataModule):
         self.influential_concept_category = influential_concept_category
         self.target_concept_name = target_concept_name
         self.target_concept_category = target_concept_category
-        super().__init__(dataset, batch_size)
+        super().__init__(dataset, batch_size, device)
 
     def _transform(self, dataset: pd.DataFrame):
         dataset = dataset.drop(
@@ -187,6 +188,7 @@ class TextConditioning(GenericDataModule):
             input_ids=selected_samples["input_ids"],
             attention_mask=selected_samples["attention_mask"],
             concept_tensor=concept_tensor,
+            device=self.device,
         )
         return DataLoader(
             dataset=concept_dataset,
@@ -200,6 +202,7 @@ class TextConditioning(GenericDataModule):
             input_ids=random_samples["input_ids"],
             attention_mask=random_samples["attention_mask"],
             concept_tensor=concept_tensor,
+            device=self.device,
         )
         return DataLoader(
             dataset=concept_dataset,

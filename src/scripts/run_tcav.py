@@ -70,6 +70,7 @@ def tcav(cfg: TCAVConfig):
 
     log.info(f"Instantiating model <{cfg.model.model._target_}>")
     model = hydra.utils.instantiate(cfg.model.model)
+    model.to(device)
 
     log.info("Instantiating loggers...")
     logger = instantiate_loggers(cfg.get("logger"))

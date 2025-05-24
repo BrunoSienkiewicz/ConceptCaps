@@ -16,6 +16,7 @@ def create_experimental_set(
         fill_value=0,
         dtype=torch.float32,
     )
+    concept_tensor = concept_tensor.to(device)
     concept_dataloader = data_module.concept_dataloader(
         num_samples=num_samples,
         concept_tensor=concept_tensor,
@@ -30,6 +31,7 @@ def create_experimental_set(
             fill_value=i,
             dtype=torch.float32,
         )
+        random_concept_tensor = random_concept_tensor.to(device)
         concept_dataloader = data_module.random_dataloader(
             num_samples=num_samples,
             concept_tensor=random_concept_tensor,
