@@ -12,7 +12,7 @@ import pytorch_lightning as pl
 from captum.concept import TCAV
 from captum.concept._utils.common import concepts_to_str
 
-from src.utils import RankedLogger, instantiate_loggers, log_hyperparameters
+from src.utils import RankedLogger, instantiate_loggers, log_hyperparameters, print_config_tree
 from src.tcav.concept import create_experimental_set
 from src.tcav.config import TCAVConfig
 
@@ -65,7 +65,7 @@ def tcav(cfg: TCAVConfig):
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
 
-    log.info(f"Instantiating datamodule <{cfg.data}>")
+    log.info(f"Instantiating datamodule <{cfg.data._target_}>")
     data_module = hydra.utils.instantiate(cfg.data)
 
     log.info(f"Instantiating model <{cfg.model.model._target_}>")
@@ -87,7 +87,7 @@ def tcav(cfg: TCAVConfig):
 
     object_dict = {
         "cfg": cfg,
-        "datamodule": data_module,
+        "data_module": data_module,
         "model": model,
         "logger": logger,
         "trainer": trainer,
@@ -107,6 +107,7 @@ def tcav(cfg: TCAVConfig):
     data_module.prepare_data()
     data_module.setup()
 
+    log.info("Creating experimental set...")
     experimental_set = create_experimental_set(
         data_module,
         experimental_set_size=cfg.experiment.experimental_set_size,
@@ -149,6 +150,7 @@ def tcav(cfg: TCAVConfig):
     input_ids = inputs["input_ids"].to(device)
     attention_mask = inputs["attention_mask"].to(device)
 
+    log.info("Running TCAV...")
     tcav_scores = instrument_tcav.interpret(
         inputs=(input_ids, attention_mask, None),
         experimental_sets=experimental_set,
@@ -156,6 +158,7 @@ def tcav(cfg: TCAVConfig):
         layer_mask=layer_masks,
     )
 
+    log.info("TCAV scores computed successfully!")
     plot_tcav_scores(experimental_set, tcav_scores, layers)
 
     output_dir = Path(cfg.paths.output_dir)
@@ -167,6 +170,7 @@ def tcav(cfg: TCAVConfig):
 
 @hydra.main(version_base=None, config_path="../../config", config_name="tcav")
 def main(cfg: TCAVConfig):
+    print_config_tree(cfg)
     tcav(cfg)
 
 if __name__ == "__main__":
