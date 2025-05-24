@@ -1,4 +1,4 @@
-_target_: "music-gen-interpretability.tcav.config.ExperimentConfig"
+_target_: "src.tcav.config.ExperimentConfig"
 random_state: 42
 layers: ["model.decoder.lm_heads.0", "model.decoder.lm_heads.1"]
 layer_attr_method:

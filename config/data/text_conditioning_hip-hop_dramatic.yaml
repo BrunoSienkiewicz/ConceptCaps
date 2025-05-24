@@ -1,4 +1,4 @@
-_target_: "music_gen_interpretability.data.text_conditioning.TextConditioning"
+_target_: "src.data.text_conditioning.TextConditioning"
 dataset: "google/MusicCaps"
 processor:
   _target_: "transformers.AutoProcessor.from_pretrained"

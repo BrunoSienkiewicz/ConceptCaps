@@ -5,3 +5,5 @@ defaults:
   - trainer: default
   - paths: default
   - logger: wandb
+
+device: cuda

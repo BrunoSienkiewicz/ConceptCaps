@@ -1,7 +1,7 @@
 import torch
 from captum.concept import Concept
 
-from music_gen_interpretability.data.generic_data_module import GenericDataModule
+from src.data.generic_data_module import GenericDataModule
 
 
 def create_experimental_set(

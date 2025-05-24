@@ -3,7 +3,6 @@ from pathlib import Path
 
 import hydra
 import matplotlib.pyplot as plt
-from music_gen_interpretability.utils.logging import log_hyperparameters
 import numpy as np
 import pandas as pd
 import torch
@@ -13,9 +12,9 @@ import pytorch_lightning as pl
 from captum.concept import TCAV
 from captum.concept._utils.common import concepts_to_str
 
-from music_gen_interpretability.utils import RankedLogger, instantiate_loggers
-from music_gen_interpretability.tcav.concept import create_experimental_set
-from music_gen_interpretability.tcav.config import TCAVConfig
+from src.utils import RankedLogger, instantiate_loggers, log_hyperparameters
+from src.tcav.concept import create_experimental_set
+from src.tcav.config import TCAVConfig
 
 
 
@@ -84,7 +83,7 @@ def tcav(cfg: TCAVConfig):
     )
 
     log.info(f"Instantiating classifier <{cfg.model.classifier._target_}>")
-    classifier = hydra.utils.instantiate(cfg.model.classifier, trainer=trainer)
+    classifier = hydra.utils.instantiate(cfg.model.classifier)
 
     object_dict = {
         "cfg": cfg,

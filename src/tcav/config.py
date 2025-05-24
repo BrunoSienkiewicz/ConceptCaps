@@ -6,8 +6,8 @@ from transformers import AutoProcessor, MusicgenForConditionalGeneration
 
 from omegaconf import DictConfig
 
-from music_gen_interpretability.data.generic_data_module import GenericDataModule
-from music_gen_interpretability.tcav.model import ConceptClassifier
+from src.data.generic_data_module import GenericDataModule
+from src.tcav.model import ConceptClassifier
 
 
 @dataclass

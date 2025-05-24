@@ -6,7 +6,7 @@ from typing import Tuple
 from datasets import load_dataset
 from transformers import AutoProcessor
 from torch.utils.data import Dataset, DataLoader
-from music_gen_interpretability.data.generic_data_module import GenericDataModule
+from src.data.generic_data_module import GenericDataModule
 
 
 class ConceptDataset(Dataset):
