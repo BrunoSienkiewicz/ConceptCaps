@@ -10,4 +10,4 @@ model:
     pretrained_model_name_or_path: "facebook/musicgen-small"
 model_id: "musicgen-small"
 classifier:
-  _target_: "src.tcav.model.ConceptClassifier"
+  _target_: "src.tcav.model.SVMClassifier"

@@ -7,7 +7,7 @@ from transformers import AutoProcessor, MusicgenForConditionalGeneration
 from omegaconf import DictConfig
 
 from src.data.generic_data_module import GenericDataModule
-from src.tcav.model import ConceptClassifier
+from src.tcav.model import SVMClassifier
 
 
 @dataclass
@@ -17,7 +17,7 @@ class ModelConfig:
     model: MusicgenForConditionalGeneration
     model_name: str
     processor_name: str
-    classifier: ConceptClassifier
+    classifier: SVMClassifier
 
 
 @dataclass

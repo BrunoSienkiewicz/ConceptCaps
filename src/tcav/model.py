@@ -7,17 +7,14 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 from transformers import MusicgenModel, MusicgenProcessor
+from torchmetrics import Accuracy
 
 
-class ConceptClassifier(Classifier, pl.LightningModule):
+class SVMClassifier(Classifier):
     def __init__(self, random_state: int = 42, *args, **kwargs):
         super().__init__()
 
-        self.save_hyperparameters()
-
         self.lm = SGDClassifier(
-            *args,
-            **kwargs,
             random_state=random_state,
         )
 
@@ -26,6 +23,7 @@ class ConceptClassifier(Classifier, pl.LightningModule):
         dataloader: DataLoader,
         test_split_ratio=0.33,
         random_state: int = 42,
+        *args,
         **kwargs,
     ) -> dict:
         X = []
@@ -67,13 +65,92 @@ class ConceptClassifier(Classifier, pl.LightningModule):
         return list(self.lm.classes_)
 
 
+class CustomNet(pl.LightningModule):
+    def __init__(self, input_dim: int, output_dim: int, num_classes: int):
+        super().__init__()
+
+        self.save_hyperparameters()
+
+        self.net = torch.nn.Sequential(
+            torch.nn.Linear(input_dim, 128),
+            torch.nn.ReLU(),
+            torch.nn.Linear(128, output_dim),
+        )
+        self.num_classes = num_classes
+        self.loss_fn = torch.nn.CrossEntropyLoss()
+        self.train_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+        self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+
+    def forward(self, x):
+        return self.net(x)
+
+    def training_step(self, batch, batch_idx):
+        x, y = batch
+        logits = self(x)
+        loss = torch.nn.functional.cross_entropy(logits, y)
+        self.log("train_loss", loss)
+        self.train_accuracy(logits, y)
+        self.log("train_accuracy", self.train_accuracy, on_step=True, on_epoch=True)
+        return loss
+
+    def validation_step(self, batch, batch_idx):
+        x, y = batch
+        logits = self(x)
+        loss = self.loss_fn(logits, y)
+        self.log("val_loss", loss)
+        acc = self.val_accuracy(logits, y)
+        self.log("val_accuracy", acc)
+
+    def configure_optimizers(self):
+        return torch.optim.Adam(self.parameters(), lr=0.001)
+
+
+
+class NetClassifier(Classifier):
+    def __init__(self):
+        super().__init__()
+
+    def train_and_eval(
+        self,
+        dataloader: DataLoader
+    ) -> dict:
+        trainer = pl.Trainer(
+            max_epochs=10,
+            logger=False,
+            enable_progress_bar=False,
+        )
+
+        model = CustomNet(
+            input_dim=dataloader.dataset[0][0].shape[1],
+            output_dim=len(dataloader.dataset.classes()),
+            num_classes=len(dataloader.dataset.classes()),
+        )
+        model.to(self.device)
+
+        trainer.fit(model, dataloader)
+        test_result = trainer.test(model, dataloader)
+        acc = test_result[0]["val_accuracy"]
+        return {"accuracy": acc}
+
+    def weights(self) -> torch.Tensor:
+        weights = self.net.net[2].weight.data.cpu().numpy()
+        if len(weights) == 1:
+            # if there are two concepts, there is only one label.
+            # We split it in two.
+            return torch.tensor([-1 * weights[0], weights[0]])
+        else:
+            return torch.tensor(weights)
+
+    def classes(self) -> list[int]:
+        return list(range(self.num_classes))
+
+
 class CustomMusicGen(pl.LightningModule):
     def __init__(
         self,
         model: MusicgenModel,
         processor: MusicgenProcessor,
         max_new_tokens=256,
-        device: torch.device = torch.device("cpu"),
     ):
         super().__init__()
 
@@ -83,22 +160,13 @@ class CustomMusicGen(pl.LightningModule):
         self.processor = processor
         self.max_new_tokens = max_new_tokens
 
-        self.model.to(device)
-        self.model = self.model.half()
-        self.model.eval()
+    def __call__(self, input_ids, attention_mask, *args, **kwargs):
+        return self.forward(input_ids, attention_mask)
 
-    def __call__(self, input_ids, attention_mask, concept_tensor):
-        return self.forward(input_ids, attention_mask, concept_tensor)
-
-    def forward(self, input_ids, attention_mask, concept_tensor):
-        torch.cuda.empty_cache()
-        with torch.amp.autocast("cuda"):
-            audio_values = self.model.generate(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                max_new_tokens=self.max_new_tokens,
-                # output_hidden_states=True,
-                # return_dict_in_generate=True,
-                # use_cache=False,
-            )
+    def forward(self, input_ids, attention_mask, *args, **kwargs):
+        audio_values = self.model.generate(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            max_new_tokens=self.max_new_tokens,
+        )
         return audio_values[0]
