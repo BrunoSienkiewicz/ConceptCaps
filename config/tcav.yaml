@@ -7,3 +7,4 @@ defaults:
   - logger: wandb
 
 device: cuda
+random_state: 42

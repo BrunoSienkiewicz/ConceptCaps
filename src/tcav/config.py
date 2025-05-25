@@ -22,7 +22,6 @@ class ModelConfig:
 
 @dataclass
 class ExperimentConfig:
-    random_state: int
     layers: list[str]
     layer_attr_method: str
     n_groups: int

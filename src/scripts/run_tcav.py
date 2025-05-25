@@ -58,7 +58,7 @@ def plot_tcav_scores(experimental_sets, tcav_scores, layers):
 
 
 def tcav(cfg: TCAVConfig):
-    random_state = cfg.experiment.random_state
+    random_state = cfg.random_state
     pl.seed_everything(random_state)
 
     device = torch.device(cfg.device)
