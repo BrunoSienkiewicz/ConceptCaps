@@ -1,3 +1,4 @@
+from typing import Optional
 import numpy as np
 import torch
 import pytorch_lightning as pl
@@ -101,6 +102,14 @@ class CustomNet(pl.LightningModule):
         acc = self.val_accuracy(logits, y)
         self.log("val_accuracy", acc)
 
+    def test_step(self, batch, batch_idx):
+        x, y = batch
+        logits = self(x)
+        loss = self.loss_fn(logits, y)
+        acc = self.val_accuracy(logits, y)
+        self.log("test_loss", loss)
+        self.log("test_accuracy", acc)
+
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=0.001)
 
@@ -112,29 +121,36 @@ class NetClassifier(Classifier):
 
     def train_and_eval(
         self,
-        dataloader: DataLoader
-        , *args, **kwargs
+        dataloader: DataLoader,
+        trainer: Optional[pl.Trainer] = None,
+        *args, **kwargs
     ) -> dict:
-        trainer = pl.Trainer(
-            max_epochs=10,
-            logger=False,
-            enable_progress_bar=False,
+        if trainer is None:
+            # If no trainer is provided, create a default one
+            self.device = "cuda" if torch.cuda.is_available() else "cpu"
+            trainer = pl.Trainer(
+                max_epochs=10,
+                logger=False,
+                enable_progress_bar=False,
+                accelerator=self.device,
+                devices=1 if self.device == "cuda" else None,
+            )
+
+        # Values are hardcoded for now.
+        # Later it should be changed based on experiment config.
+        self.model = CustomNet(
+            input_dim=2048,
+            output_dim=3,
+            num_classes=3,
         )
 
-        model = CustomNet(
-            input_dim=dataloader.dataset[0][0].shape[1],
-            output_dim=len(dataloader.dataset.classes()),
-            num_classes=len(dataloader.dataset.classes()),
-        )
-        model.to(self.device)
-
-        trainer.fit(model, dataloader)
-        test_result = trainer.test(model, dataloader)
-        acc = test_result[0]["val_accuracy"]
+        trainer.fit(self.model, dataloader)
+        test_result = trainer.test(self.model, dataloader)
+        acc = test_result[0]["test_accuracy"]
         return {"accuracy": acc}
 
     def weights(self) -> torch.Tensor:
-        weights = self.net.net[2].weight.data.cpu().numpy()
+        weights = self.model.net[-1].weight.data.cpu().numpy().flatten().tolist()
         if len(weights) == 1:
             # if there are two concepts, there is only one label.
             # We split it in two.
@@ -143,7 +159,7 @@ class NetClassifier(Classifier):
             return torch.tensor(weights)
 
     def classes(self) -> list[int]:
-        return list(range(self.num_classes))
+        return list(range(self.model.num_classes))
 
 
 class CustomMusicGen(pl.LightningModule):
