@@ -55,7 +55,6 @@ def plot_tcav_scores(experimental_sets, tcav_scores, layers):
         _ax.legend(fontsize=16)
 
     plt.tight_layout()
-    plt.show()
 
 
 def tcav(cfg: TCAVConfig):
