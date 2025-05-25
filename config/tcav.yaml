@@ -4,7 +4,8 @@ defaults:
   - experiment: small
   - trainer: default
   - paths: default
-  - logger: wandb
+  - logger: null
+  - hydra: default
 
 device: cuda
 random_state: 42
