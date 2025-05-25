@@ -7,5 +7,6 @@ defaults:
   - logger: null
   - hydra: default
 
+task_name: tcav
 device: cuda
 random_state: 42
