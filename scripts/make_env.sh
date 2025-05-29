@@ -22,4 +22,4 @@ conda config --add envs\_dirs $CONDA_DIR/envs
 
 srun conda env create -n "$(cat environment.yml | grep -E "name: " | cut -d " " -f 2)" -f environment.yml --yes
 conda activate "$(cat environment.yml | grep -E "name: " | cut -d " " -f 2)"
-srun poetry install
+srun poetry install --no-root
