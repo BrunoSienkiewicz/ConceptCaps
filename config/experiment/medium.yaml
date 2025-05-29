@@ -4,4 +4,4 @@ layer_attr_method:
   _target_: "captum.attr.LayerFeatureAblation"
 num_samples: 50
 experimental_set_size: 10
-n_groups: 5
+n_groups: 128

@@ -3,3 +3,6 @@ defaults:
   - override /paths: plgrid
   - override /model: musicgen-medium
   - override /experiment: medium
+
+data:
+  batch_size: 64
