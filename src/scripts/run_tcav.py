@@ -61,6 +61,9 @@ def tcav(cfg: TCAVConfig):
     random_state = cfg.random_state
     pl.seed_everything(random_state)
 
+    log.info("Instantiating loggers...")
+    logger = instantiate_loggers(cfg.get("logger"))
+
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
 
@@ -70,9 +73,6 @@ def tcav(cfg: TCAVConfig):
     log.info(f"Instantiating model <{cfg.model.model._target_}>")
     model = hydra.utils.instantiate(cfg.model.model)
     model.to(device)
-
-    log.info("Instantiating loggers...")
-    logger = instantiate_loggers(cfg.get("logger"))
 
     log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
     trainer = hydra.utils.instantiate(
