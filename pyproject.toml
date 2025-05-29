@@ -14,6 +14,7 @@ matplotlib = "^3.10.3"
 seaborn = "^0.13.2"
 click = "^8.2.0"
 pyparsing = "^3.2.3"
+huggingface-hub = {extras = ["hf-xet"], version = "^0.32.2"}
 
 [tool.poetry.group.docs]
 optional = true
