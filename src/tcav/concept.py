@@ -11,12 +11,12 @@ def create_experimental_set(
     device: torch.device = torch.device("cpu"),
 ):
     experimental_set = []
-    concept_tensor = torch.full(
-        size=(1,),
-        fill_value=0,
+    concept_tensor = torch.tensor(
+        [0.0] * (experimental_set_size + 1),
         dtype=torch.float32,
+        device=device,
     )
-    concept_tensor = concept_tensor.to(device)
+    concept_tensor[0] = 1.0
     concept_dataloader = data_module.concept_dataloader(
         num_samples=num_samples,
         concept_tensor=concept_tensor,
@@ -26,12 +26,12 @@ def create_experimental_set(
     )
 
     for i in range(1, experimental_set_size + 1):
-        random_concept_tensor = torch.full(
-            size=(1,),
-            fill_value=i,
+        random_concept_tensor = torch.tensor(
+            [0.0] * (experimental_set_size + 1),
             dtype=torch.float32,
+            device=device,
         )
-        random_concept_tensor = random_concept_tensor.to(device)
+        random_concept_tensor[i] = 1.0
         concept_dataloader = data_module.random_dataloader(
             num_samples=num_samples,
             concept_tensor=random_concept_tensor,

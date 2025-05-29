@@ -78,7 +78,7 @@ class CustomNet(pl.LightningModule):
             torch.nn.Linear(128, output_dim),
         )
         self.num_classes = num_classes
-        self.loss_fn = torch.nn.CrossEntropyLoss()
+        self.loss_fn = torch.nn.BCEWithLogitsLoss()
         self.train_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
         self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
 
@@ -88,7 +88,8 @@ class CustomNet(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        loss = torch.nn.functional.cross_entropy(logits, y)
+        print(logits.min(), logits.max(), logits.shape)
+        loss = self.loss_fn(logits, y)
         self.log("train_loss", loss)
         self.train_accuracy(logits, y)
         self.log("train_accuracy", self.train_accuracy, on_step=True, on_epoch=True)
@@ -97,6 +98,7 @@ class CustomNet(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
+        print(logits.min(), logits.max(), logits.shape)
         loss = self.loss_fn(logits, y)
         self.log("val_loss", loss)
         acc = self.val_accuracy(logits, y)
@@ -105,6 +107,7 @@ class CustomNet(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
+        print(logits.min(), logits.max(), logits.shape)
         loss = self.loss_fn(logits, y)
         acc = self.val_accuracy(logits, y)
         self.log("test_loss", loss)
@@ -140,8 +143,8 @@ class NetClassifier(Classifier):
         # Later it should be changed based on experiment config.
         self.model = CustomNet(
             input_dim=2048,
-            output_dim=3,
-            num_classes=3,
+            output_dim=4,
+            num_classes=4,
         )
 
         trainer.fit(self.model, dataloader)
