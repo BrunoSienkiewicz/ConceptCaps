@@ -17,4 +17,4 @@ CONDA_DIR="/net/tscratch/people/plgbsienkiewicz/.conda"
 ENV_DIR="$CONDA_DIR/envs/$(cat environment.yml | grep -E "name: " | cut -d " " -f 2)"
 
 export PYTHONPATH="$PYTHONPATH:$(pwd)"
-srun "$ENV_DIR/bin/python" src/scripts/run_tcav.py +preset=plgird +logger=wandb
+srun "$ENV_DIR/bin/python" src/scripts/run_tcav.py +preset=plgrid +logger=wandb
