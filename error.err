@@ -1,9 +1,0 @@
-Now please run command: 
-eval "$(conda shell.bash hook)"
-to set conda env
- Miniconda3/23.3.1-0 loaded.
-Warning: '/net/tscratch/people/plgbsienkiewicz/.conda/envs' already in 'envs_dirs' list, moving to the top
-Traceback (most recent call last):
-  File "/net/people/plgrid/plgbsienkiewicz/music-gen-interpretability/src/scripts/run_tcav.py", line 15, in <module>
-    from src.utils import RankedLogger, instantiate_loggers, log_hyperparameters, print_config_tree
-ModuleNotFoundError: No module named 'src'
