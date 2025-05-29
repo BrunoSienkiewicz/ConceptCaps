@@ -1,0 +1,7 @@
+_target_: "src.tcav.config.ExperimentConfig"
+layers: ["model.decoder.lm_heads.0", "model.decoder.lm_heads.1"]
+layer_attr_method:
+  _target_: "captum.attr.LayerFeatureAblation"
+num_samples: 50
+experimental_set_size: 10
+n_groups: 5
