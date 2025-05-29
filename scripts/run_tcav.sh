@@ -19,4 +19,4 @@ ENV_DIR="$CONDA_DIR/envs/$(cat environment.yml | grep -E "name: " | cut -d " " -
 
 export PYTHONPATH="$PYTHONPATH:$(pwd)"
 export HF_HOME="$TEMP_DIR/.cache/huggingface"
-srun "$ENV_DIR/bin/python" src/scripts/run_tcav.py +preset=plgrid +logger=wandb
+srun "$ENV_DIR/bin/python" src/scripts/run_tcav.py +preset=plgrid

@@ -3,6 +3,7 @@ defaults:
   - override /paths: plgrid
   - override /model: musicgen-medium
   - override /experiment: medium
+  - override /logger: wandb
 
 data:
   batch_size: 64
