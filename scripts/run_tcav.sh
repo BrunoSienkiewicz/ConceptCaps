@@ -28,3 +28,4 @@ if [ ! -d "$ENV_DIR" ]; then
 fi
 
 conda activate "$ENV_DIR"
+"$ENV_DIR/bin/python" src/scripts/run_tcav.py +preset=plgird +logger=wandb
