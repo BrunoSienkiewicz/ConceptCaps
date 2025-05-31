@@ -20,6 +20,4 @@ conda init --all
 conda config --add pkgs\_dirs $CONDA_DIR/pkgs
 conda config --add envs\_dirs $CONDA_DIR/envs
 
-srun conda env create -n "$(cat environment.yml | grep -E "name: " | cut -d " " -f 2)" -f environment.yml --yes
-conda activate "$(cat environment.yml | grep -E "name: " | cut -d " " -f 2)"
-srun poetry install --no-root
+srun make env
