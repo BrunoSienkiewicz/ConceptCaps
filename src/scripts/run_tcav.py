@@ -1,6 +1,8 @@
 from functools import reduce
 from pathlib import Path
 
+import os
+import wandb
 import hydra
 import matplotlib.pyplot as plt
 import numpy as np
@@ -22,6 +24,8 @@ rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 
 log = RankedLogger(__name__, rank_zero_only=True)
+
+wandb.login()
 
 def format_float(f):
     return float(f"{f:.3f}" if abs(f) >= 0.0005 else f"{f:.3e}")
@@ -60,6 +64,8 @@ def plot_tcav_scores(experimental_sets, tcav_scores, layers):
 def tcav(cfg: TCAVConfig):
     random_state = cfg.random_state
     pl.seed_everything(random_state)
+
+    print(os.environ.get("WANDB_API_KEY"))
 
     log.info("Instantiating loggers...")
     logger = instantiate_loggers(cfg.get("logger"))
