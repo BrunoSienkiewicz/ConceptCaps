@@ -140,20 +140,23 @@ def tcav(cfg: TCAVConfig):
         save_path=cfg.paths.output_dir,
     )
 
-    # For now I am creating the layer masks by grouping adjacent neurons
-    # into groups of size n_groups. Later we can add a more sophisticated
-    # approach to create the layer masks.
-    n_groups = cfg.experiment.n_groups
-    layer_masks = []
-    for layer in layers:
-        layer_shape = reduce(getattr, layer.split("."), model).weight.shape[0]
-        layer_mask = torch.zeros(layer_shape).to(device)
-        group_size = layer_mask.shape[0] // n_groups
-        for i in range(n_groups + 1):
-            layer_mask[i * group_size : (i + 1) * group_size] = i
-        layer_masks.append(layer_mask)
+    if cfg.experiment.n_groups != 0:
+        layer_masks = None
+    else:
+        # For now I am creating the layer masks by grouping adjacent neurons
+        # into groups of size n_groups. Later we can add a more sophisticated
+        # approach to create the layer masks.
+        n_groups = cfg.experiment.n_groups
+        layer_masks = []
+        for layer in layers:
+            layer_shape = reduce(getattr, layer.split("."), model).weight.shape[0]
+            layer_mask = torch.zeros(layer_shape).to(device)
+            group_size = layer_mask.shape[0] // n_groups
+            for i in range(n_groups + 1):
+                layer_mask[i * group_size : (i + 1) * group_size] = i
+            layer_masks.append(layer_mask)
 
-    layer_masks = (*layer_masks,)
+        layer_masks = (*layer_masks,)
 
     input_ids = inputs["input_ids"].to(device)
     attention_mask = inputs["attention_mask"].to(device)
