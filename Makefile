@@ -27,4 +27,3 @@ env: ## Create virtual environment
 update: ## Update dependencies
 	conda env update --file environment.yml --prune
 	poetry update
-

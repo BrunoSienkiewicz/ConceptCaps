@@ -1,5 +1,5 @@
-import torch
 import pytorch_lightning as pl
+import torch
 
 
 class GenericDataModule(pl.LightningDataModule):
@@ -7,7 +7,7 @@ class GenericDataModule(pl.LightningDataModule):
         self,
         dataset: str,
         batch_size: int,
-        device: torch.device = torch.device("cpu")
+        device: torch.device = torch.device("cpu"),
     ):
         super().__init__()
         self.dataset = dataset
@@ -22,7 +22,9 @@ class GenericDataModule(pl.LightningDataModule):
         # This method should return a random subset of the dataset with the specified number of samples
         pass
 
-    def concept_dataloader(self, num_samples: int, concept_tensor: torch.Tensor):
+    def concept_dataloader(
+        self, num_samples: int, concept_tensor: torch.Tensor
+    ):
         # This method should return a DataLoader for the concept dataset
         pass
 

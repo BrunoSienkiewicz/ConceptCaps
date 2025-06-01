@@ -1,29 +1,31 @@
 from functools import reduce
 from pathlib import Path
 
-import os
-import wandb
 import hydra
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import torch
-import rootutils
 import pytorch_lightning as pl
-
+import rootutils
+import torch
+import wandb
 from captum.concept import TCAV
 from captum.concept._utils.common import concepts_to_str
 
-from src.utils import RankedLogger, instantiate_loggers, log_hyperparameters, print_config_tree
 from src.tcav.concept import create_experimental_set
 from src.tcav.config import TCAVConfig
-
-
+from src.utils import (
+    RankedLogger,
+    instantiate_loggers,
+    log_hyperparameters,
+    print_config_tree,
+)
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 
 log = RankedLogger(__name__, rank_zero_only=True)
+
 
 def format_float(f):
     return float(f"{f:.3f}" if abs(f) >= 0.0005 else f"{f:.3e}")
@@ -48,7 +50,11 @@ def plot_tcav_scores(experimental_sets, tcav_scores, layers):
                 for layer, scores in tcav_scores[concepts_key].items()
             ]
             _ax.bar(
-                pos[i], val, width=barWidth, edgecolor="white", label=concepts[i].name
+                pos[i],
+                val,
+                width=barWidth,
+                edgecolor="white",
+                label=concepts[i].name,
             )
 
         _ax.set_xlabel(f"Set {str(idx_es)}", fontweight="bold", fontsize=16)
@@ -100,7 +106,6 @@ def tcav(cfg: TCAVConfig):
     if logger:
         log.info("Logging hyperparameters!")
         log_hyperparameters(object_dict)
-
 
     if logger:
         log.info("Logging hyperparameters!")
@@ -171,10 +176,12 @@ def tcav(cfg: TCAVConfig):
     tcav_scores_df.to_csv(output_dir / "tcav.csv", index=False)
     plt.savefig(output_dir / "tcav_scores.png", bbox_inches="tight", dpi=300)
 
+
 @hydra.main(version_base=None, config_path="../../config", config_name="tcav")
 def main(cfg: TCAVConfig):
     print_config_tree(cfg)
     tcav(cfg)
+
 
 if __name__ == "__main__":
     main()

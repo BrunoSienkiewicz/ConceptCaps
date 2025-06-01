@@ -22,7 +22,9 @@ def create_experimental_set(
         concept_tensor=concept_tensor,
     )
     influential_concept = Concept(
-        id=0, name=data_module.influential_concept_name, data_iter=concept_dataloader
+        id=0,
+        name=data_module.influential_concept_name,
+        data_iter=concept_dataloader,
     )
 
     for i in range(1, experimental_set_size + 1):

@@ -1,14 +1,15 @@
 from typing import Optional
+
 import numpy as np
-import torch
 import pytorch_lightning as pl
+import torch
 from captum.concept._utils.classifier import Classifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
-from transformers import MusicgenModel, MusicgenProcessor
 from torchmetrics import Accuracy
+from transformers import MusicgenModel, MusicgenProcessor
 
 
 class SVMClassifier(Classifier):
@@ -36,7 +37,10 @@ class SVMClassifier(Classifier):
 
         # Pad the sequences to the same length
         max_len = max([x.shape[1] for x in X])
-        X = [np.pad(x, ((0, 0), (0, max_len - x.shape[1])), mode="constant") for x in X]
+        X = [
+            np.pad(x, ((0, 0), (0, max_len - x.shape[1])), mode="constant")
+            for x in X
+        ]
 
         X = np.concatenate(X)
         y = np.concatenate(y)
@@ -79,7 +83,9 @@ class CustomNet(pl.LightningModule):
         )
         self.num_classes = num_classes
         self.loss_fn = torch.nn.BCEWithLogitsLoss()
-        self.train_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+        self.train_accuracy = Accuracy(
+            task="multiclass", num_classes=num_classes
+        )
         self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
 
     def forward(self, x):
@@ -92,7 +98,9 @@ class CustomNet(pl.LightningModule):
         loss = self.loss_fn(logits, y)
         self.log("train_loss", loss)
         self.train_accuracy(logits, y)
-        self.log("train_accuracy", self.train_accuracy, on_step=True, on_epoch=True)
+        self.log(
+            "train_accuracy", self.train_accuracy, on_step=True, on_epoch=True
+        )
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -117,7 +125,6 @@ class CustomNet(pl.LightningModule):
         return torch.optim.Adam(self.parameters(), lr=0.001)
 
 
-
 class NetClassifier(Classifier):
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -126,7 +133,8 @@ class NetClassifier(Classifier):
         self,
         dataloader: DataLoader,
         trainer: Optional[pl.Trainer] = None,
-        *args, **kwargs
+        *args,
+        **kwargs,
     ) -> dict:
         if trainer is None:
             # If no trainer is provided, create a default one
@@ -153,7 +161,9 @@ class NetClassifier(Classifier):
         return {"accuracy": acc}
 
     def weights(self) -> torch.Tensor:
-        weights = self.model.net[-1].weight.data.cpu().numpy().flatten().tolist()
+        weights = (
+            self.model.net[-1].weight.data.cpu().numpy().flatten().tolist()
+        )
         if len(weights) == 1:
             # if there are two concepts, there is only one label.
             # We split it in two.

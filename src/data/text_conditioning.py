@@ -1,11 +1,12 @@
-import torch
-import pandas as pd
-import numpy as np
-
 from typing import Tuple
+
+import numpy as np
+import pandas as pd
+import torch
 from datasets import load_dataset
+from torch.utils.data import DataLoader, Dataset
 from transformers import AutoProcessor
-from torch.utils.data import Dataset, DataLoader
+
 from src.data.generic_data_module import GenericDataModule
 
 
@@ -25,8 +26,14 @@ class ConceptDataset(Dataset):
     def __len__(self) -> int:
         return len(self.input_ids)
 
-    def __getitem__(self, idx) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        return self.input_ids[idx], self.attention_mask[idx], self.concept_tensor
+    def __getitem__(
+        self, idx
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        return (
+            self.input_ids[idx],
+            self.attention_mask[idx],
+            self.concept_tensor,
+        )
 
 
 def transform_concept(df, concept_list, concept_name):
@@ -68,7 +75,7 @@ class TextConditioning(GenericDataModule):
         target_concept_name: str,
         target_concept_category: str,
         max_sequence_length: int = 256,
-        device: torch.device = torch.device("cpu")
+        device: torch.device = torch.device("cpu"),
     ):
         self.processor = processor
         self.max_sequence_length = max_sequence_length
@@ -98,7 +105,9 @@ class TextConditioning(GenericDataModule):
         dataset = transform_concept(dataset, self.genres, "genre")
 
         is_any_genre = dataset.filter(like="is_genre_").sum(axis=1) > 0
-        is_any_instrument = dataset.filter(like="is_instrument_").sum(axis=1) > 0
+        is_any_instrument = (
+            dataset.filter(like="is_instrument_").sum(axis=1) > 0
+        )
         is_any_emotion = dataset.filter(like="is_emotion_").sum(axis=1) > 0
 
         dataset = dataset[
@@ -154,13 +163,17 @@ class TextConditioning(GenericDataModule):
         )
         self.dataset_all = self.dataset_transformed
         self.dataset_all = self._tokenize(
-            self.dataset_all[f"caption_without_{self.target_concept_category}"].tolist()
+            self.dataset_all[
+                f"caption_without_{self.target_concept_category}"
+            ].tolist()
         )
 
     def select_samples(self, num_samples: int):
         if num_samples > len(self.dataset_concept["input_ids"]):
             print(num_samples, len(self.dataset_concept))
-            raise ValueError("Number of samples requested exceeds the dataset size.")
+            raise ValueError(
+                "Number of samples requested exceeds the dataset size."
+            )
         indices = np.random.choice(
             len(self.dataset_concept["input_ids"]), num_samples, replace=False
         )
@@ -172,7 +185,9 @@ class TextConditioning(GenericDataModule):
 
     def select_random_samples(self, num_samples: int):
         if num_samples > len(self.dataset_all["input_ids"]):
-            raise ValueError("Number of samples requested exceeds the dataset size.")
+            raise ValueError(
+                "Number of samples requested exceeds the dataset size."
+            )
         indices = np.random.choice(
             len(self.dataset_all["input_ids"]), num_samples, replace=False
         )
@@ -182,7 +197,9 @@ class TextConditioning(GenericDataModule):
         }
         return random_samples
 
-    def concept_dataloader(self, num_samples: int, concept_tensor: torch.Tensor):
+    def concept_dataloader(
+        self, num_samples: int, concept_tensor: torch.Tensor
+    ):
         selected_samples = self.select_samples(num_samples)
         concept_dataset = ConceptDataset(
             input_ids=selected_samples["input_ids"],

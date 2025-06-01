@@ -37,4 +37,4 @@ markdown_extensions:
       custom_fences:
         - name: plot
           class: plot
-          format: !!python/name:matplotlib.pyplot.figure
+          # format: !!python/name:matplotlib.pyplot.figure

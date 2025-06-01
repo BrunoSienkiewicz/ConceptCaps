@@ -1,10 +1,8 @@
 from dataclasses import dataclass
-
 from typing import Optional, Union
 
-from transformers import AutoProcessor, MusicgenForConditionalGeneration
-
 from omegaconf import DictConfig
+from transformers import AutoProcessor, MusicgenForConditionalGeneration
 
 from src.data.generic_data_module import GenericDataModule
 from src.tcav.model import SVMClassifier
