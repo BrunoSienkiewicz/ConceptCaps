@@ -3,9 +3,6 @@ from pathlib import Path
 
 import matplotlib
 import hydra
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
 import pandas as pd
 import pytorch_lightning as pl
 import rootutils
