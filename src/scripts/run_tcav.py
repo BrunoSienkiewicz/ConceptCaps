@@ -172,6 +172,7 @@ def tcav(cfg: TCAVConfig):
     )
 
     log.info("TCAV scores computed successfully!")
+    log.info(f"Saving outputs to {cfg.paths.output_dir}")
     plot_tcav_scores(experimental_set, tcav_scores, layers)
 
     output_dir = Path(cfg.paths.output_dir)
