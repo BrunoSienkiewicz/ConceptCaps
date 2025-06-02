@@ -4,6 +4,7 @@ from pathlib import Path
 import matplotlib
 import hydra
 import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
 import pandas as pd
 import pytorch_lightning as pl
@@ -22,6 +23,7 @@ from src.utils import (
     print_config_tree,
 )
 
+from math import ceil
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 
@@ -32,38 +34,36 @@ def format_float(f):
     return float(f"{f:.3f}" if abs(f) >= 0.0005 else f"{f:.3e}")
 
 
-def plot_tcav_scores(experimental_sets, tcav_scores, layers):
-    fig, ax = plt.subplots(1, len(experimental_sets), figsize=(25, 7))
-
-    barWidth = 1 / (len(experimental_sets[0]) + 1)
+def save_results(experimental_sets, tcav_scores):
+    df_scores = []
+    df_concepts = []
+    layers = []
+    sets = []
 
     for idx_es, concepts in enumerate(experimental_sets):
         concepts = experimental_sets[idx_es]
         concepts_key = concepts_to_str(concepts)
-
-        pos = [np.arange(len(layers))]
-        for i in range(1, len(concepts)):
-            pos.append([(x + barWidth) for x in pos[i - 1]])
-        _ax = ax[idx_es] if len(experimental_sets) > 1 else ax
         for i in range(len(concepts)):
-            val = [
-                format_float(scores["sign_count"][i])
-                for layer, scores in tcav_scores[concepts_key].items()
-            ]
-            _ax.bar(
-                pos[i],
-                val,
-                width=barWidth,
-                edgecolor="white",
-                label=concepts[i].name,
-            )
+            for layer, scores in tcav_scores[concepts_key].items():
+                val = format_float(scores["sign_count"][i])
+                df_scores.append(val)
+                df_concepts.append(concepts[i].name)
+                layers.append(layer)
+                sets.append(str(idx_es))
+    res_df = pd.DataFrame.from_dict(
+        {
+            "Scores": df_scores,
+            "Concept": df_concepts,
+            "Layer": layers,
+            "Set": sets,
+        }
+    )
 
-        _ax.set_xlabel(f"Set {str(idx_es)}", fontweight="bold", fontsize=16)
-        _ax.set_xticks([r + 0.3 * barWidth for r in range(len(layers))])
-        _ax.set_xticklabels(layers, fontsize=16, rotation=45)
-        _ax.legend(fontsize=16)
-
-    plt.tight_layout()
+    res_df["Scores"] = res_df["Scores"].astype(float)
+    res_df["Set"] = res_df["Set"].astype(int)
+    res_df["Layer"] = res_df["Layer"].astype(str)
+    res_df["Concept"] = res_df["Concept"].astype(str)
+    return res_df
 
 
 def tcav(cfg: TCAVConfig):
@@ -173,14 +173,12 @@ def tcav(cfg: TCAVConfig):
 
     log.info("TCAV scores computed successfully!")
     log.info(f"Saving outputs to {cfg.paths.output_dir}")
-    plot_tcav_scores(experimental_set, tcav_scores, layers)
 
     output_dir = Path(cfg.paths.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    tcav_scores_df = pd.DataFrame.from_dict(tcav_scores, orient="index")
+    tcav_scores_df = save_results(experimental_set, tcav_scores)
     tcav_scores_df.to_csv(output_dir / "tcav.csv", index=False)
-    plt.savefig(output_dir / "tcav_scores.png", bbox_inches="tight", dpi=300)
 
 
 @hydra.main(version_base=None, config_path="../../config", config_name="tcav")
