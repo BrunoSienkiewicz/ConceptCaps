@@ -8,6 +8,7 @@ influential_concept_name: "guitar"
 target_concept_category: "emotion"
 target_concept_name: "energetic"
 batch_size: 10
+device: ${device}
 emotions:
   - happy
   - sad

@@ -3,11 +3,12 @@ dataset: "google/MusicCaps"
 processor:
   _target_: "transformers.AutoProcessor.from_pretrained"
   pretrained_model_name_or_path: "facebook/musicgen-small"
-influential_concept_category: "genre"
-influential_concept_name: "hip-hop"
-target_concept_category: "emotion"
-target_concept_name: "dramatic"
+influential_concept_category: "instrument"
+influential_concept_name: "saxophone"
+target_concept_category: "genre"
+target_concept_name: "jazz"
 batch_size: 10
+device: ${device}
 emotions:
   - happy
   - sad
