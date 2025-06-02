@@ -5,3 +5,4 @@ layer_attr_method:
 num_samples: 10
 experimental_set_size: 3
 n_groups: 10
+plot_backend: "qtagg"

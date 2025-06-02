@@ -26,6 +26,7 @@ class ExperimentConfig:
     experimental_set_size: int
     num_samples: int
     output_dir: str
+    plot_backend: str = "qtagg"
 
 
 @dataclass

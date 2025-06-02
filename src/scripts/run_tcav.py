@@ -1,6 +1,7 @@
 from functools import reduce
 from pathlib import Path
 
+import matplotlib
 import hydra
 import matplotlib.pyplot as plt
 import numpy as np
@@ -71,6 +72,7 @@ def tcav(cfg: TCAVConfig):
 
     log.info("Instantiating loggers...")
     logger = instantiate_loggers(cfg.get("logger"))
+    matplotlib.use(cfg.experiment.plot_backend)
     wandb.login()
 
     device = torch.device(cfg.device)
