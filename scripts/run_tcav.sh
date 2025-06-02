@@ -14,7 +14,7 @@
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
 OUT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
-CONDA_DIR="$OUT_DIR/.conda"
+CONDA_DIR="$SCRATCH/.conda"
 ENV_DIR="$CONDA_DIR/envs/$(cat environment.yml | grep -E "name: " | cut -d " " -f 2)"
 
 export PYTHONPATH="$PYTHONPATH:$(pwd)"
