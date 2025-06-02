@@ -140,7 +140,7 @@ def tcav(cfg: TCAVConfig):
         save_path=cfg.paths.output_dir,
     )
 
-    if cfg.experiment.n_groups != 0:
+    if cfg.experiment.n_groups == 0:
         layer_masks = None
     else:
         # For now I am creating the layer masks by grouping adjacent neurons
