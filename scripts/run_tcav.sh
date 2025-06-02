@@ -13,10 +13,12 @@
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
-OUT_DIR="$PLG_GROUPS_STORAGE/plgbsienkiewicz"
+OUT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
 CONDA_DIR="$OUT_DIR/.conda"
 ENV_DIR="$CONDA_DIR/envs/$(cat environment.yml | grep -E "name: " | cut -d " " -f 2)"
 
 export PYTHONPATH="$PYTHONPATH:$(pwd)"
 export HF_HOME="$OUT_DIR/.cache/huggingface"
+
+mkdir -p "$OUT_DIR/.cache/huggingface"
 srun "$ENV_DIR/bin/python" src/scripts/run_tcav.py +preset=plgrid

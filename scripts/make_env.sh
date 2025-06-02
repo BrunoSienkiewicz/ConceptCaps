@@ -13,7 +13,7 @@
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
-CONDA_DIR="$PLG_GROUPS_STORAGE/plgbsienkiewicz/.conda"
+CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
 
 module load Miniconda3/23.3.1
 conda init --all
