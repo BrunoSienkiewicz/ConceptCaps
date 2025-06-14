@@ -21,8 +21,8 @@ class ModelConfig:
 @dataclass
 class ExperimentConfig:
     layers: list[str]
+    interpretation_method: str
     layer_attr_method: str
-    n_groups: int
     experimental_set_size: int
     num_samples: int
     output_dir: str

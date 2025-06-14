@@ -1,8 +1,7 @@
-from functools import reduce
 from pathlib import Path
 
-import matplotlib
 import hydra
+import matplotlib
 import pandas as pd
 import pytorch_lightning as pl
 import rootutils
@@ -13,14 +12,9 @@ from captum.concept._utils.common import concepts_to_str
 
 from src.tcav.concept import create_experimental_set
 from src.tcav.config import TCAVConfig
-from src.utils import (
-    RankedLogger,
-    instantiate_loggers,
-    log_hyperparameters,
-    print_config_tree,
-)
+from src.utils import (RankedLogger, instantiate_loggers, log_hyperparameters,
+                       print_config_tree)
 
-from math import ceil
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 
@@ -127,45 +121,29 @@ def tcav(cfg: TCAVConfig):
 
     layers = cfg.experiment.layers
 
-    instrument_tcav = TCAV(
+    tcav = TCAV(
         model=model,
         model_id=cfg.model.model_id,
         classifier=classifier,
-        layer_attr_method=hydra.utils.instantiate(
-            cfg.experiment.layer_attr_method, model.forward, None
-        ),
         layers=layers,
         show_progress=True,
         save_path=cfg.paths.output_dir,
     )
 
-    if cfg.experiment.n_groups == 0:
-        layer_masks = None
-    else:
-        # For now I am creating the layer masks by grouping adjacent neurons
-        # into groups of size n_groups. Later we can add a more sophisticated
-        # approach to create the layer masks.
-        n_groups = cfg.experiment.n_groups
-        layer_masks = []
-        for layer in layers:
-            layer_shape = reduce(getattr, layer.split("."), model).weight.shape[0]
-            layer_mask = torch.zeros(layer_shape).to(device)
-            group_size = layer_mask.shape[0] // n_groups
-            for i in range(n_groups + 1):
-                layer_mask[i * group_size : (i + 1) * group_size] = i
-            layer_masks.append(layer_mask)
-
-        layer_masks = (*layer_masks,)
 
     input_ids = inputs["input_ids"].to(device)
     attention_mask = inputs["attention_mask"].to(device)
 
     log.info("Running TCAV...")
-    tcav_scores = instrument_tcav.interpret(
-        inputs=(input_ids, attention_mask, None),
-        experimental_sets=experimental_set,
-        target=0,
-        layer_mask=layer_masks,
+    tcav_scores = hydra.utils.instantiate(
+        cfg.experiment.interpretation_method,
+        tcav=tcav,
+        model=model,
+        input_ids=input_ids,
+        attention_mask=attention_mask,
+        experimental_set=experimental_set,
+        layers=layers,
+        device=device,
     )
 
     log.info("TCAV scores computed successfully!")

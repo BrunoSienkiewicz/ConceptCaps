@@ -2,7 +2,7 @@
 defaults:
   - override /paths: plgrid
   - override /model: musicgen-small
-  - override /experiment: medium
+  - override /experiment: layer-feature-ablation-medium
   - override /logger: wandb
 
 data:
