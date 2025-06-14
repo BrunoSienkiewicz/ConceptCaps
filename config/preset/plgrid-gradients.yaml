@@ -1,0 +1,9 @@
+# @package _global_
+defaults:
+  - override /paths: plgrid
+  - override /model: musicgen-small
+  - override /experiment: layer-gradient-x-activation-medium
+  - override /logger: wandb
+
+data:
+  batch_size: 32

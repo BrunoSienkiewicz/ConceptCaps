@@ -1,0 +1,8 @@
+_target_: "src.tcav.config.ExperimentConfig"
+layers: ["model.decoder.lm_heads.0", "model.decoder.lm_heads.1"]
+interpretation_method:
+  _target_: "src.tcav.interpretation_methods.layer_feature_ablation"
+  n_groups: 0
+num_samples: 40
+experimental_set_size: 10
+plot_backend: "agg"
