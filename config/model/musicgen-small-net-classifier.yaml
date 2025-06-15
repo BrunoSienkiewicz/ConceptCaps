@@ -11,3 +11,6 @@ model:
 model_id: "musicgen-small"
 classifier:
   _target_: "src.tcav.model.NetClassifier"
+  input_dim: 2048
+  num_classes: ${experiment.experimental_set_size}
+  random_state: ${random_state}

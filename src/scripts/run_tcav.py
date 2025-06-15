@@ -85,7 +85,7 @@ def tcav(cfg: TCAVConfig):
     )
 
     log.info(f"Instantiating classifier <{cfg.model.classifier._target_}>")
-    classifier = hydra.utils.instantiate(cfg.model.classifier)
+    classifier = hydra.utils.instantiate(cfg.model.classifier, trainer=trainer)
 
     object_dict = {
         "cfg": cfg,
@@ -95,10 +95,6 @@ def tcav(cfg: TCAVConfig):
         "trainer": trainer,
         "classifier": classifier,
     }
-
-    if logger:
-        log.info("Logging hyperparameters!")
-        log_hyperparameters(object_dict)
 
     if logger:
         log.info("Logging hyperparameters!")

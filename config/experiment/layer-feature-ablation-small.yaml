@@ -3,6 +3,6 @@ layers: ["model.decoder.lm_heads.0", "model.decoder.lm_heads.1"]
 interpretation_method:
   _target_: "src.tcav.interpretation_methods.layer_feature_ablation"
   n_groups: 10
-num_samples: 10
+num_samples: 30
 experimental_set_size: 3
 plot_backend: "tkagg"

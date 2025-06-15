@@ -1,19 +1,22 @@
 import copy
 from typing import Optional
 
+import lightning.pytorch as pl
 import numpy as np
-import pytorch_lightning as pl
 import torch
 from captum.concept._utils.classifier import Classifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
+from torch.utils.data.sampler import SubsetRandomSampler
 from torchmetrics import Accuracy
 from transformers import MusicgenModel, MusicgenProcessor
+from transformers.generation.configuration_utils import (GenerationConfig,
+                                                         GenerationMode)
+from transformers.generation.logits_process import (
+    ClassifierFreeGuidanceLogitsProcessor, LogitsProcessorList)
 from transformers.generation.stopping_criteria import StoppingCriteriaList
-from transformers.generation.logits_process import ClassifierFreeGuidanceLogitsProcessor, LogitsProcessorList
-from transformers.generation.configuration_utils import GenerationConfig, GenerationMode
 from transformers.modeling_outputs import BaseModelOutput
 
 
@@ -87,7 +90,7 @@ class CustomNet(pl.LightningModule):
             torch.nn.Linear(128, output_dim),
         )
         self.num_classes = num_classes
-        self.loss_fn = torch.nn.BCEWithLogitsLoss()
+        self.loss_fn = torch.nn.CrossEntropyLoss()
         self.train_accuracy = Accuracy(
             task="multiclass", num_classes=num_classes
         )
@@ -99,10 +102,13 @@ class CustomNet(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        print(logits.min(), logits.max(), logits.shape)
+        y_pred = torch.argmax(logits, dim=2)
+        y = y.squeeze()
+        logits = logits.squeeze()
+        y_pred = y_pred.squeeze()
         loss = self.loss_fn(logits, y)
         self.log("train_loss", loss)
-        self.train_accuracy(logits, y)
+        self.train_accuracy(y_pred, y)
         self.log(
             "train_accuracy", self.train_accuracy, on_step=True, on_epoch=True
         )
@@ -111,18 +117,24 @@ class CustomNet(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        print(logits.min(), logits.max(), logits.shape)
+        y_pred = torch.argmax(logits, dim=2)
+        y = y.squeeze()
+        logits = logits.squeeze()
+        y_pred = y_pred.squeeze()
         loss = self.loss_fn(logits, y)
         self.log("val_loss", loss)
-        acc = self.val_accuracy(logits, y)
+        acc = self.val_accuracy(y_pred, y)
         self.log("val_accuracy", acc)
 
     def test_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        print(logits.min(), logits.max(), logits.shape)
+        y_pred = torch.argmax(logits, dim=2)
+        y = y.squeeze()
+        logits = logits.squeeze()
+        y_pred = y_pred.squeeze()
         loss = self.loss_fn(logits, y)
-        acc = self.val_accuracy(logits, y)
+        acc = self.val_accuracy(y_pred, y)
         self.log("test_loss", loss)
         self.log("test_accuracy", acc)
 
@@ -131,37 +143,71 @@ class CustomNet(pl.LightningModule):
 
 
 class NetClassifier(Classifier):
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self, 
+        input_dim: int, # must match the input/output of resarched layer
+        num_classes: int, # must match the number of concepts
+        trainer: pl.Trainer,
+        test_split_ratio=0.33,
+        val_split_ratio=0.2,
+        random_state: int = 42,
+        *args, 
+        **kwargs
+    ):
+        self.model = CustomNet(
+            input_dim=input_dim,
+            output_dim=num_classes,
+            num_classes=num_classes,
+        )
+        self.trainer = trainer
+        self.test_split_ratio = test_split_ratio
+        self.val_split_ratio = val_split_ratio
+        self.random_state = random_state
+
         super().__init__()
 
     def train_and_eval(
         self,
         dataloader: DataLoader,
-        trainer: Optional[pl.Trainer] = None,
         *args,
         **kwargs,
     ) -> dict:
-        if trainer is None:
-            # If no trainer is provided, create a default one
-            self.device = "cuda" if torch.cuda.is_available() else "cpu"
-            trainer = pl.Trainer(
-                max_epochs=10,
-                logger=False,
-                enable_progress_bar=False,
-                accelerator=self.device,
-                devices=1 if self.device == "cuda" else None,
-            )
-
-        # Values are hardcoded for now.
-        # Later it should be changed based on experiment config.
-        self.model = CustomNet(
-            input_dim=2048,
-            output_dim=4,
-            num_classes=4,
+        dir(dataloader)
+        dataset_size = len(dataloader.dataset)
+        indices = list(range(dataset_size))
+        train_indices, test_indicies = train_test_split(
+            indices,
+            test_size=self.test_split_ratio,
+            random_state=self.random_state,
+        )
+        train_indices, val_indices = train_test_split(
+            train_indices,
+            test_size=self.val_split_ratio,
+            random_state=self.random_state,
         )
 
-        trainer.fit(self.model, dataloader)
-        test_result = trainer.test(self.model, dataloader)
+        train_sampler = SubsetRandomSampler(train_indices)
+        valid_sampler = SubsetRandomSampler(val_indices)
+        test_sampler = SubsetRandomSampler(test_indicies)
+
+        train_loader = DataLoader(
+            dataloader.dataset,
+            batch_size=dataloader.batch_size,
+            sampler=train_sampler,
+        )
+        val_loader = DataLoader(
+            dataloader.dataset,
+            batch_size=dataloader.batch_size,
+            sampler=valid_sampler,
+        )
+        test_loader = DataLoader(
+            dataloader.dataset,
+            batch_size=dataloader.batch_size,
+            sampler=test_sampler,
+        )
+
+        self.trainer.fit(self.model, train_loader, val_loader)
+        test_result = self.trainer.test(self.model, test_loader)
         acc = test_result[0]["test_accuracy"]
         return {"accuracy": acc}
 
