@@ -9,7 +9,6 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
-from torch.utils.data.sampler import SubsetRandomSampler
 from torchmetrics import Accuracy
 from transformers import MusicgenModel, MusicgenProcessor
 from transformers.generation.configuration_utils import (GenerationConfig,
@@ -19,6 +18,9 @@ from transformers.generation.logits_process import (
 from transformers.generation.stopping_criteria import StoppingCriteriaList
 from transformers.modeling_outputs import BaseModelOutput
 
+from src.utils import RankedLogger
+
+log = RankedLogger(__name__, rank_zero_only=True)
 
 class SVMClassifier(Classifier):
     def __init__(self, random_state: int = 42, *args, **kwargs):
@@ -79,22 +81,25 @@ class SVMClassifier(Classifier):
 
 
 class CustomNet(pl.LightningModule):
-    def __init__(self, input_dim: int, output_dim: int, num_classes: int):
+    def __init__(self, input_size: int, cav_size: int, num_classes: int, learning_rate: float = 0.001):
         super().__init__()
 
         self.save_hyperparameters()
 
         self.net = torch.nn.Sequential(
-            torch.nn.Linear(input_dim, 128),
+            torch.nn.Linear(input_size, cav_size),
             torch.nn.ReLU(),
-            torch.nn.Linear(128, output_dim),
+            # I add +1 to the number of classes to account for the researched class
+            # num_classes is derived from experimental_set_size
+            torch.nn.Linear(cav_size, num_classes + 1),
         )
+        self.learning_rate = learning_rate
         self.num_classes = num_classes
         self.loss_fn = torch.nn.CrossEntropyLoss()
         self.train_accuracy = Accuracy(
-            task="multiclass", num_classes=num_classes
+            task="multiclass", num_classes=num_classes + 1 
         )
-        self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+        self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes + 1)
 
     def forward(self, x):
         return self.net(x)
@@ -102,25 +107,23 @@ class CustomNet(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        y_pred = torch.argmax(logits, dim=2)
         y = y.squeeze()
         logits = logits.squeeze()
-        y_pred = y_pred.squeeze()
+        y_pred = torch.argmax(logits, dim=1)
+        print(f"y_pred: {y_pred}, y: {y}")
         loss = self.loss_fn(logits, y)
         self.log("train_loss", loss)
-        self.train_accuracy(y_pred, y)
-        self.log(
-            "train_accuracy", self.train_accuracy, on_step=True, on_epoch=True
-        )
+        acc = self.train_accuracy(y_pred, y)
+        self.log("train_accuracy", acc)
         return loss
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        y_pred = torch.argmax(logits, dim=2)
         y = y.squeeze()
         logits = logits.squeeze()
-        y_pred = y_pred.squeeze()
+        y_pred = torch.argmax(logits, dim=1)
+        print(f"y_pred: {y_pred}, y: {y}")
         loss = self.loss_fn(logits, y)
         self.log("val_loss", loss)
         acc = self.val_accuracy(y_pred, y)
@@ -129,25 +132,27 @@ class CustomNet(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        y_pred = torch.argmax(logits, dim=2)
         y = y.squeeze()
         logits = logits.squeeze()
-        y_pred = y_pred.squeeze()
+        y_pred = torch.argmax(logits, dim=1)
+        print(f"y_pred: {y_pred}, y: {y}")
         loss = self.loss_fn(logits, y)
         acc = self.val_accuracy(y_pred, y)
         self.log("test_loss", loss)
         self.log("test_accuracy", acc)
 
     def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=0.001)
+        return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
 
 
 class NetClassifier(Classifier):
     def __init__(
         self, 
-        input_dim: int, # must match the input/output of resarched layer
+        input_size: int, # must match the input/output of resarched layer
+        cav_size: int, # size of activation vector
         num_classes: int, # must match the number of concepts
         trainer: pl.Trainer,
+        batch_size: int = 8,
         test_split_ratio=0.33,
         val_split_ratio=0.2,
         random_state: int = 42,
@@ -155,14 +160,16 @@ class NetClassifier(Classifier):
         **kwargs
     ):
         self.model = CustomNet(
-            input_dim=input_dim,
-            output_dim=num_classes,
+            input_size=input_size,
+            cav_size=cav_size,
             num_classes=num_classes,
         )
+        self.batch_size = batch_size
         self.trainer = trainer
         self.test_split_ratio = test_split_ratio
         self.val_split_ratio = val_split_ratio
         self.random_state = random_state
+        self.train_and_eval_calls = 0
 
         super().__init__()
 
@@ -172,38 +179,40 @@ class NetClassifier(Classifier):
         *args,
         **kwargs,
     ) -> dict:
-        dir(dataloader)
-        dataset_size = len(dataloader.dataset)
-        indices = list(range(dataset_size))
-        train_indices, test_indicies = train_test_split(
-            indices,
-            test_size=self.test_split_ratio,
-            random_state=self.random_state,
-        )
-        train_indices, val_indices = train_test_split(
-            train_indices,
-            test_size=self.val_split_ratio,
-            random_state=self.random_state,
-        )
+        self.train_and_eval_calls += 1
+        log.info(f"Training and evaluating classifier, call #{self.train_and_eval_calls}") 
+        X = []
+        y = []
 
-        train_sampler = SubsetRandomSampler(train_indices)
-        valid_sampler = SubsetRandomSampler(val_indices)
-        test_sampler = SubsetRandomSampler(test_indicies)
+        for batch in dataloader:
+            x, y_batch = batch
+            X.append(x)
+            y.append(y_batch)
+        X = torch.cat(X, dim=0)
+        y = torch.cat(y, dim=0)
+        dataset = torch.utils.data.TensorDataset(X, y)
 
+        test_amount, val_amount = int(dataset.__len__() * self.test_split_ratio), int(dataset.__len__() * self.val_split_ratio)
+
+        train_set, val_set, test_set = torch.utils.data.random_split(dataset, [
+                    (dataset.__len__() - (test_amount + val_amount)), 
+                    test_amount, 
+                    val_amount
+        ])
         train_loader = DataLoader(
-            dataloader.dataset,
-            batch_size=dataloader.batch_size,
-            sampler=train_sampler,
+            train_set,
+            batch_size=self.batch_size,
+            shuffle=True,
         )
         val_loader = DataLoader(
-            dataloader.dataset,
-            batch_size=dataloader.batch_size,
-            sampler=valid_sampler,
+            val_set,
+            batch_size=self.batch_size,
+            shuffle=False,
         )
         test_loader = DataLoader(
-            dataloader.dataset,
-            batch_size=dataloader.batch_size,
-            sampler=test_sampler,
+            test_set,
+            batch_size=self.batch_size,
+            shuffle=False,
         )
 
         self.trainer.fit(self.model, train_loader, val_loader)
@@ -212,15 +221,7 @@ class NetClassifier(Classifier):
         return {"accuracy": acc}
 
     def weights(self) -> torch.Tensor:
-        weights = (
-            self.model.net[-1].weight.data.cpu().numpy().flatten().tolist()
-        )
-        if len(weights) == 1:
-            # if there are two concepts, there is only one label.
-            # We split it in two.
-            return torch.tensor([-1 * weights[0], weights[0]])
-        else:
-            return torch.tensor(weights)
+        return self.model.net[0].weight.data.squeeze(0)
 
     def classes(self) -> list[int]:
         return list(range(self.model.num_classes))
