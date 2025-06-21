@@ -1,0 +1,7 @@
+_target_: lightning.pytorch.trainer.Trainer
+accelerator: "auto"
+devices: "auto"
+strategy: "auto"
+precision: "16-mixed"
+max_epochs: 100
+deterministic: true
