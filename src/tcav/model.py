@@ -116,15 +116,15 @@ class CustomNet(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         loss, y_pred, y = self.model_step(batch)
-        self.log("train/loss", loss)
         acc = self.train_accuracy(y_pred, y)
+        self.log("train/loss", loss)
         self.log("train/accuracy", acc)
         return loss
 
     def validation_step(self, batch, batch_idx):
         loss, y_pred, y = self.model_step(batch)
-        self.log("val/loss", loss)
         acc = self.val_accuracy(y_pred, y)
+        self.log("val/loss", loss)
         self.log("val/accuracy", acc)
 
     def test_step(self, batch, batch_idx):
