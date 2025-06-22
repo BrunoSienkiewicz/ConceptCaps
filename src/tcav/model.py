@@ -104,7 +104,7 @@ class CustomNet(pl.LightningModule):
     def forward(self, x):
         return self.net(x)
 
-    def training_step(self, batch, batch_idx):
+    def model_step(self, batch):
         x, y = batch
         logits = self(x)
         loss = self.loss_fn(logits, y)
@@ -112,31 +112,23 @@ class CustomNet(pl.LightningModule):
             y = y.squeeze(-1)
         logits = logits.squeeze(-1)
         y_pred = torch.softmax(logits, dim=1).float()
+        return loss, y_pred, y
+
+    def training_step(self, batch, batch_idx):
+        loss, y_pred, y = self.model_step(batch)
         self.log("train/loss", loss)
         acc = self.train_accuracy(y_pred, y)
         self.log("train/accuracy", acc)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = self.loss_fn(logits, y)
-        if len(y.shape) == 2:
-            y = y.squeeze(-1)
-        logits = logits.squeeze(-1)
-        y_pred = torch.softmax(logits, dim=1).float()
+        loss, y_pred, y = self.model_step(batch)
         self.log("val/loss", loss)
         acc = self.val_accuracy(y_pred, y)
         self.log("val/accuracy", acc)
 
     def test_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = self.loss_fn(logits, y)
-        if len(y.shape) == 2:
-            y = y.squeeze(-1)
-        logits = logits.squeeze(-1)
-        y_pred = torch.softmax(logits, dim=1).float()
+        loss, y_pred, y = self.model_step(batch)
         acc = self.val_accuracy(y_pred, y)
         self.log("test/loss", loss)
         self.log("test/accuracy", acc)
