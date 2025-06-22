@@ -13,6 +13,5 @@ classifier:
   _target_: "src.tcav.model.NetClassifier"
   input_size: 2048
   cav_size: 16
-  learning_rate: 0.01
   num_classes: ${experiment.experimental_set_size}
   random_state: ${random_state}

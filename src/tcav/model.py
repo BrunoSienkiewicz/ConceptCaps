@@ -86,6 +86,7 @@ class CustomNet(pl.LightningModule):
 
         self.save_hyperparameters()
 
+        self.experiment_progress = 0
         self.net = torch.nn.Sequential(
             torch.nn.Linear(input_size, cav_size),
             torch.nn.ReLU(),
@@ -137,6 +138,7 @@ class CustomNet(pl.LightningModule):
         self.train_loss(loss)
         self.log("train/loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True)
         self.log("train/accuracy", self.train_accuracy, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("experiment/progress", self.experiment_progress, on_step=False, on_epoch=True, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -145,6 +147,7 @@ class CustomNet(pl.LightningModule):
         self.val_loss(loss)
         self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
         self.log("val/accuracy", self.val_accuracy, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("experiment/progress", self.experiment_progress, on_step=False, on_epoch=True, prog_bar=True)
 
     def test_step(self, batch, batch_idx):
         loss, y_pred, y = self.model_step(batch)
@@ -152,6 +155,7 @@ class CustomNet(pl.LightningModule):
         self.test_loss(loss)
         self.log("test/loss", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
         self.log("test/accuracy", self.test_accuracy, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("experiment/progress", self.experiment_progress, on_step=False, on_epoch=True, prog_bar=True)
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
@@ -227,9 +231,9 @@ class NetClassifier(Classifier):
             shuffle=False,
         )
 
+        self.model.experiment_progress = self.train_and_eval_calls
         self.trainer.fit(self.model, train_loader, val_loader)
         test_result = self.trainer.test(self.model, test_loader)
-        print(test_result)
         acc = test_result[0]["test/accuracy"]
         return {"accuracy": acc}
 
