@@ -61,6 +61,5 @@ def layer_gradient_x_activation(
         inputs=(input_ids, attention_mask, None),
         experimental_sets=experimental_set,
         target=0,
-        attribute_to_layer_input=True
     )
     return tcav_scores
