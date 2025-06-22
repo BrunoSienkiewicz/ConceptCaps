@@ -113,7 +113,6 @@ class CustomNet(pl.LightningModule):
         logits = logits.squeeze(-1)
         y_pred = torch.softmax(logits, dim=1).float()
         self.log("train/loss", loss)
-        print(y.shape)
         acc = self.train_accuracy(y_pred, y)
         self.log("train/accuracy", acc)
         return loss
@@ -216,6 +215,7 @@ class NetClassifier(Classifier):
             shuffle=False,
         )
 
+        self.model.log("experiment/progress", self.train_and_eval_calls, on_step=True, on_epoch=True)
         self.trainer.fit(self.model, train_loader, val_loader)
         test_result = self.trainer.test(self.model, test_loader)
         acc = test_result[0]["test_accuracy"]
