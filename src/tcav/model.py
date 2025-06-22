@@ -112,10 +112,10 @@ class CustomNet(pl.LightningModule):
             y = y.squeeze(-1)
         logits = logits.squeeze(-1)
         y_pred = torch.softmax(logits, dim=1).float()
-        self.log("train_loss", loss)
+        self.log("train/loss", loss)
         print(y.shape)
         acc = self.train_accuracy(y_pred, y)
-        self.log("train_accuracy", acc)
+        self.log("train/accuracy", acc)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -126,9 +126,9 @@ class CustomNet(pl.LightningModule):
             y = y.squeeze(-1)
         logits = logits.squeeze(-1)
         y_pred = torch.softmax(logits, dim=1).float()
-        self.log("val_loss", loss)
+        self.log("val/loss", loss)
         acc = self.val_accuracy(y_pred, y)
-        self.log("val_accuracy", acc)
+        self.log("val/accuracy", acc)
 
     def test_step(self, batch, batch_idx):
         x, y = batch
@@ -139,8 +139,8 @@ class CustomNet(pl.LightningModule):
         logits = logits.squeeze(-1)
         y_pred = torch.softmax(logits, dim=1).float()
         acc = self.val_accuracy(y_pred, y)
-        self.log("test_loss", loss)
-        self.log("test_accuracy", acc)
+        self.log("test/loss", loss)
+        self.log("test/accuracy", acc)
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
