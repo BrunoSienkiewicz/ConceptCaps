@@ -107,12 +107,13 @@ class CustomNet(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        y = y.squeeze()
-        logits = logits.squeeze()
-        y_pred = torch.argmax(logits, dim=1)
-        print(f"y_pred: {y_pred}, y: {y}")
         loss = self.loss_fn(logits, y)
+        if len(y.shape) == 2:
+            y = y.squeeze(-1)
+        logits = logits.squeeze(-1)
+        y_pred = torch.softmax(logits, dim=1).float()
         self.log("train_loss", loss)
+        print(y.shape)
         acc = self.train_accuracy(y_pred, y)
         self.log("train_accuracy", acc)
         return loss
@@ -120,11 +121,11 @@ class CustomNet(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        y = y.squeeze()
-        logits = logits.squeeze()
-        y_pred = torch.argmax(logits, dim=1)
-        print(f"y_pred: {y_pred}, y: {y}")
         loss = self.loss_fn(logits, y)
+        if len(y.shape) == 2:
+            y = y.squeeze(-1)
+        logits = logits.squeeze(-1)
+        y_pred = torch.softmax(logits, dim=1).float()
         self.log("val_loss", loss)
         acc = self.val_accuracy(y_pred, y)
         self.log("val_accuracy", acc)
@@ -132,11 +133,11 @@ class CustomNet(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        y = y.squeeze()
-        logits = logits.squeeze()
-        y_pred = torch.argmax(logits, dim=1)
-        print(f"y_pred: {y_pred}, y: {y}")
         loss = self.loss_fn(logits, y)
+        if len(y.shape) == 2:
+            y = y.squeeze(-1)
+        logits = logits.squeeze(-1)
+        y_pred = torch.softmax(logits, dim=1).float()
         acc = self.val_accuracy(y_pred, y)
         self.log("test_loss", loss)
         self.log("test_accuracy", acc)
