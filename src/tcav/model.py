@@ -103,9 +103,6 @@ class CustomNet(pl.LightningModule):
         self.val_accuracy = Accuracy(
             task="multiclass", num_classes=num_classes + 1
         )
-        self.val_acc_best = Accuracy(
-            task="multiclass", num_classes=num_classes + 1
-        )
         self.test_accuracy = Accuracy(
             task="multiclass", num_classes=num_classes + 1
         )
@@ -120,7 +117,6 @@ class CustomNet(pl.LightningModule):
         # so it's worth to make sure validation metrics don't store results from these checks
         self.val_loss.reset()
         self.val_accuracy.reset()
-        self.val_acc_best.reset()
 
     def forward(self, x):
         return self.net(x)
@@ -149,14 +145,6 @@ class CustomNet(pl.LightningModule):
         self.val_loss(loss)
         self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
         self.log("val/accuracy", self.val_accuracy, on_step=False, on_epoch=True, prog_bar=True)
-
-    def on_validation_epoch_end(self) -> None:
-        "Lightning hook that is called when a validation epoch ends."
-        acc = self.val_acc.compute()  # get current val acc
-        self.val_acc_best(acc)  # update best so far val acc
-        # log `val_acc_best` as a value through `.compute()` method, instead of as a metric object
-        # otherwise metric would be reset by lightning after each epoch
-        self.log("val/acc_best", self.val_acc_best.compute(), sync_dist=True, prog_bar=True)
 
     def test_step(self, batch, batch_idx):
         loss, y_pred, y = self.model_step(batch)
@@ -239,7 +227,6 @@ class NetClassifier(Classifier):
             shuffle=False,
         )
 
-        self.model.log("experiment/progress", self.train_and_eval_calls, on_step=True, on_epoch=True)
         self.trainer.fit(self.model, train_loader, val_loader)
         test_result = self.trainer.test(self.model, test_loader)
         print(test_result)
@@ -294,7 +281,6 @@ class MusicGenWithGrad(pl.LightningModule):
         self.model = model
         self.processor = processor
         self.max_new_tokens = max_new_tokens
-        self.generate_calls = 0
 
     def forward(self, input_ids, attention_mask, *args, **kwargs):
         audio_values = self.generate_with_grad(
@@ -314,9 +300,6 @@ class MusicGenWithGrad(pl.LightningModule):
         streamer: Optional["BaseStreamer"] = None,
         **kwargs,
     ):
-        self.generate_calls += 1
-        self.log("experiment/generations", self.generate_calls, on_step=True, on_epoch=True)
-
         # 1. Handle `generation_config` and kwargs that might update it, and validate the resulting objects
         if generation_config is None:
             generation_config = self.model.generation_config
