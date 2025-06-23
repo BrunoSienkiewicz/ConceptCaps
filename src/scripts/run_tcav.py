@@ -58,6 +58,7 @@ def save_results(experimental_sets, tcav_scores):
 
 
 def tcav(cfg: TCAVConfig):
+    torch.set_float32_matmul_precision('medium')
     random_state = cfg.random_state
     pl.seed_everything(random_state)
 
