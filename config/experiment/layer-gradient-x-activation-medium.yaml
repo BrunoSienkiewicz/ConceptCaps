@@ -1,5 +1,5 @@
 _target_: "src.tcav.config.ExperimentConfig"
-layers: ["model.decoder.lm_heads.0", "model.decoder.lm_heads.1"]
+layers: ["model.decoder.model.decoder.embed_tokens.0"]
 interpretation_method:
   _target_: "src.tcav.interpretation_methods.layer_gradient_x_activation"
 num_samples: 40

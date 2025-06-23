@@ -52,10 +52,9 @@ def layer_gradient_x_activation(
         layers: list[str],
         device: torch.device = torch.device("cpu")
     ):
-    layer = [reduce(getattr, layer.split("."), model) for layer in layers]
     tcav.layer_attr_method = LayerGradientXActivation(
         model.forward,
-        layer=layer,
+        layer=layers[0], # Hardcoded for now, can be extended later
     )
     tcav_scores = tcav.interpret(
         inputs=(input_ids, attention_mask, None),
