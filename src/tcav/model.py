@@ -8,6 +8,7 @@ from captum.concept._utils.classifier import Classifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
+from torch.cuda.amp import autocast
 from torch.utils.data import DataLoader
 from torchmetrics import Accuracy, MeanMetric
 from transformers import MusicgenModel, MusicgenProcessor
@@ -124,8 +125,9 @@ class CustomNet(pl.LightningModule):
 
     def model_step(self, batch):
         x, y = batch
-        logits = self(x)
-        loss = self.loss_fn(logits, y)
+        with autocast(device_type='cuda', dtype=x.dtype):
+            logits = self(x)
+            loss = self.loss_fn(logits, y)
         if len(y.shape) == 2:
             y = y.squeeze(-1)
         logits = logits.squeeze(-1)
