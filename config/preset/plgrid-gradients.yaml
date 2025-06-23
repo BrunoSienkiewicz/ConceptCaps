@@ -1,7 +1,7 @@
 # @package _global_
 defaults:
   - override /paths: plgrid
-  - override /model: musicgen-small-net-classifier
+  - override /model: musicgen-small-with-grad
   - override /experiment: layer-gradient-x-activation-medium
   - override /trainer: small
   - override /logger: wandb
