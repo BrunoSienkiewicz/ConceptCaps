@@ -125,9 +125,8 @@ class CustomNet(pl.LightningModule):
 
     def model_step(self, batch):
         x, y = batch
-        with autocast(device_type='cuda', dtype=x.dtype):
-            logits = self(x)
-            loss = self.loss_fn(logits, y)
+        logits = self(x)
+        loss = self.loss_fn(logits, y)
         if len(y.shape) == 2:
             y = y.squeeze(-1)
         logits = logits.squeeze(-1)
