@@ -30,6 +30,7 @@ class SVMClassifier(Classifier):
         self.lm = SGDClassifier(
             random_state=random_state,
         )
+        self.train_and_eval_calls = 0
 
     def train_and_eval(
         self,
@@ -39,6 +40,8 @@ class SVMClassifier(Classifier):
         *args,
         **kwargs,
     ) -> dict:
+        self.train_and_eval_calls += 1
+        log.info(f"Training and evaluating classifier, call #{self.train_and_eval_calls}") 
         X = []
         y = []
         for batch in dataloader:

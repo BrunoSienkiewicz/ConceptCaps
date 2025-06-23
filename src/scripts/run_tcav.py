@@ -124,7 +124,7 @@ def tcav(cfg: TCAVConfig):
         layers=layers,
         show_progress=True,
         save_path=cfg.paths.output_dir,
-        attribute_to_layer_input=True # Hardcoded for now, can be extended later
+        # attribute_to_layer_input=True # Hardcoded for now, can be extended later
     )
 
 
