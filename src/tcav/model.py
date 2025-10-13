@@ -480,3 +480,191 @@ class MusicGenWithGrad(pl.LightningModule):
             return outputs
         else:
             return output_values
+
+
+class MusicGenCodebooks(pl.LightningModule):
+    def __init__(
+        self,
+        model: MusicgenModel,
+        processor: MusicgenProcessor,
+        max_new_tokens=256,
+    ):
+        super().__init__()
+
+        self.save_hyperparameters()
+
+        self.model = model
+        self.processor = processor
+        self.max_new_tokens = max_new_tokens
+
+    def forward(self, input_ids, attention_mask, *args, **kwargs):
+        codebooks = self.generate(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            max_new_tokens=self.max_new_tokens,
+        )
+        return codebooks
+
+    def generate(
+        self,
+        inputs: Optional[torch.Tensor] = None,
+        generation_config: Optional[GenerationConfig] = None,
+        logits_processor: Optional[LogitsProcessorList] = None,
+        stopping_criteria: Optional[StoppingCriteriaList] = None,
+        synced_gpus: Optional[bool] = None,
+        streamer: Optional["BaseStreamer"] = None,
+        **kwargs,
+    ):
+        # 1. Handle `generation_config` and kwargs that might update it, and validate the resulting objects
+        if generation_config is None:
+            generation_config = self.model.generation_config
+
+        generation_config = copy.deepcopy(generation_config)
+        model_kwargs = generation_config.update(**kwargs)  # All unused kwargs must be model kwargs
+        generation_config.validate()
+        self.model._validate_model_kwargs(model_kwargs.copy())
+
+        if model_kwargs.get("encoder_outputs") is not None and type(model_kwargs["encoder_outputs"]) is tuple:
+            # wrap the unconditional outputs as a BaseModelOutput for compatibility with the rest of generate
+            model_kwargs["encoder_outputs"] = BaseModelOutput(last_hidden_state=model_kwargs["encoder_outputs"][0])
+
+        # 2. Set generation parameters if not already defined
+        logits_processor = logits_processor if logits_processor is not None else LogitsProcessorList()
+        stopping_criteria = stopping_criteria if stopping_criteria is not None else StoppingCriteriaList()
+
+        requires_attention_mask = "encoder_outputs" not in model_kwargs
+        kwargs_has_attention_mask = model_kwargs.get("attention_mask", None) is not None
+
+        # 3. Define model inputs
+        inputs_tensor, model_input_name, model_kwargs = self.model._prepare_model_inputs(
+            inputs, generation_config.bos_token_id, model_kwargs
+        )
+        batch_size = inputs_tensor.shape[0]
+        self.model._prepare_special_tokens(generation_config, kwargs_has_attention_mask, device=inputs_tensor.device)
+
+        # 4. Define other model kwargs
+        model_kwargs["use_cache"] = generation_config.use_cache
+        model_kwargs["guidance_scale"] = generation_config.guidance_scale
+
+        if model_kwargs.get("attention_mask", None) is None and requires_attention_mask:
+            model_kwargs["attention_mask"] = self.model._prepare_attention_mask_for_generation(
+                inputs_tensor, generation_config, model_kwargs
+            )
+
+        if "encoder_outputs" not in model_kwargs:
+            # encoder_outputs are created and added to `model_kwargs`
+            model_kwargs = self.model._prepare_text_encoder_kwargs_for_generation(
+                inputs_tensor, model_kwargs, model_input_name, generation_config
+            )
+
+        if "decoder_input_ids" not in model_kwargs and "input_values" in model_kwargs:
+            model_kwargs = self.model._prepare_audio_encoder_kwargs_for_generation(
+                model_kwargs["input_values"],
+                model_kwargs,
+            )
+
+        # 5. Prepare `input_ids` which will be used for auto-regressive generation
+        input_ids, model_kwargs = self.model._prepare_decoder_input_ids_for_generation(
+            batch_size=batch_size,
+            model_input_name=model_input_name,
+            model_kwargs=model_kwargs,
+            decoder_start_token_id=generation_config._decoder_start_token_tensor,
+            bos_token_id=generation_config._bos_token_tensor,
+            device=inputs_tensor.device,
+        )
+
+        # 6. Prepare `max_length` depending on other stopping criteria.
+        input_ids_length = input_ids.shape[-1]
+        has_default_max_length = kwargs.get("max_length") is None and generation_config.max_length is not None
+        has_default_min_length = kwargs.get("min_length") is None and generation_config.min_length is not None
+        generation_config = self.model._prepare_generated_length(
+            generation_config=generation_config,
+            has_default_max_length=has_default_max_length,
+            has_default_min_length=has_default_min_length,
+            model_input_name=model_input_name,
+            inputs_tensor=inputs_tensor,
+            input_ids_length=input_ids_length,
+        )
+
+        # build the delay pattern mask for offsetting each codebook prediction by 1 (this behaviour is specific to MusicGen)
+        input_ids, decoder_delay_pattern_mask = self.model.decoder.build_delay_pattern_mask(
+            input_ids,
+            pad_token_id=generation_config._decoder_start_token_tensor,
+            max_length=generation_config.max_length,
+        )
+        # stash the delay mask so that we don't have to recompute in each forward pass
+        model_kwargs["decoder_delay_pattern_mask"] = decoder_delay_pattern_mask
+
+        # input_ids are ready to be placed on the streamer (if used)
+        if streamer is not None:
+            streamer.put(input_ids.cpu())
+
+        # 7. determine generation mode
+        generation_mode = generation_config.get_generation_mode()
+
+        # 8. prepare batched CFG externally (to enable coexistance with the unbatched CFG)
+        if generation_config.guidance_scale is not None and generation_config.guidance_scale > 1:
+            logits_processor.append(ClassifierFreeGuidanceLogitsProcessor(generation_config.guidance_scale))
+            generation_config.guidance_scale = None
+
+        # 9. prepare distribution pre_processing samplers
+        logits_processor = self.model._get_logits_processor(
+            generation_config=generation_config,
+            input_ids_seq_length=input_ids_length,
+            encoder_input_ids=inputs_tensor,
+            prefix_allowed_tokens_fn=None,
+            logits_processor=logits_processor,
+            device=input_ids.device,
+        )
+
+        # 10. prepare stopping criteria
+        stopping_criteria = self.model._get_stopping_criteria(
+            generation_config=generation_config, stopping_criteria=stopping_criteria
+        )
+
+
+        if generation_mode in (GenerationMode.SAMPLE, GenerationMode.GREEDY_SEARCH):
+            # expand input_ids with `num_return_sequences` additional sequences per batch
+            input_ids, model_kwargs = self.model._expand_inputs_for_generation(
+                input_ids=input_ids,
+                expand_size=generation_config.num_return_sequences,
+                is_encoder_decoder=self.model.config.is_encoder_decoder,
+                **model_kwargs,
+            )
+
+            # 11. run sample
+            outputs = self.model._sample(
+                input_ids,
+                logits_processor=logits_processor,
+                stopping_criteria=stopping_criteria,
+                generation_config=generation_config,
+                synced_gpus=synced_gpus,
+                streamer=streamer,
+                **model_kwargs,
+            )
+
+        else:
+            raise ValueError(
+                "Got incompatible mode for generation, should be one of greedy or sampling. "
+                "Ensure that beam search is de-activated by setting `num_beams=1` and `num_beam_groups=1`."
+            )
+
+        return outputs.sequences, outputs.logits
+
+        # if generation_config.return_dict_in_generate:
+        #     output_ids = outputs.sequences
+        # else:
+        #     output_ids = outputs
+
+        # # apply the pattern mask to the final ids
+        # output_ids = self.model.decoder.apply_delay_pattern_mask(output_ids, model_kwargs["decoder_delay_pattern_mask"])
+
+        # # revert the pattern delay mask by filtering the pad token id
+        # output_ids = output_ids[output_ids != generation_config._pad_token_tensor].reshape(
+        #     batch_size, self.model.decoder.num_codebooks, -1
+        # )
+
+        # # append the frame dimension back to the audio codes
+        # output_ids = output_ids[None, ...]
+
+        # return output_ids
