@@ -272,7 +272,7 @@ class CustomMusicGen(pl.LightningModule):
             attention_mask=attention_mask,
             max_new_tokens=self.max_new_tokens,
         )
-        return audio_values[0]
+        return audio_values
 
 
 class MusicGenWithGrad(pl.LightningModule):

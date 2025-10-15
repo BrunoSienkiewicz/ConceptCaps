@@ -1,7 +1,10 @@
 from pathlib import Path
 
 import hydra
+import scipy.io
 import rootutils
+import torch
+import scipy
 import pytorch_lightning as pl
 
 from src.utils import (RankedLogger, instantiate_loggers, log_hyperparameters,
@@ -21,15 +24,34 @@ def tta(cfg: TTAConfig):
     log.info("Instantiating loggers...")
     logger = instantiate_loggers(cfg.get("logger"))
 
-    inputs = sample_dataset(cfg.dataset)
+    device = torch.device(cfg.device)
+    log.info(f"Using device: {device}")
 
-    for batch in split(inputs, cfg.model.batch_size):
-        tensors = preprocess_dataset(batch)
+    log.info(f"Instantiating datamodule <{cfg.data._target_}>")
+    data_module = hydra.utils.instantiate(cfg.data)
 
-        audio = generate_audio(cfg.model, tensors)
+    log.info(f"Instantiating model <{cfg.model.model._target_}>")
+    model = hydra.utils.instantiate(cfg.model)
+    model.model.to(device)
+
+    log.info("Preparing data...")
+    data_module.prepare_data()
+    data_module.setup()
+
+    data_module.dataset.to_csv(Path(cfg.paths.output_dir) / "full_dataset.csv", index=False)
+
+    for i, batch in enumerate(data_module.random_dataloader()):
+        input_ids, attention_mask = batch
+        audio_values = model.model(input_ids=input_ids, attention_mask=attention_mask, max_new_tokens=cfg.model.model.max_new_tokens)
+        sampling_rate = model.model.model.config.audio_encoder.sampling_rate
+        output_dir = Path(cfg.paths.output_dir) / "tta_generation"
+        output_dir.mkdir(parents=True, exist_ok=True)
+        for j, audio in enumerate(audio_values):
+            idx = i * data_module.batch_size + j
+            scipy.io.wavfile.write(output_dir / f"{idx}.wav", sampling_rate, audio.cpu().numpy())
 
 
-@hydra.main(version_base=None, config_path="../../config", config_name="tcav")
+@hydra.main(version_base=None, config_path="../../config", config_name="tta")
 def main(cfg: TTAConfig):
     print_config_tree(cfg)
     tta(cfg)

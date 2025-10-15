@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from typing import Optional, Union
 
+from transformers import AutoProcessor, MusicgenForConditionalGeneration
+from src.data.generic_data_module import GenericDataModule
+
 from omegaconf import DictConfig
 
 
@@ -19,19 +22,15 @@ class PathsConfig:
     data_dir: str
 
 @dataclass
-class DatasetConfig:
-    name: str
-    sample_size: int
-
-@dataclass
 class ModelConfig:
-    name: str
-    batch_size: int
+    model_id: str
+    model: MusicgenForConditionalGeneration
+    max_new_tokens: int = 255
 
 @dataclass
 class TTAConfig(DictConfig):
     model: ModelConfig
-    dataset: DatasetConfig
+    data: GenericDataModule
     logger: LoggerConfig
     paths: PathsConfig
     random_state: int
