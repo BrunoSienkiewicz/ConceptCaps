@@ -6,6 +6,6 @@ defaults:
   - hydra: default
 
 task_name: tta
-# device: cuda
-device: cpu
+device: cuda
+# device: cpu
 random_state: 42

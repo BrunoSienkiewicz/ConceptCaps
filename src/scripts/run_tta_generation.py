@@ -48,7 +48,7 @@ def tta(cfg: TTAConfig):
         output_dir.mkdir(parents=True, exist_ok=True)
         for j, audio in enumerate(audio_values):
             idx = i * data_module.batch_size + j
-            scipy.io.wavfile.write(output_dir / f"{idx}.wav", sampling_rate, audio.cpu().numpy())
+            scipy.io.wavfile.write(output_dir / f"{idx}.wav", sampling_rate, audio[0].cpu().numpy())
 
 
 @hydra.main(version_base=None, config_path="../../config", config_name="tta")
