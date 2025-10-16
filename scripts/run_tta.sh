@@ -1,11 +1,11 @@
 #!/bin/bash -l
-#SBATCH -J run_tcav
+#SBATCH -J run_tta
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=8GB
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=03:00:00
+#SBATCH --time=01:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
 #SBATCH --output="output.out"
@@ -38,7 +38,7 @@ done
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 OUT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
-CONDA_DIR="$SCRATCH/.conda"
+CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
 ENV_DIR="$CONDA_DIR/envs/$(cat environment.yml | grep -E "name: " | cut -d " " -f 2)"
 
 export HYDRA_FULL_ERROR=1

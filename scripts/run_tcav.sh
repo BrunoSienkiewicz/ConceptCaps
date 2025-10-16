@@ -44,7 +44,7 @@ done
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 OUT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
-CONDA_DIR="$SCRATCH/.conda"
+CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
 ENV_DIR="$CONDA_DIR/envs/$(cat environment.yml | grep -E "name: " | cut -d " " -f 2)"
 
 export HYDRA_FULL_ERROR=1
