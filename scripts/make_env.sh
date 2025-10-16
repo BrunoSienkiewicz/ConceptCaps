@@ -20,4 +20,4 @@ conda init --all
 conda config --add pkgs\_dirs $CONDA_DIR/pkgs
 conda config --add envs\_dirs $CONDA_DIR/envs
 
-srun make env
+make env
