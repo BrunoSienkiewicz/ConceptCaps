@@ -28,6 +28,7 @@ dependencies:
   - torchmetrics=0.*
   - transformers=4.*
   - hydra-core=1.*
+  - libmamba=2.*
 
   # --------- loggers --------- #
   - wandb
