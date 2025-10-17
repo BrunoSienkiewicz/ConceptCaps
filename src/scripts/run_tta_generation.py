@@ -36,17 +36,6 @@ def tta(cfg: TTAConfig):
     model = hydra.utils.instantiate(cfg.model)
     model.model.to(device)
 
-    object_dict = {
-        "cfg": cfg,
-        "data_module": data_module,
-        "model": model,
-        "logger": logger,
-    }
-
-    if logger:
-        log.info("Logging hyperparameters!")
-        log_hyperparameters(object_dict)
-
     log.info("Preparing data...")
     data_module.prepare_data()
     data_module.setup()
