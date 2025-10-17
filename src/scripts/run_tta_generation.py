@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import wandb
 import hydra
 import scipy.io
 import rootutils
@@ -22,6 +23,7 @@ def tta(cfg: TTAConfig):
     pl.seed_everything(random_state)
 
     log.info("Instantiating loggers...")
+    wandb.login()
     logger = instantiate_loggers(cfg.get("logger"))
 
     device = torch.device(cfg.device)
@@ -33,6 +35,17 @@ def tta(cfg: TTAConfig):
     log.info(f"Instantiating model <{cfg.model.model._target_}>")
     model = hydra.utils.instantiate(cfg.model)
     model.model.to(device)
+
+    object_dict = {
+        "cfg": cfg,
+        "data_module": data_module,
+        "model": model,
+        "logger": logger,
+    }
+
+    if logger:
+        log.info("Logging hyperparameters!")
+        log_hyperparameters(object_dict)
 
     log.info("Preparing data...")
     data_module.prepare_data()
