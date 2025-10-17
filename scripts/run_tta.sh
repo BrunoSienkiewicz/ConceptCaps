@@ -37,10 +37,9 @@ done
 
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
-OUT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
-CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
-ENV_DIR="$CONDA_DIR/envs/$(cat environment.yml | grep -E "name: " | cut -d " " -f 2)"
-
+export OUT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
+export CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
+export ENV_DIR="$CONDA_DIR/envs/$(cat environment.yml | grep -E "name: " | cut -d " " -f 2)"
 export HYDRA_FULL_ERROR=1
 export PYTHONPATH="$PYTHONPATH:$(pwd)"
 export HF_HOME="$OUT_DIR/.cache/huggingface"
