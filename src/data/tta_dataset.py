@@ -106,5 +106,5 @@ class TextDescriptions(GenericDataModule):
         return DataLoader(
             dataset=concept_dataset,
             batch_size=self.batch_size,
-            shuffle=True,
+            shuffle=False,
         )
