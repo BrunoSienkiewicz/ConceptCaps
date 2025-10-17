@@ -17,7 +17,12 @@ CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
 
 module load Miniconda3/23.3.1
 conda init --all
+
+# Configure conda to use a custom directory for packages and environments
 conda config --add pkgs\_dirs $CONDA_DIR/pkgs
 conda config --add envs\_dirs $CONDA_DIR/envs
+
+# Use libmamba solver for faster environment resolution
+conda config --set solver libmamba
 
 make env
