@@ -16,6 +16,16 @@ click = "^8.2.0"
 pyparsing = "^3.2.3"
 huggingface-hub = "0.34.0"
 librosa = "^0.11.0"
+trl = "^0.24.0"
+peft = "^0.17.1"
+evaluate = "^0.4.6"
+bitsandbytes-cuda117 = "^0.26.0.post2"
+bitsandbytes = "^0.48.1"
+ipywidgets = "^8.1.7"
+sentencepiece = "^0.2.1"
+rouge-score = "^0.1.2"
+nltk = "^3.9.2"
+bert-score = "^0.3.13"
 
 [tool.poetry.group.docs]
 optional = true
