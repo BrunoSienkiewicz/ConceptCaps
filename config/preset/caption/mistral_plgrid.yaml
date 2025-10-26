@@ -1,8 +1,7 @@
 # @package _global_
 defaults:
   - override /paths: plgrid
-  - override /model: musicgen-small
-  - override /experiment: layer-feature-ablation-medium
+  - override /model: caption/mistral_7b_instruct
   - override /logger: wandb
 
 data:

@@ -1,8 +1,8 @@
 defaults:
-  - model: musicgen-small
-  - data: text_conditioning_guitar_rock
-  - experiment: layer-feature-ablation-small
-  - trainer: default
+  - model: tcav/musicgen-small
+  - data: tcav/text_conditioning_guitar_rock
+  - experiment: tcav/layer-feature-ablation-small
+  - trainer: tcav/default
   - paths: default
   - logger: null
   - hydra: default

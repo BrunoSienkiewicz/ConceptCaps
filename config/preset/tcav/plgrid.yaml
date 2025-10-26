@@ -1,0 +1,9 @@
+# @package _global_
+defaults:
+  - override /paths: plgrid
+  - override /model: tcav/musicgen-small
+  - override /experiment: tcav/layer-feature-ablation-medium
+  - override /logger: wandb
+
+data:
+  batch_size: 32
