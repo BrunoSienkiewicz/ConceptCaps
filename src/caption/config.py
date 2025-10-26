@@ -60,7 +60,7 @@ class LoRAConfig:
 
 
 @dataclass
-class TrainingConfig:
+class TrainerConfig:
     per_device_train_batch_size: int = 8
     gradient_accumulation_steps: int = 2
     warmup_steps: int = 5
@@ -110,7 +110,7 @@ class CaptionGenerationConfig(DictConfig):
     model: ModelConfig
     data: DatasetConfig
     lora: LoRAConfig
-    training: TrainingConfig
+    trainer: TrainerConfig
     evaluation: EvaluationConfig
     paths: PathsConfig
     device: str = "cuda"

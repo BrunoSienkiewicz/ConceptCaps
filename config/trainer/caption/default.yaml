@@ -12,11 +12,11 @@ report_to:
   - wandb
 logging_steps: 1
 logging_strategy: steps
-save_strategy: no
+save_strategy: best
 load_best_model_at_end: true
 save_only_model: false
 fp16: null
 bf16: null
 remove_unused_columns: false
-evaluation_strategy: epoch
+eval_strategy: epoch
 save_total_limit: 1

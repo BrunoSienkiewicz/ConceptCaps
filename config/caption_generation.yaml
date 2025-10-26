@@ -2,7 +2,7 @@ defaults:
   - model: caption/mistral_7b_instruct
   - data: caption/musiccaps
   - lora: caption/default
-  - training: caption/default
+  - trainer: caption/default
   - evaluation: caption/default
   - paths: default
   - logger: null

@@ -12,7 +12,6 @@ import wandb
 import evaluate
 import pandas as pd
 from datasets import DatasetDict, load_dataset
-from huggingface_hub import login as hf_login
 from omegaconf import DictConfig, OmegaConf
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
@@ -117,7 +116,7 @@ def _prepare_trainer(
     dataset: DatasetDict,
     lora_config: LoraConfig,
 ) -> SFTTrainer:
-    training_args_dict = OmegaConf.to_container(cfg.training, resolve=True)
+    training_args_dict = OmegaConf.to_container(cfg.trainer, resolve=True)
     training_args_dict = dict(training_args_dict)
 
     if training_args_dict.get("fp16") is None:
@@ -134,8 +133,6 @@ def _prepare_trainer(
         eval_dataset=dataset["validation"],
         peft_config=lora_config,
         processing_class=tokenizer,
-        tokenizer=tokenizer,
-        dataset_text_field=cfg.data.text_column,
     )
     return trainer
 
@@ -243,15 +240,12 @@ def caption_generation(cfg: CaptionGenerationConfig) -> None:
     log.info("Setting random seed...")
     set_seed(cfg.seed)
 
-    hf_login()
     wandb.login()
 
     log.info("Preparing datasets...")
     dataset, test_examples = _prepare_datasets(cfg.data)
     log.info(
-        "Dataset prepared with %d training and %d validation samples.",
-        len(dataset["train"]),
-        len(dataset["validation"]),
+        f"Dataset prepared with {len(dataset['train'])} training and {len(dataset['validation'])} validation samples.",
     )
 
     log.info("Loading tokenizer...")
