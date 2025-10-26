@@ -2,14 +2,14 @@
 #SBATCH -J run_caption_generation
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
-#SBATCH --mem-per-cpu=16GB
+#SBATCH --mem-per-cpu=8GB
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=12:00:00
+#SBATCH --time=01:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
-#SBATCH --output="caption_generation.out"
-#SBATCH --error="caption_generation.err"
+#SBATCH --output="output.out"
+#SBATCH --error="error.err"
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
