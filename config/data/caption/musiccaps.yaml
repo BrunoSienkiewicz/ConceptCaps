@@ -1,0 +1,16 @@
+train_file: ${paths.data_dir}/musiccaps_with_concept_tags/train.csv
+validation_file: ${paths.data_dir}/musiccaps_with_concept_tags/valid.csv
+test_file: ${paths.data_dir}/musiccaps_with_concept_tags/test.csv
+aspect_column: aspect_list
+caption_column: caption
+text_column: text
+prompt:
+  template: |
+    <|begin_of_text|><|start_header_id|>system<|end_header_id|>{system_prompt}<|eot_id|>
+    <|start_header_id|>user<|end_header_id|>{user_prompt}<|eot_id|>
+    <|start_header_id|>assistant<|end_header_id|>{assistant_response}<|eot_id|>
+  system_prompt: You are a music description expert that creates detailed, technical descriptions of songs based on their musical characteristics.
+  user_prompt_template: Generate a detailed song description based on the following tags:{tags}
+remove_columns: null
+max_train_samples: null
+max_eval_samples: null
