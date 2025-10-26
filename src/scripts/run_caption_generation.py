@@ -20,7 +20,7 @@ from transformers.trainer_utils import set_seed
 from trl import SFTTrainer
 
 from src.caption.config import CaptionGenerationConfig
-from src.utils import RankedLogger, print_config_tree
+from src.utils import RankedLogger, print_config_tree, instantiate_loggers
 
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
@@ -240,6 +240,7 @@ def caption_generation(cfg: CaptionGenerationConfig) -> None:
     log.info("Setting random seed...")
     set_seed(cfg.seed)
 
+    logger = instantiate_loggers(cfg.get("logger"))
     wandb.login()
 
     log.info("Preparing datasets...")
