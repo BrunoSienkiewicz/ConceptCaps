@@ -40,9 +40,6 @@ dependencies:
   - pip>=23
   - pip:
       - captum
-      - bitsandbytes
-      - peft
-      - trl
       - hydra-optuna-sweeper
       - hydra-colorlog
       - rootutils

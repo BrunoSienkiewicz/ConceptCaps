@@ -23,7 +23,17 @@ env: ## Create virtual environment
 	conda env create -n $(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2) --file environment.yml --yes
 	conda activate $(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2)
 	poetry install --no-root
+	install-source-libraries
 
 update: ## Update dependencies
 	conda env update --file environment.yml --prune
 	poetry update
+
+install-source-libraries: ## Install source libraries in editable mode
+	git clone https://github.com/bitsandbytes-foundation/bitsandbytes.git
+	cd bitsandbytes && pip install -e . && cd ..
+	git clone https://github.com/huggingface/peft.git
+	cd peft && pip install -e . && cd ..
+	git clone https://github.com/huggingface/trl.git
+	cd trl && pip install -e . && cd ..
+
