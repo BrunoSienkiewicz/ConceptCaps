@@ -48,6 +48,8 @@ ENV_DIR="$CONDA_DIR/envs/$(grep -E '^name:' environment.yml | awk '{print $2}')"
 export HYDRA_FULL_ERROR=1
 export PYTHONPATH="$PYTHONPATH:$(pwd)"
 export HF_HOME="$OUT_DIR/.cache/huggingface"
-mkdir -p "$HF_HOME"
+export OUT_DIR="$OUT_DIR"
+export CONDA_DIR="$CONDA_DIR"
 
+mkdir -p "$HF_HOME"
 srun "$ENV_DIR/bin/python" src/scripts/run_caption_generation.py "${HYDRA_OVERRIDES[@]}"
