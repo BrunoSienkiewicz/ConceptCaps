@@ -420,18 +420,6 @@ docs = ["hf-doc-builder (==0.5.0)"]
 test = ["einops (>=0.8.0,<0.9.0)", "lion-pytorch (==0.2.3)", "pytest (>=8.3,<9.0)", "scipy (>=1.11.4,<2)", "transformers (>=4.30.1,<5)"]
 
 [[package]]
-name = "bitsandbytes-cuda117"
-version = "0.26.0.post2"
-description = "8-bit optimizers and quantization routines."
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "bitsandbytes-cuda117-0.26.0.post2.tar.gz", hash = "sha256:b54ad77790e824e3daa55643b631e01a790fe4b114c6d9aece6dac7db96b4a6d"},
-    {file = "bitsandbytes_cuda117-0.26.0.post2-py3-none-any.whl", hash = "sha256:9c41b20dea027f6764ace77a4a14d922384752d91f75bc7180bac3328da5fab9"},
-]
-
-[[package]]
 name = "certifi"
 version = "2025.10.5"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -5019,4 +5007,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "76c337563608eac106f1f59cd2108a726698c17fbde8d77cacd521d6c1178652"
+content-hash = "6add314641cf28b4560d6cdefc0b9723f553b3fe9a1609a419873c3e522ecd44"
