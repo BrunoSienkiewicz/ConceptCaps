@@ -39,8 +39,11 @@ dependencies:
 
   - pip>=23
   - pip:
-      - captum
       - hydra-optuna-sweeper
       - hydra-colorlog
       - rootutils
       - poetry
+      - captum
+      - https://github.com/bitsandbytes-foundation/bitsandbytes.git
+      - https://github.com/huggingface/peft.git
+      - https://github.com/huggingface/trl.git
