@@ -243,7 +243,7 @@ def caption_generation(cfg: CaptionGenerationConfig) -> None:
     log.info("Setting random seed...")
     set_seed(cfg.seed)
 
-    hf_login(token=os.environ.get("HUGGINGFACE_TOKEN"))
+    hf_login()
     wandb.login()
 
     log.info("Preparing datasets...")
