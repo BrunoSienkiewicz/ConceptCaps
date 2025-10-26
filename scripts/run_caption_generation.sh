@@ -11,8 +11,6 @@
 #SBATCH --output="caption_generation.out"
 #SBATCH --error="caption_generation.err"
 
-set -euo pipefail
-
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
 PRESET=""
