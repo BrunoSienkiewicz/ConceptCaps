@@ -16,6 +16,7 @@ from omegaconf import DictConfig, OmegaConf
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
                           BitsAndBytesConfig, TrainingArguments)
+from transformers.trainer_callback import TrainerCallback
 from transformers.trainer_utils import set_seed
 from trl import SFTTrainer
 
@@ -27,6 +28,42 @@ rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
+def _flatten_numeric_metrics(value: Any, prefix: str) -> Dict[str, float]:
+    result: Dict[str, float] = {}
+    if isinstance(value, dict):
+        for key, sub_value in value.items():
+            new_prefix = f"{prefix}/{key}" if prefix else key
+            result.update(_flatten_numeric_metrics(sub_value, new_prefix))
+    elif isinstance(value, (int, float)):
+        result[prefix] = float(value)
+    elif isinstance(value, (list, tuple)):
+        for idx, item in enumerate(value):
+            new_prefix = f"{prefix}/{idx}" if prefix else str(idx)
+            result.update(_flatten_numeric_metrics(item, new_prefix))
+    return result
+
+
+class WandbMonitoringCallback(TrainerCallback):
+    def on_log(self, args, state, control, logs=None, **kwargs) -> None:
+        if logs is None or wandb.run is None:
+            return
+        payload: Dict[str, float] = {}
+        for key, value in logs.items():
+            if key == "epoch":
+                continue
+            if key.startswith("eval_"):
+                base = f"eval/{key[5:]}"
+            elif key.startswith("train_"):
+                base = f"train/{key[6:]}"
+            else:
+                base = f"train/{key}"
+            payload.update(_flatten_numeric_metrics(value, base))
+        if state.global_step is not None:
+            payload["trainer/global_step"] = state.global_step
+        if state.epoch is not None:
+            payload["trainer/epoch"] = state.epoch
+        if payload:
+            wandb.log(payload, step=state.global_step)
 
 def _build_quantization_config(model_cfg: DictConfig) -> BitsAndBytesConfig | None:
     quant_cfg = model_cfg.get("quantization")
@@ -134,6 +171,7 @@ def _prepare_trainer(
         peft_config=lora_config,
         processing_class=tokenizer,
     )
+    trainer.add_callback(WandbMonitoringCallback())
     return trainer
 
 
@@ -242,6 +280,11 @@ def caption_generation(cfg: CaptionGenerationConfig) -> None:
 
     logger = instantiate_loggers(cfg.get("logger"))
     wandb.login()
+    if wandb.run is not None:
+        wandb.define_metric("trainer/global_step", summary="max")
+        wandb.define_metric("trainer/epoch", summary="max")
+        wandb.define_metric("train/*", step="trainer/global_step")
+        wandb.define_metric("eval/*", step="trainer/global_step")
 
     log.info("Preparing datasets...")
     dataset, test_examples = _prepare_datasets(cfg.data)
@@ -269,6 +312,17 @@ def caption_generation(cfg: CaptionGenerationConfig) -> None:
 
     log.info("Running evaluation...")
     metrics = _run_evaluation(cfg, model, tokenizer, test_examples, output_dir)
+
+    if metrics:
+        log.info(f"Evaluation metrics: {metrics}")
+        if wandb.run is not None:
+            payload: Dict[str, float] = {}
+            for key, value in metrics.items():
+                payload.update(_flatten_numeric_metrics(value, f"eval/{key}"))
+            payload["trainer/global_step"] = trainer.state.global_step
+            if trainer.state.epoch is not None:
+                payload["trainer/epoch"] = trainer.state.epoch
+            wandb.log(payload, step=trainer.state.global_step)
 
     if metrics:
         log.info(f"Evaluation metrics: {metrics}")
