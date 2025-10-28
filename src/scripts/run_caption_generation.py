@@ -286,6 +286,9 @@ def caption_generation(cfg: CaptionGenerationConfig) -> None:
         wandb.define_metric("train/*", step="trainer/global_step")
         wandb.define_metric("eval/*", step="trainer/global_step")
 
+    device = torch.device(cfg.device)
+    log.info(f"Using device: {device}")
+
     log.info("Preparing datasets...")
     dataset, test_examples = _prepare_datasets(cfg.data)
     log.info(
@@ -297,6 +300,7 @@ def caption_generation(cfg: CaptionGenerationConfig) -> None:
 
     log.info("Loading model...")
     model, lora_config = _prepare_model(cfg)
+    model.to(device)
 
     output_dir = Path(cfg.paths.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
