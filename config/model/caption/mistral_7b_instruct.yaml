@@ -1,5 +1,5 @@
 name: mistralai/Mistral-7B-Instruct-v0.3
-device_map: auto
+device_map: sequential
 trust_remote_code: true
 quantization:
   load_in_4bit: true

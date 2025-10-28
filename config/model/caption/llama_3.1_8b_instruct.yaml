@@ -1,5 +1,5 @@
 name: meta-llama/Llama-3.1-8B-Instruct
-device_map: auto
+device_map: sequential
 trust_remote_code: true
 quantization:
   load_in_4bit: true
