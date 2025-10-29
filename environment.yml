@@ -27,6 +27,9 @@ dependencies:
   - lightning=2.*
   - torchmetrics=0.*
   - transformers=4.*
+  - peft=0.17.*
+  - trl=0.25.*
+  - bitsandbytes=0.48.*
   - hydra-core=1.*
   - libmamba=2.*
 
@@ -44,6 +47,3 @@ dependencies:
       - rootutils
       - poetry
       - captum
-      - https://github.com/bitsandbytes-foundation/bitsandbytes.git
-      - https://github.com/huggingface/peft.git
-      - https://github.com/huggingface/trl.git
