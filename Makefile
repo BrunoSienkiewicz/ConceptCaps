@@ -19,11 +19,13 @@ sync: ## Merge changes from main branch to your current branch
 	git pull
 	git pull origin main
 
+ENV_NAME=$(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2)
 env: ## Create virtual environment
-	conda env create -n $(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2) --file environment.yml --yes
-	conda activate $(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2)
-	poetry install --no-root
+	conda env create -n ${ENV_NAME}
+	conda activate ${ENV_NAME}
+	pip install torch==2.4.0
+	conda env update --file environment.yml --prune
 
 update: ## Update dependencies
+	conda activate ${ENV_NAME}
 	conda env update --file environment.yml --prune
-	poetry update
