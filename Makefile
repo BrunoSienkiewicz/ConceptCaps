@@ -19,13 +19,8 @@ sync: ## Merge changes from main branch to your current branch
 	git pull
 	git pull origin main
 
-ENV_NAME=$(shell cat environment.yml | grep -E "name: " | cut -d " " -f 2)
 env: ## Create virtual environment
-	conda env create -n ${ENV_NAME}
-	conda activate ${ENV_NAME}
-	pip install torch==2.4.0
-	conda env update --file environment.yml --prune
+	conda env create
 
 update: ## Update dependencies
-	conda activate ${ENV_NAME}
-	conda env update --file environment.yml --prune
+	conda env update --name ${ENV_NAME} --file environment.yml --prune

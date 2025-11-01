@@ -15,8 +15,10 @@ cd "$SLURM_SUBMIT_DIR" || exit 1
 
 CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
 
+module load CUDA/12.4.0
+module load GCCcore/12.2.0
+module load CMake/3.24.3
 module load GCC/11.2.0
-eval "$(conda shell.bash hook)"
 module load Miniconda3/23.3.1-0
 conda init --all
 
@@ -27,4 +29,6 @@ conda config --add envs\_dirs $CONDA_DIR/envs
 # Use libmamba solver for faster environment resolution
 conda config --set solver libmamba
 
-make env
+conda env create --file environment.yml
+conda activate music-gen-interpretability
+pip install torch==2.6
