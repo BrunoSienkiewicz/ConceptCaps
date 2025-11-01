@@ -76,23 +76,14 @@ def tcav(cfg: TCAVConfig):
     model = hydra.utils.instantiate(cfg.model.model)
     model.to(device)
 
-    log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
-    trainer = hydra.utils.instantiate(
-        cfg.trainer,
-        logger=logger,
-        callbacks=None,  # No callbacks needed for TCAV
-        enable_progress_bar=False,  # Disable progress bar for cleaner output
-    )
-
     log.info(f"Instantiating classifier <{cfg.model.classifier._target_}>")
-    classifier = hydra.utils.instantiate(cfg.model.classifier, trainer=trainer)
+    classifier = hydra.utils.instantiate(cfg.model.classifier)
 
     object_dict = {
         "cfg": cfg,
         "data_module": data_module,
         "model": model,
         "logger": logger,
-        "trainer": trainer,
         "classifier": classifier,
     }
 
@@ -123,8 +114,7 @@ def tcav(cfg: TCAVConfig):
         classifier=classifier,
         layers=layers,
         show_progress=True,
-        save_path=cfg.paths.output_dir,
-        # attribute_to_layer_input=True # Hardcoded for now, can be extended later
+        save_path=cfg.paths.output_dir
     )
 
 
