@@ -1,0 +1,8 @@
+# @package _global_
+defaults:
+  - override /paths: plgrid
+  - override /model: caption/llama_3.1_8b_instruct.yaml
+  - override /logger: wandb
+
+data:
+  batch_size: 32

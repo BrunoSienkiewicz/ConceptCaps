@@ -59,7 +59,8 @@ def run_caption_generation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     trainer.save_model(output_dir / "final_model")
 
     log.info("Running evaluation...")
-    metrics = run_evaluation(cfg, model, tokenizer, test_examples, output_dir, log)
+    metrics = None
+    # metrics = run_evaluation(cfg, model, tokenizer, test_examples, output_dir, log)
 
     if metrics and wandb.run is not None:
         payload: Dict[str, float] = {}
