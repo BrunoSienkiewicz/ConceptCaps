@@ -5,7 +5,6 @@ learning_rate: 0.0002
 num_train_epochs: 100
 optim: adamw_8bit
 weight_decay: 0.01
-dropout: 0.1
 lr_scheduler_type: cosine_with_restarts
 seed: ${seed}
 output_dir: ${paths.output_dir}/trainer
