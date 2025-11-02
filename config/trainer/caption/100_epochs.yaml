@@ -1,11 +1,12 @@
 per_device_train_batch_size: 32
 gradient_accumulation_steps: 2
 warmup_steps: 5
-learning_rate: 0.00002
+learning_rate: 0.0002
 num_train_epochs: 100
 optim: adamw_8bit
 weight_decay: 0.01
-lr_scheduler_type: linear
+dropout: 0.1
+lr_scheduler_type: cosine_with_restarts
 seed: ${seed}
 output_dir: ${paths.output_dir}/trainer
 report_to:
