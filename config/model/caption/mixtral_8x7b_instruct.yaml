@@ -1,4 +1,4 @@
-name: mistralai/Mistral-Small-3.1-24B-Instruct-2503
+name: mistralai/Mixtral-8x7B-Instruct-v0.1
 device_map: sequential
 trust_remote_code: true
 quantization:
