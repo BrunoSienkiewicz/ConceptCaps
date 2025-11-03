@@ -6,7 +6,7 @@ num_train_epochs: 3
 optim: adamw_8bit
 weight_decay: 0.01
 lr_scheduler_type: linear
-seed: ${seed}
+seed: ${random_state}
 output_dir: ${paths.output_dir}/trainer
 report_to:
   - wandb

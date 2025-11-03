@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Tuple
+from pathlib import Path
 
 from omegaconf import DictConfig, OmegaConf
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
@@ -46,3 +47,12 @@ def prepare_model(model_cfg: DictConfig, lora_cfg: DictConfig) -> Tuple[AutoMode
     model = get_peft_model(model, lora_config)
     model.print_trainable_parameters()
     return model, lora_config
+
+def prepare_evaluation_model_tokenizer(model_cfg: DictConfig, model_path: Path) -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
+    tokenizer = prepare_tokenizer(model_cfg)
+    model = AutoModelForCausalLM.from_pretrained(
+        model_path,
+        device_map=model_cfg.device_map,
+        trust_remote_code=model_cfg.trust_remote_code,
+    )
+    return model, tokenizer

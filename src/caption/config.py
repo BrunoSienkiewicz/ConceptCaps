@@ -71,7 +71,7 @@ class TrainerConfig:
     lr_scheduler_type: str = "linear"
     seed: int = 3407
     output_dir: str = "outputs"
-    report_to: List[str] = field(default_factory=lambda: ["wandb"])
+    report_to: List[str] = field(default_factory=lambda: ["none"])
     logging_steps: int = 1
     logging_strategy: str = "steps"
     save_strategy: str = "no"
@@ -114,4 +114,4 @@ class CaptionGenerationConfig(DictConfig):
     evaluation: EvaluationConfig
     paths: PathsConfig
     device: str = "cuda"
-    seed: int = 3407
+    random_state: int = 42

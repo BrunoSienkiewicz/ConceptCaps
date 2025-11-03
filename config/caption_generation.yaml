@@ -9,5 +9,5 @@ defaults:
   - hydra: default
 
 task_name: caption_generation
-seed: 42
+random_state: 42
 device: cuda

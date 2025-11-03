@@ -35,5 +35,4 @@ def create_trainer(
         peft_config=lora_config,
         processing_class=tokenizer,
     )
-    trainer.add_callback(WandbMonitoringCallback())
     return trainer

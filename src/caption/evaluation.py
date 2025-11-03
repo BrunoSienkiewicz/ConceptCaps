@@ -21,8 +21,6 @@ def generate_caption(
     temperature: float,
 ) -> str:
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-    if model.dtype == torch.bfloat16:
-        inputs = {key: value.bfloat16() for key, value in inputs.items()}
     model.eval()
 
     with torch.no_grad():
