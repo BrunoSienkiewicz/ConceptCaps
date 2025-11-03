@@ -53,10 +53,10 @@ def prepare_model(model_cfg: DictConfig, lora_cfg: DictConfig) -> Tuple[AutoMode
 def prepare_evaluation_model_tokenizer(model_cfg: DictConfig) -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
     tokenizer = prepare_tokenizer(model_cfg)
     quantization_config = BitsAndBytesConfig(
-        load_in_8bit=True,
-        llm_int8_threshold=6.0,
-        llm_int8_has_fp16_weight=False,
-        llm_int8_enable_fp16_cpu_offload=True,
+        load_in_4bit=True,
+        bnb_4bit_compute_dtype=torch.float16,
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_quant_type="nf4"
     )
     model = AutoModelForCausalLM.from_pretrained(
         model_cfg.name,
@@ -64,7 +64,6 @@ def prepare_evaluation_model_tokenizer(model_cfg: DictConfig) -> Tuple[AutoModel
         device_map=model_cfg.device_map,
         low_cpu_mem_usage=True,
         trust_remote_code=model_cfg.trust_remote_code,
-        torch_dtype=torch.float16,
         use_cache=False,
     )
     return model, tokenizer
