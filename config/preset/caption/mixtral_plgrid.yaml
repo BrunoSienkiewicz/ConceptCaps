@@ -2,8 +2,8 @@
 defaults:
   - override /paths: plgrid
   - override /model: caption/mixtral_8x7b_instruct
-  - override /trainer: caption/10_epochs
-  - override /lora: caption/regularization
+  - override /trainer: caption/15_epochs
+  - override /lora: caption/more_regularization
   - override /logger: wandb
 
 data:

@@ -2,7 +2,7 @@
 defaults:
   - override /paths: plgrid
   - override /model: caption/llama_3.1_8b_instruct.yaml
-  - override /trainer: caption/20_epochs
+  - override /trainer: caption/15_epochs
   - override /lora: caption/regularization
   - override /logger: wandb
 
