@@ -20,7 +20,7 @@ def run_caption_generation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     log = RankedLogger(__name__, rank_zero_only=True)
 
     log.info("Setting random seed...")
-    set_seed(cfg.seed)
+    set_seed(cfg.random_state)
 
     _ = instantiate_loggers(cfg.get("logger"))
     wandb.login()
