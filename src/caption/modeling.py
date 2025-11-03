@@ -55,7 +55,8 @@ def prepare_evaluation_model_tokenizer(model_cfg: DictConfig) -> Tuple[AutoModel
     quantization_config = BitsAndBytesConfig(
         load_in_8bit=True,
         llm_int8_threshold=6.0,
-        llm_int8_has_fp16_weight=False
+        llm_int8_has_fp16_weight=False,
+        llm_int8_enable_fp16_cpu_offload=True,
     )
     model = AutoModelForCausalLM.from_pretrained(
         model_cfg.name,
