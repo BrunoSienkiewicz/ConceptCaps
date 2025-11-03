@@ -14,7 +14,7 @@ logging_strategy: steps
 save_strategy: best
 load_best_model_at_end: true
 save_only_model: false
-fp16: true
+fp16: null
 bf16: null
 remove_unused_columns: false
 eval_strategy: epoch
