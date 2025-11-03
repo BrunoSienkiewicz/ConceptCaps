@@ -73,6 +73,8 @@ def run_caption_generation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
         model_dir / "final_model",
         is_trainable=False
     )
+    eval_model.to(device)
+    eval_tokenizer.to(device)
     metrics = run_evaluation(cfg, eval_model, eval_tokenizer, test_examples, output_dir, log)
 
     if metrics and wandb.run is not None:
