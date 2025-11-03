@@ -55,6 +55,11 @@ def run_caption_generation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     log.info("Saving final model...")
     trainer.save_model(model_dir / "final_model")
 
+    # Cleanup for evaluation
+    del trainer
+    del model
+    torch.cuda.empty_cache()
+
     log.info("Running evaluation...")
     log.info(f"Test examples count: {len(test_examples)}")
     eval_model, eval_tokenizer = prepare_evaluation_model_tokenizer(cfg.model, model_dir / "final_model")
