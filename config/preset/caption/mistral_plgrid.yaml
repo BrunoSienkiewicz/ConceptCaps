@@ -2,7 +2,7 @@
 defaults:
   - override /paths: plgrid
   - override /model: caption/mistral_7b_instruct
-  - override /trainer: caption/20_epochs
+  - override /trainer: caption/10_epochs
   - override /lora: caption/regularization
   - override /logger: wandb
 
