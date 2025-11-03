@@ -21,7 +21,7 @@ eval_strategy: epoch
 save_total_limit: 1
 
 # Regularization additions
-max_grad_norm: 1.0
+max_grad_norm: 0.3
 label_smoothing_factor: 0.1
 gradient_checkpointing: true
 warmup_ratio: 0.1
