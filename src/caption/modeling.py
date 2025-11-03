@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import torch
+
 from typing import Tuple
 from pathlib import Path
 
@@ -48,11 +50,20 @@ def prepare_model(model_cfg: DictConfig, lora_cfg: DictConfig) -> Tuple[AutoMode
     model.print_trainable_parameters()
     return model, lora_config
 
-def prepare_evaluation_model_tokenizer(model_cfg: DictConfig, model_path: Path) -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
+def prepare_evaluation_model_tokenizer(model_cfg: DictConfig) -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
     tokenizer = prepare_tokenizer(model_cfg)
+    quantization_config = BitsAndBytesConfig(
+        load_in_8bit=True,
+        llm_int8_threshold=6.0,
+        llm_int8_has_fp16_weight=False
+    )
     model = AutoModelForCausalLM.from_pretrained(
-        model_path,
+        model_cfg.name,
+        quantization_config=quantization_config,
         device_map=model_cfg.device_map,
+        low_cpu_mem_usage=True,
         trust_remote_code=model_cfg.trust_remote_code,
+        torch_dtype=torch.float16,
+        use_cache=False,
     )
     return model, tokenizer

@@ -3,8 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict
 
+import gc
 import torch
 import wandb
+
+from peft import PeftModel
 from transformers.trainer_utils import set_seed
 
 from src.caption.config import CaptionGenerationConfig
@@ -50,7 +53,7 @@ def run_caption_generation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     trainer = create_trainer(cfg, model, tokenizer, dataset, lora_config)
 
     log.info("Starting training...")
-    trainer.train()
+    # trainer.train()
 
     log.info("Saving final model...")
     trainer.save_model(model_dir / "final_model")
@@ -59,10 +62,17 @@ def run_caption_generation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     del trainer
     del model
     torch.cuda.empty_cache()
+    gc.collect()
 
     log.info("Running evaluation...")
     log.info(f"Test examples count: {len(test_examples)}")
-    eval_model, eval_tokenizer = prepare_evaluation_model_tokenizer(cfg.model, model_dir / "final_model")
+    eval_model, eval_tokenizer = prepare_evaluation_model_tokenizer(cfg.model)
+
+    eval_model = PeftModel.from_pretrained(
+        eval_model, 
+        model_dir / "final_model",
+        is_trainable=False
+    )
     metrics = run_evaluation(cfg, eval_model, eval_tokenizer, test_examples, output_dir, log)
 
     if metrics and wandb.run is not None:
