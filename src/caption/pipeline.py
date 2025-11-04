@@ -39,7 +39,13 @@ def create_caption_generation_datasets(log, cfg: CaptionGenerationConfig) -> Dic
 def run_training(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     device = torch.device(cfg.device)
     log.info("Loading datasets...")
-    dataset = load_dataset(cfg.data.hub_repo_name)
+    data_files = {
+        "train": cfg.data.train_file,
+        "validation": cfg.data.validation_file,
+        "test": cfg.data.test_file,
+    }
+    dataset = load_dataset("csv", data_files=data_files)
+    # dataset = load_dataset(cfg.data.hub_repo_name)
     dataset = prepare_datasets(cfg.data, dataset)
     log.info(
         f"Dataset loaded with {len(dataset['train'])} training and {len(dataset['validation'])} validation samples.",
@@ -73,7 +79,8 @@ def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
 
-    dataset = prepare_datasets(cfg.data)
+    dataset = load_dataset(cfg.data.hub_repo_name)
+    dataset = prepare_datasets(cfg.data, dataset)
     test_examples = dataset["test"]
 
     log.info("Loading tokenizer...")

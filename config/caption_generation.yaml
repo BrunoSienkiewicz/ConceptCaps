@@ -1,6 +1,6 @@
 defaults:
   - model: caption/mistral_7b_instruct
-  - data: caption/musiccaps
+  - data: caption/load_dataset
   - lora: caption/default
   - trainer: caption/default
   - evaluation: caption/default
