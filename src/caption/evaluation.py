@@ -33,12 +33,13 @@ def generate_caption(
 
 
 class MetricComputer:
-    def __init__(self, metric_cfgs: Iterable[DictConfig]):
+    def __init__(self, metric_cfgs: Iterable[DictConfig], tokenizer: Optional[AutoTokenizer] = None):
         self.metric_cfgs = metric_cfgs
         self.metrics = []
         for metric_cfg in metric_cfgs:
             metric = evaluate.load(metric_cfg.name)
             self.metrics.append((metric, metric_cfg))
+        self.tokenizer = tokenizer
 
     def _calculate_metrics(self, predictions: List[str], references: List[str]) -> Dict[str, Any]:
         results: Dict[str, Any] = {}
@@ -62,8 +63,10 @@ class MetricComputer:
     def compute_metrics(self, eval_pred: EvalPrediction):
         predictions = eval_pred.predictions
         references = eval_pred.label_ids
-        decoded_preds = [pred.strip() for pred in predictions]
-        decoded_labels = [label.strip() for label in references]
+
+        if self.tokenizer is not None:
+            decoded_preds = self.tokenizer.batch_decode(predictions, skip_special_tokens=True)
+            decoded_labels = self.tokenizer.batch_decode(references, skip_special_tokens=True)
 
         results = self._calculate_metrics(decoded_preds, decoded_labels)
         return results

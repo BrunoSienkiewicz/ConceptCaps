@@ -76,7 +76,10 @@ def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     dataset = prepare_datasets(cfg.data)
     test_examples = dataset["test"]
 
-    metric_computer = MetricComputer(cfg.evaluation.metrics)
+    log.info("Loading tokenizer...")
+    tokenizer = prepare_tokenizer(cfg.model)
+
+    metric_computer = MetricComputer(cfg.evaluation.metrics, tokenizer)
 
     output_dir = Path(cfg.paths.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)

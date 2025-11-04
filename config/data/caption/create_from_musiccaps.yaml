@@ -4,7 +4,7 @@ train_file: ${paths.data_dir}/musiccaps/train.csv
 validation_file: ${paths.data_dir}/musiccaps/validation.csv
 test_file: ${paths.data_dir}/musiccaps/test.csv
 push_to_hub: true
-hub_repo_name: musiccaps-tag-to-caption
+hub_repo_name: bsienkiewicz/musiccaps-tag-to-caption
 hub_private_repo: true
 aspect_column: aspect_list
 caption_column: caption
