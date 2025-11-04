@@ -14,7 +14,7 @@ from src.utils import print_config_tree, RankedLogger, instantiate_loggers
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 
-@hydra.main(version_base=None, config_path="../../config", config_name="caption_generation")
+@hydra.main(version_base=None, config_path="../../../config", config_name="caption_test")
 def main(cfg: CaptionGenerationConfig) -> None:
     log = RankedLogger(__name__, rank_zero_only=True)
 
@@ -29,13 +29,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
 
     print_config_tree(cfg)
 
-    if(cfg.data.create):
-        create_caption_generation_datasets(log, cfg) 
-    
-    run_training(log, cfg)
-
-    if (cfg.evaluation.enabled):
-        run_test_evaluation(log, cfg)
+    run_test_evaluation(log, cfg)
 
 if __name__ == "__main__":
     main()

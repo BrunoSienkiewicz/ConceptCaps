@@ -22,6 +22,7 @@ class ModelTokenizerConfig:
 @dataclass
 class ModelConfig:
     name: str
+    checkpoint_dir: str = ""
     device_map: Union[str, dict, None] = "auto"
     trust_remote_code: bool = True
     quantization: Optional[QuantizationConfig] = field(default_factory=QuantizationConfig)
@@ -111,6 +112,7 @@ class PathsConfig:
     data_dir: str
 
 
+@dataclass
 class CaptionGenerationConfig(DictConfig):
     model: ModelConfig
     data: DatasetConfig

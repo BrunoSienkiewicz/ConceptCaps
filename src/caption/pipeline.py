@@ -9,6 +9,7 @@ import wandb
 
 from peft import PeftModel
 from datasets import load_dataset
+from transformers.modeling_utils import load_sharded_checkpoint
 
 from src.caption.config import CaptionGenerationConfig
 from src.caption.data import prepare_datasets, create_datasets
@@ -38,14 +39,14 @@ def create_caption_generation_datasets(log, cfg: CaptionGenerationConfig) -> Dic
 
 def run_training(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     device = torch.device(cfg.device)
+
+    output_dir = Path(cfg.paths.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    model_dir = Path(cfg.paths.model_dir)
+    model_dir.mkdir(parents=True, exist_ok=True) 
+
     log.info("Loading datasets...")
-    data_files = {
-        "train": cfg.data.train_file,
-        "validation": cfg.data.validation_file,
-        "test": cfg.data.test_file,
-    }
-    dataset = load_dataset("csv", data_files=data_files)
-    # dataset = load_dataset(cfg.data.hub_repo_name)
+    dataset = load_dataset(cfg.data.hub_repo_name)
     dataset = prepare_datasets(cfg.data, dataset)
     log.info(
         f"Dataset loaded with {len(dataset['train'])} training and {len(dataset['validation'])} validation samples.",
@@ -56,12 +57,10 @@ def run_training(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
 
     log.info("Loading model...")
     model, lora_config = prepare_model(cfg.model, cfg.lora)
+    if cfg.model.checkpoint_dir:
+        log.info(f"Loading model weights from checkpoint: {cfg.model.checkpoint_dir}...")
+        load_sharded_checkpoint(model, cfg.model.checkpoint_dir)
     model.to(device)
-
-    output_dir = Path(cfg.paths.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    model_dir = Path(cfg.paths.model_dir)
-    model_dir.mkdir(parents=True, exist_ok=True) 
 
     metric_computer = MetricComputer(cfg.evaluation.metrics)
 
@@ -72,7 +71,7 @@ def run_training(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     trainer.train()
 
     log.info("Saving final model...")
-    trainer.save_model(model_dir / "final_model")
+    trainer.save_model(model_dir)
 
 
 def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
@@ -97,11 +96,10 @@ def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     log.info(f"Test examples count: {len(test_examples)}")
     eval_model, eval_tokenizer = prepare_evaluation_model_tokenizer(cfg.model)
 
-    eval_model = PeftModel.from_pretrained(
-        eval_model, 
-        model_dir / "final_model",
-        is_trainable=False
-    )
+    if cfg.model.checkpoint_dir:
+        log.info(f"Loading model weights from checkpoint: {cfg.model.checkpoint_dir}...")
+        load_sharded_checkpoint(eval_model, cfg.model.checkpoint_dir)
+
     eval_model.to(device)
     metrics = run_test_evaluation(cfg, metric_computer, eval_model, eval_tokenizer, test_examples, output_dir, log)
 
