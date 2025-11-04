@@ -12,7 +12,7 @@ from transformers.trainer_utils import set_seed
 
 from src.caption.config import CaptionGenerationConfig
 from src.caption.data import prepare_datasets
-from src.caption.evaluation import run_evaluation
+from src.caption.evaluation import run_test_evaluation, MetricComputer
 from src.caption.logging_utils import flatten_numeric_metrics
 from src.caption.modeling import prepare_model, prepare_tokenizer, prepare_evaluation_model_tokenizer
 from src.caption.trainer import create_trainer
@@ -49,14 +49,20 @@ def run_caption_generation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     model_dir = Path(cfg.paths.model_dir)
     model_dir.mkdir(parents=True, exist_ok=True) 
 
+    metric_computer = MetricComputer(cfg.evaluation.metrics)
+
     log.info("Instantiating trainer...")
-    trainer = create_trainer(cfg, model, tokenizer, dataset, lora_config)
+    trainer = create_trainer(cfg, model, tokenizer, dataset, lora_config, metric_computer)
 
     log.info("Starting training...")
     trainer.train()
 
     log.info("Saving final model...")
     trainer.save_model(model_dir / "final_model")
+
+    if not cfg.evaluation.enabled:
+        log.info("Evaluation is disabled. Exiting.")
+        return {}
 
     # Cleanup for evaluation
     del trainer
@@ -74,7 +80,7 @@ def run_caption_generation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
         is_trainable=False
     )
     eval_model.to(device)
-    metrics = run_evaluation(cfg, eval_model, eval_tokenizer, test_examples, output_dir, log)
+    metrics = run_test_evaluation(cfg, metric_computer, eval_model, eval_tokenizer, test_examples, output_dir, log)
 
     if metrics and wandb.run is not None:
         payload: Dict[str, float] = {}

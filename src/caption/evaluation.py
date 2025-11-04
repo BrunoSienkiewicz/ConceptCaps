@@ -8,7 +8,7 @@ import evaluate
 import pandas as pd
 import torch
 from omegaconf import DictConfig
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, EvalPrediction
 
 from src.utils import RankedLogger
 
@@ -32,33 +32,54 @@ def generate_caption(
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 
-def compute_metrics(
-    predictions: List[str],
-    references: List[str],
-    metric_cfgs: Iterable[DictConfig],
-) -> Dict[str, Any]:
-    results: Dict[str, Any] = {}
-    for metric_cfg in metric_cfgs:
-        metric = evaluate.load(metric_cfg.name)
-        kwargs = metric_cfg.get("kwargs", {}) or {}
-        if metric_cfg.name == "bleu":
-            value = metric.compute(
-                predictions=predictions,
-                references=[[ref] for ref in references],
-                **kwargs,
-            )
-        else:
-            value = metric.compute(
-                predictions=predictions,
-                references=references,
-                **kwargs,
-            )
-        results[metric_cfg.name] = value
-    return results
+class MetricComputer:
+    def __init__(self, metric_cfgs: Iterable[DictConfig]):
+        self.metric_cfgs = metric_cfgs
+        self.metrics = []
+        for metric_cfg in metric_cfgs:
+            metric = evaluate.load(metric_cfg.name)
+            self.metrics.append((metric, metric_cfg))
+
+    def _calculate_metrics(self, predictions: List[str], references: List[str]) -> Dict[str, Any]:
+        results: Dict[str, Any] = {}
+        for metric, metric_cfg in self.metrics:
+            kwargs = metric_cfg.get("kwargs", {})
+            if metric_cfg.name == "bleu":
+                value = metric.compute(
+                    predictions=predictions,
+                    references=[[ref] for ref in references],
+                    **kwargs,
+                )
+            else:
+                value = metric.compute(
+                    predictions=predictions,
+                    references=references,
+                    **kwargs,
+                )
+            results[metric_cfg.name] = value
+        return results
+
+    def compute_metrics(self, eval_pred: EvalPrediction):
+        predictions = eval_pred.predictions
+        references = eval_pred.label_ids
+        decoded_preds = [pred.strip() for pred in predictions]
+        decoded_labels = [label.strip() for label in references]
+
+        results = self._calculate_metrics(decoded_preds, decoded_labels)
+        return results
+
+    def compute_test_metrics(
+        self,
+        predictions: List[str],
+        references: List[str],
+    ) -> Dict[str, Any]:
+        results = self._calculate_metrics(predictions, references)
+        return results
 
 
-def run_evaluation(
+def run_test_evaluation(
     cfg: DictConfig,
+    computer: MetricComputer,
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
     eval_examples: List[dict],
@@ -102,7 +123,7 @@ def run_evaluation(
             }
         )
 
-    metrics = compute_metrics(predictions, references, cfg.evaluation.metrics)
+    metrics = computer.compute_test_metrics(predictions, references)
 
     output_dir.mkdir(parents=True, exist_ok=True)
     metrics_path = output_dir / "evaluation_metrics.json"
