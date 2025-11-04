@@ -11,9 +11,6 @@ from src.caption.logging_utils import WandbMonitoringCallback
 from src.caption.evaluation import MetricComputer
 
 
-    
-
-
 def create_trainer(
     cfg: DictConfig,
     model: AutoModelForCausalLM,

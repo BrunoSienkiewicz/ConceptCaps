@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import torch
 import hydra
 import rootutils
+import wandb
 
-from src.caption import CaptionGenerationConfig, run_caption_generation
-from src.utils import print_config_tree
+from transformers.trainer_utils import set_seed
+
+from src.caption import CaptionGenerationConfig, run_training, run_test_evaluation, create_caption_generation_datasets
+from src.utils import print_config_tree, RankedLogger, instantiate_loggers
 
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
@@ -12,9 +16,26 @@ rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 @hydra.main(version_base=None, config_path="../../config", config_name="caption_generation")
 def main(cfg: CaptionGenerationConfig) -> None:
-    print_config_tree(cfg)
-    run_caption_generation(cfg)
+    log = RankedLogger(__name__, rank_zero_only=True)
 
+    log.info("Setting random seed...")
+    set_seed(cfg.random_state)
+
+    _ = instantiate_loggers(cfg.get("logger"))
+    wandb.login()
+
+    device = torch.device(cfg.device)
+    log.info(f"Using device: {device}")
+
+    print_config_tree(cfg)
+
+    if(cfg.data.create):
+        create_caption_generation_datasets(log, cfg) 
+    
+    run_training(log, cfg)
+
+    if (cfg.evaluation.enabled):
+        run_test_evaluation(log, cfg)
 
 if __name__ == "__main__":
     main()

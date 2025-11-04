@@ -86,30 +86,15 @@ def run_test_evaluation(
     output_dir: Path,
     logger: Optional[RankedLogger] = None,
 ) -> Dict[str, Any]:
-    if not cfg.evaluation.enabled or not eval_examples:
-        if logger:
-            logger.info("Evaluation skipped.")
-        return {}
-
-    prompt_cfg = cfg.data.prompt
-    prompt_template = cfg.evaluation.prompt_template
-
     predictions: List[str] = []
     references: List[str] = []
     records: List[Dict[str, Any]] = []
 
     for example in eval_examples:
-        user_prompt = prompt_cfg["user_prompt_template"].format(
-            tags=example[cfg.data.aspect_column]
-        )
-        prompt = prompt_template.format(
-            system_prompt=prompt_cfg["system_prompt"],
-            user_prompt=user_prompt,
-        )
         generated = generate_caption(
             model,
             tokenizer,
-            prompt,
+            example,
             cfg.evaluation.max_new_tokens,
             cfg.evaluation.temperature,
         )

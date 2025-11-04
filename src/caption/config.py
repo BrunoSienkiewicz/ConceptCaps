@@ -37,9 +37,14 @@ class PromptTemplateConfig:
 
 @dataclass
 class DatasetConfig:
-    train_file: str
-    validation_file: str
-    test_file: str
+    create: bool = False
+    dataset_name: str = ""
+    train_file: str = ""
+    validation_file: str = ""
+    test_file: str = ""
+    push_to_hub: bool = False
+    hub_repo_name: str = ""
+    hub_private_repo: bool = True
     aspect_column: str = "aspect_list"
     caption_column: str = "caption"
     text_column: str = "text"

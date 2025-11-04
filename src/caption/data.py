@@ -1,9 +1,103 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List, Tuple
+from pathlib import Path
 
 from datasets import DatasetDict, load_dataset
 from omegaconf import DictConfig
+
+
+def _extract_tags(song_tags, concept_tags):
+    res = []
+    for c_tag in concept_tags:
+        for s_tag in song_tags:
+            if c_tag in s_tag:
+                res.append(s_tag)
+    return list(set(res))
+
+def create_datasets(log, data_cfg: DictConfig, data_dir: Path) -> None:
+    ds = load_dataset(data_cfg.dataset_name)
+
+    for subset in ds.keys():
+        df = ds[subset].to_pandas()
+        df['aspect_list_transformed'] = df['aspect_list'].apply(lambda x: x.strip("[]").replace("'", ""))
+        df['aspect_list_transformed'] = df['aspect_list_transformed'].apply(lambda x: x.split(', '))
+        
+        tempo_tags = set([
+            "fast tempo", "medium tempo", "slow tempo", "moderate tempo", "uptempo",
+            "medium fast tempo", "slower tempo", "medium to uptempo", "mid-tempo",
+            "quick tempo", "accelerated tempo", "steady tempo", "rapid tempo",
+            "slow music", "very fast tempo", "slow to medium tempo", "medium-to-high pitch singing",
+            "steady drumming rhythm", "dance rhythm", "various tempos", "tempo changes",
+            "fast paced", "slow song", "mid tempo", "steady beat", "pulsating beats",
+            "groovy rhythm", "4 on the floor kick pattern", "normal tempo", "fast beat"
+        ])
+
+        genre_tags = set([
+            "rock", "pop", "jazz", "classical", "folk", "blues", "hip hop", "reggae",
+            "metal", "country", "r&b", "edm", "trance", "techno", "dance music",
+            "electronic dance music", "gospel", "ambient", "soul", "funk",
+            "alternative rock", "ballad", "hip-hop", "techno pop", "world music",
+            "disco", "trap", "punk rock", "latin pop", "house", "bluegrass",
+            "indie rock", "new age", "grunge", "industrial", "dubstep",
+            "carnatic music", "bossa nova", "baroque music", "surf rock",
+            "ska", "lo-fi", "symphonic", "orchestral", "fusion music", "raga",
+            "bollywood music", "afrobeat", "folk song", "christian rock", "soundtrack"
+        ])
+
+        mood_tags = set([
+            "emotional", "passionate", "happy", "melancholic", "relaxing", "calming",
+            "upbeat", "exciting", "mellow", "sentimental", "soothing", "joyful",
+            "intense", "peaceful", "dreamy", "romantic mood", "ominous", "suspenseful",
+            "haunting", "energetic", "chill", "cheerful", "nostalgic", "fun",
+            "cool", "ethereal", "sad", "spooky", "hopeful", "playful",
+            "mystical", "dark", "solemn", "festive", "inspirational", "sentimental",
+            "powerful", "serene", "mysterious", "emphatic", "tranquil", "passionate singing",
+            "ominous music", "romantic", "meditative", "joyous", "heartfelt", "uplifting",
+            "enthusiastic", "melancholy", "emotional voice", "soothing melody", "heavenly", 
+            "fearful", "vibrant", "soulful", "excited", "energetic drums", "charming"
+        ])
+
+        instrument_tags = set([
+            "piano", "drums", "guitar", "bass guitar", "electric guitar", "acoustic guitar",
+            "flute", "violin", "cello", "trumpet", "saxophone", "tambourine",
+            "synth", "harmonica", "organ", "harp", "clarinet", "string section",
+            "percussion", "banjo", "trombone", "didgeridoo", "mandolin", "tabla",
+            "ukulele", "accordion", "xylophone", "viola", "timpani", "congas",
+            "bongo", "triangle", "oboe", "bagpipes", "steel drums", "marimba",
+            "dj mixer", "drum machine", "brass section", "horn", "sitar",
+            "strings", "keyboard", "double bass", "synth bass", "guitar solo",
+            "electric piano", "acoustic piano", "woodwind", "cymbals", "bells",
+            "vibraphone", "hand claps", "snare", "hi-hat", "kick drum", 
+            "conga", "tabla percussion", "theremin", "church organ", "trumpets",
+            "bass drum", "djembe", "steel guitar", "harpsichord", "choir"
+        ])
+
+        concepts = {
+            "tempo": tempo_tags,
+            "genre": genre_tags,
+            "mood": mood_tags,
+            "instrument": instrument_tags
+        }
+
+        for concept, tags in concepts.items():
+            df[concept + '_tags'] = df['aspect_list_transformed'].apply(
+                lambda x: _extract_tags(x, tags)
+            )
+
+        df = df[["caption", "aspect_list_transformed", "tempo_tags", "genre_tags", "mood_tags", "instrument_tags"]]
+        df = df[(df['tempo_tags'].map(len) > 0) & 
+                            (df['genre_tags'].map(len) > 0) & 
+                            (df['mood_tags'].map(len) > 0) & 
+                            (df['instrument_tags'].map(len) > 0)] 
+        df["aspect_list"] = df["aspect_list_transformed"].apply(lambda x: ', '.join(x))
+        df["tempo_tags"] = df["tempo_tags"].apply(lambda x: ', '.join(x))
+        df["genre_tags"] = df["genre_tags"].apply(lambda x: ', '.join(x))
+        df["mood_tags"] = df["mood_tags"].apply(lambda x: ', '.join(x))
+        df["instrument_tags"] = df["instrument_tags"].apply(lambda x: ', '.join(x))
+        df = df[["caption", "aspect_list", "tempo_tags", "genre_tags", "mood_tags", "instrument_tags"]]
+        df.to_csv(data_cfg.get(f"{subset}_file"), index=False)
+        log.info(f"Created {subset} dataset with {len(df)} samples at {data_dir / data_cfg.get(f'{subset}_file')}")
 
 
 def _format_prompt(prompt_cfg: DictConfig, aspects: Any, reference_caption: str) -> str:
@@ -15,15 +109,7 @@ def _format_prompt(prompt_cfg: DictConfig, aspects: Any, reference_caption: str)
     ).strip()
 
 
-def prepare_datasets(data_cfg: DictConfig) -> Tuple[DatasetDict, List[dict]]:
-    data_files = {
-        "train": data_cfg.train_file,
-        "validation": data_cfg.validation_file,
-        "test": data_cfg.test_file,
-    }
-    raw_dataset = load_dataset("csv", data_files=data_files)
-
-    test_dataset_raw = raw_dataset["test"]
+def prepare_datasets(data_cfg, raw_dataset: DatasetDict) -> DatasetDict:
     prompt_cfg = data_cfg.prompt
     text_column = data_cfg.text_column
     remove_columns = data_cfg.remove_columns
@@ -43,4 +129,4 @@ def prepare_datasets(data_cfg: DictConfig) -> Tuple[DatasetDict, List[dict]]:
         remove_columns=remove_columns,
     )
 
-    return processed_dataset, test_dataset_raw.to_list()
+    return processed_dataset
