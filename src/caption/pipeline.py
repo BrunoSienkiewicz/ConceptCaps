@@ -53,7 +53,7 @@ def run_caption_generation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     trainer = create_trainer(cfg, model, tokenizer, dataset, lora_config)
 
     log.info("Starting training...")
-    # trainer.train()
+    trainer.train()
 
     log.info("Saving final model...")
     trainer.save_model(model_dir / "final_model")
