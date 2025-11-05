@@ -66,6 +66,7 @@ class MetricComputer:
 
         results: Dict[str, Any] = {}
         if self.tokenizer is not None:
+            print(predictions, references)
             decoded_preds = self.tokenizer.batch_decode(predictions, skip_special_tokens=True)
             decoded_labels = self.tokenizer.batch_decode(references, skip_special_tokens=True)
             results = self._calculate_metrics(decoded_preds, decoded_labels)
