@@ -62,7 +62,7 @@ def run_training(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
         load_sharded_checkpoint(model, cfg.model.checkpoint_dir)
     model.to(device)
 
-    metric_computer = MetricComputer(cfg.evaluation.metrics)
+    metric_computer = MetricComputer(cfg.evaluation.metrics, tokenizer)
 
     log.info("Instantiating trainer...")
     trainer = create_trainer(cfg, model, tokenizer, dataset, lora_config, metric_computer)

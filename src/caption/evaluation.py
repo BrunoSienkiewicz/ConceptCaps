@@ -64,11 +64,12 @@ class MetricComputer:
         predictions = eval_pred.predictions
         references = eval_pred.label_ids
 
+        results: Dict[str, Any] = {}
         if self.tokenizer is not None:
             decoded_preds = self.tokenizer.batch_decode(predictions, skip_special_tokens=True)
             decoded_labels = self.tokenizer.batch_decode(references, skip_special_tokens=True)
-
-        results = self._calculate_metrics(decoded_preds, decoded_labels)
+            results = self._calculate_metrics(decoded_preds, decoded_labels)
+            
         return results
 
     def compute_test_metrics(
