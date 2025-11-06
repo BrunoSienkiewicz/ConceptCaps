@@ -19,7 +19,6 @@ def generate_caption(
     tokenizer: AutoTokenizer,
     prompt: str,
     max_new_tokens: int,
-    temperature: float,
 ) -> str:
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
     model.eval()
@@ -28,7 +27,6 @@ def generate_caption(
         outputs = model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
-            temperature=temperature,
         )
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
@@ -106,7 +104,6 @@ def run_test_evaluation(
             tokenizer,
             example[cfg.data.text_column],
             cfg.evaluation.max_new_tokens,
-            cfg.evaluation.temperature,
         )
         predictions.append(generated)
         references.append(example[cfg.data.caption_column])

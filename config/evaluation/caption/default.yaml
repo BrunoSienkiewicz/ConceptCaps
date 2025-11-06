@@ -1,6 +1,5 @@
 enabled: true
 max_new_tokens: 256
-temperature: 0.7
 metrics:
   - name: bleu
     kwargs: {}
@@ -11,4 +10,3 @@ metrics:
         lang: en
 output_predictions: true
 predictions_file: predictions.csv
-prompt_template: "{system_prompt}\n{user_prompt}"

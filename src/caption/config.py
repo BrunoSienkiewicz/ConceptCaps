@@ -97,11 +97,9 @@ class EvaluationMetricConfig:
 class EvaluationConfig:
     enabled: bool = True
     max_new_tokens: int = 256
-    temperature: float = 0.7
     metrics: List[EvaluationMetricConfig] = field(default_factory=list)
     output_predictions: bool = True
     predictions_file: str = "predictions.csv"
-    prompt_template: str = "{system_prompt}\n{user_prompt}"
 
 
 @dataclass
