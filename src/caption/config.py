@@ -111,6 +111,15 @@ class PathsConfig:
 
 
 @dataclass
+class MTGJamendoConfig:
+    """Configuration for MTG Jamendo dataset creation."""
+    output_dir: str = "${paths.data_dir}/mtg_jamendo"
+    train_split: float = 0.8
+    val_split: float = 0.1
+    random_state: int = 42
+
+
+@dataclass
 class CaptionGenerationConfig(DictConfig):
     model: ModelConfig
     data: DatasetConfig

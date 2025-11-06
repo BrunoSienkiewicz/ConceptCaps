@@ -1,0 +1,7 @@
+defaults:
+  - data: tags/create_from_mtg_jamendo
+  - paths: default
+  - hydra: default
+
+task_name: tags_dataset
+random_state: 42
