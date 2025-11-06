@@ -104,7 +104,7 @@ def run_test_evaluation(
         generated = generate_caption(
             model,
             tokenizer,
-            example,
+            example[cfg.data.text_column],
             cfg.evaluation.max_new_tokens,
             cfg.evaluation.temperature,
         )
