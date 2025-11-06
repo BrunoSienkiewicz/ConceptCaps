@@ -36,7 +36,7 @@ def prepare_tokenizer(model_cfg: DictConfig) -> AutoTokenizer:
     return tokenizer
 
 
-def prepare_model(model_cfg: DictConfig, lora_cfg: DictConfig) -> Tuple[AutoModelForCausalLM, LoraConfig]:
+def prepare_training_model(log, model_cfg: DictConfig, lora_cfg: DictConfig) -> Tuple[AutoModelForCausalLM, LoraConfig]:
     quantization_config = build_quantization_config(model_cfg)
     model = AutoModelForCausalLM.from_pretrained(
         model_cfg.name,
@@ -44,6 +44,15 @@ def prepare_model(model_cfg: DictConfig, lora_cfg: DictConfig) -> Tuple[AutoMode
         device_map=model_cfg.device_map,
         trust_remote_code=model_cfg.trust_remote_code,
     )
+    if model_cfg.checkpoint_dir:
+        log.info(f"Loading model weights from checkpoint: {model_cfg.checkpoint_dir}...")
+        model = PeftModel.from_pretrained(
+            model,
+            model_cfg.checkpoint_dir,
+            device_map=model_cfg.device_map,
+            low_cpu_mem_usage=True,
+        )
+        model = model.merge_and_unload()
     model = prepare_model_for_kbit_training(model)
     lora_config = LoraConfig(**OmegaConf.to_container(lora_cfg, resolve=True))
     model = get_peft_model(model, lora_config)

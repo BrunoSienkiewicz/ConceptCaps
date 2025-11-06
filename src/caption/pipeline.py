@@ -15,9 +15,8 @@ from src.caption.config import CaptionGenerationConfig
 from src.caption.data import prepare_datasets, create_datasets
 from src.caption.evaluation import run_test_evaluation, MetricComputer
 from src.caption.logging_utils import flatten_numeric_metrics
-from src.caption.modeling import prepare_model, prepare_tokenizer, prepare_evaluation_model_tokenizer
+from src.caption.modeling import prepare_training_model, prepare_tokenizer, prepare_evaluation_model_tokenizer
 from src.caption.trainer import create_trainer
-from src.utils import RankedLogger, instantiate_loggers
 
 
 def create_caption_generation_datasets(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
@@ -56,10 +55,7 @@ def run_training(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     tokenizer = prepare_tokenizer(cfg.model)
 
     log.info("Loading model...")
-    model, lora_config = prepare_model(cfg.model, cfg.lora)
-    if cfg.model.checkpoint_dir:
-        log.info(f"Loading model weights from checkpoint: {cfg.model.checkpoint_dir}...")
-        load_sharded_checkpoint(model, cfg.model.checkpoint_dir)
+    model, lora_config = prepare_training_model(log, cfg.model, cfg.lora)
     model.to(device)
 
     metric_computer = MetricComputer(cfg.evaluation.metrics, tokenizer)
