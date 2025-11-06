@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import numpy as np
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
@@ -66,6 +67,11 @@ class MetricComputer:
 
         results: Dict[str, Any] = {}
         if self.tokenizer is not None:
+            if len(predictions.shape) == 3:
+                predictions = np.argmax(predictions, axis=-1)
+            
+            references = np.where(references != -100, references, self.tokenizer.pad_token_id)
+
             decoded_preds = self.tokenizer.batch_decode(predictions, skip_special_tokens=True)
             decoded_labels = self.tokenizer.batch_decode(references, skip_special_tokens=True)
             results = self._calculate_metrics(decoded_preds, decoded_labels)
