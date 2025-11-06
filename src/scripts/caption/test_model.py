@@ -7,7 +7,7 @@ import wandb
 
 from transformers.trainer_utils import set_seed
 
-from src.caption import CaptionGenerationConfig, run_training, run_test_evaluation, create_caption_generation_datasets
+from src.caption import CaptionGenerationConfig, run_evaluation
 from src.utils import print_config_tree, RankedLogger, instantiate_loggers
 
 
@@ -29,7 +29,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
 
     print_config_tree(cfg)
 
-    run_test_evaluation(log, cfg)
+    run_evaluation(log, cfg)
 
 if __name__ == "__main__":
     main()
