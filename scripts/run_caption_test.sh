@@ -52,4 +52,4 @@ export OUT_DIR="$OUT_DIR"
 export CONDA_DIR="$CONDA_DIR"
 
 mkdir -p "$HF_HOME"
-srun "$ENV_DIR/bin/python" src/scripts/caption/run_test_model.py "${HYDRA_OVERRIDES[@]}"
+srun "$ENV_DIR/bin/python" src/scripts/caption/test_model.py "${HYDRA_OVERRIDES[@]}"
