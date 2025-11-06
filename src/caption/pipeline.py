@@ -94,14 +94,10 @@ def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
 
     log.info("Running evaluation...")
     log.info(f"Test examples count: {len(test_examples)}")
-    eval_model, eval_tokenizer = prepare_evaluation_model_tokenizer(cfg.model)
+    model, tokenizer = prepare_evaluation_model_tokenizer(log, cfg.model)
 
-    if cfg.model.checkpoint_dir:
-        log.info(f"Loading model weights from checkpoint: {cfg.model.checkpoint_dir}...")
-        load_sharded_checkpoint(eval_model, cfg.model.checkpoint_dir)
-
-    eval_model.to(device)
-    metrics = run_test_evaluation(cfg, metric_computer, eval_model, eval_tokenizer, test_examples, output_dir, log)
+    model.to(device)
+    metrics = run_test_evaluation(cfg, metric_computer, model, tokenizer, test_examples, output_dir, log)
 
     if metrics and wandb.run is not None:
         payload: Dict[str, float] = {}

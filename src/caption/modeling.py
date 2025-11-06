@@ -6,7 +6,7 @@ from typing import Tuple
 from pathlib import Path
 
 from omegaconf import DictConfig, OmegaConf
-from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training, PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 
@@ -50,14 +50,9 @@ def prepare_model(model_cfg: DictConfig, lora_cfg: DictConfig) -> Tuple[AutoMode
     model.print_trainable_parameters()
     return model, lora_config
 
-def prepare_evaluation_model_tokenizer(model_cfg: DictConfig) -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
+def prepare_evaluation_model_tokenizer(log, model_cfg: DictConfig) -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
     tokenizer = prepare_tokenizer(model_cfg)
-    quantization_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_compute_dtype=torch.float16,
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_quant_type="nf4"
-    )
+    quantization_config = build_quantization_config(model_cfg)
     model = AutoModelForCausalLM.from_pretrained(
         model_cfg.name,
         quantization_config=quantization_config,
@@ -66,4 +61,13 @@ def prepare_evaluation_model_tokenizer(model_cfg: DictConfig) -> Tuple[AutoModel
         trust_remote_code=model_cfg.trust_remote_code,
         use_cache=False,
     )
+    if model_cfg.checkpoint_dir:
+        log.info(f"Loading model weights from checkpoint: {model_cfg.checkpoint_dir}...")
+        model = PeftModel.from_pretrained(
+            model,
+            model_cfg.checkpoint_dir,
+            device_map=model_cfg.device_map,
+            low_cpu_mem_usage=True,
+        )
+        model = model.merge_and_unload()
     return model, tokenizer
