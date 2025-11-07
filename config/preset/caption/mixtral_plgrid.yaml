@@ -4,7 +4,7 @@ defaults:
   - override /data: caption/load_dataset_mistral
   - override /model: caption/mixtral_8x7b_instruct
   - override /trainer: caption/25_epochs
-  - override /lora: caption/regularization
+  - override /lora: caption/more_regularization
   - override /logger: wandb
 
 data:
