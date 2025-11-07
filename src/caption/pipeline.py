@@ -69,6 +69,11 @@ def run_training(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     log.info("Saving final model...")
     trainer.save_model(model_dir)
 
+    # Clean up
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
+
 
 def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     device = torch.device(cfg.device)
