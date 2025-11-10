@@ -60,4 +60,7 @@ dependencies:
       - rouge-score
       - nltk
       - bert-score
+      - bleurt
+      - meteor-score
+      - unbabel-comet
       - psutil
