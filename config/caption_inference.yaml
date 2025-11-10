@@ -2,7 +2,11 @@ defaults:
   - data: caption/load_random_dataset
   - model: caption/mistral_7b_instruct
   - prompt: default
+  - lora: caption/default
+  - trainer: caption/default
+  - evaluation: caption/default
   - paths: default
+  - logger: null
   - hydra: default
 
 task_name: caption_inference
