@@ -126,7 +126,6 @@ def run_inference(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
 
     dataset = load_dataset(cfg.data.dataset_name)
     dataset = prepare_inference_datasets(cfg.data, cfg.prompt, dataset)
-    examples = dataset["test"]
 
     log.info("Loading tokenizer...")
     tokenizer = prepare_tokenizer(cfg.model)
@@ -135,19 +134,20 @@ def run_inference(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     log.info("Running inference...")
-    log.info(f"Examples count: {len(examples)}")
     model, tokenizer = prepare_evaluation_model_tokenizer(log, cfg.model)
     model.to(device)
     
-    results_df = run_caption_inference(
-        cfg, 
-        model, 
-        tokenizer, 
-        examples, 
-        output_dir, 
-        log,
-    )
-    
-    return {"results": results_df}
+    for split in dataset.keys():
+        examples = dataset[split]
+        predictions_path = output_dir / f"{split}.csv"
+        results_df = run_caption_inference(
+            cfg,
+            model,
+            tokenizer,
+            examples,
+            predictions_path,
+            log,
+        )
+        log.info(f"Saved {len(results_df)} predictions for split '{split}' to: {predictions_path}")
 
     

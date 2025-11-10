@@ -21,7 +21,7 @@ def run_caption_inference(
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
     examples: List[dict],
-    output_dir: Path,
+    predictions_path: Path,
     logger: Optional[RankedLogger] = None
 ) -> pd.DataFrame:
     """
@@ -32,7 +32,7 @@ def run_caption_inference(
         model: Language model
         tokenizer: Tokenizer
         examples: List of examples to process
-        output_dir: Directory to save results
+        predictions_path: Path to save results
         logger: Logger instance
         batch_size: Batch size for generation
         
@@ -66,8 +66,7 @@ def run_caption_inference(
     ]
 
     # Save results
-    output_dir.mkdir(parents=True, exist_ok=True)
-    predictions_path = output_dir / cfg.evaluation.predictions_file
+    predictions_path.parent.mkdir(parents=True, exist_ok=True)
     results_df = pd.DataFrame(records)
     results_df.to_csv(predictions_path, index=False)
     
