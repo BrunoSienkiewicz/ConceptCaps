@@ -13,7 +13,7 @@ from datasets import load_dataset
 from src.caption.config import CaptionGenerationConfig
 from src.caption.data import prepare_datasets, prepare_inference_datasets
 from src.caption.evaluation import run_test_evaluation, MetricComputer
-from src.caption.inference import run_inference
+from src.caption.inference import run_caption_inference
 from src.caption.logging_utils import flatten_numeric_metrics
 from src.caption.modeling import prepare_training_model, prepare_tokenizer, prepare_evaluation_model_tokenizer
 from src.caption.trainer import create_trainer
@@ -98,7 +98,7 @@ def run_inference(log, cfg: CaptionGenerationConfig):
 
     dataset = load_dataset(cfg.data.dataset_name)
     dataset = prepare_inference_datasets(cfg.data, cfg.prompt, dataset)
-    examples = dataset["all"]
+    examples = dataset["test"]
 
     log.info("Loading tokenizer...")
 
@@ -109,6 +109,6 @@ def run_inference(log, cfg: CaptionGenerationConfig):
     model, tokenizer = prepare_evaluation_model_tokenizer(log, cfg.model)
     model.to(device)
 
-    run_inference(cfg, model, tokenizer, examples, output_dir, log)
+    run_caption_inference(cfg, model, tokenizer, examples, output_dir, log)
 
     

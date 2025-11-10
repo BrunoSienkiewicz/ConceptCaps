@@ -1,7 +1,8 @@
 # @package _global_
 defaults:
   - override /paths: plgrid
-  - override /data: caption/load_dataset_mistral
+  - override /data: caption/load_dataset
+  - override /prompt: mistral
   - override /model: caption/mistral_7b_instruct
   - override /trainer: caption/15_epochs
   - override /lora: caption/more_regularization

@@ -1,7 +1,8 @@
 # @package _global_
 defaults:
   - override /paths: plgrid
-  - override /data: caption/load_dataset_llama
+  - override /data: caption/load_dataset
+  - override /prompt: llama
   - override /model: caption/llama_3.1_8b_instruct.yaml
   - override /trainer: caption/15_epochs
   - override /lora: caption/regularization

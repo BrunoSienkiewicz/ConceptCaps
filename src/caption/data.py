@@ -86,7 +86,7 @@ def prepare_inference_datasets(
     aspect_column = data_cfg.aspect_column
     remove_columns = data_cfg.remove_columns
     if remove_columns is None:
-        remove_columns = raw_dataset["all"].column_names
+        remove_columns = raw_dataset["test"].column_names
 
     def _transform_inference_row(row: Dict[str, Any]) -> Dict[str, str]:
         formatted = _format_eval_prompt(
@@ -99,9 +99,10 @@ def prepare_inference_datasets(
         }
 
     processed_dataset = DatasetDict()
-    processed_dataset["all"] = raw_dataset["all"].map(
-        _transform_inference_row,
-        remove_columns=remove_columns,
-    )
+    for split in raw_dataset.keys():
+        processed_dataset[split] = raw_dataset[split].map(
+            _transform_inference_row,
+            remove_columns=remove_columns,
+        )
 
     return processed_dataset

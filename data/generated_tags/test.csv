@@ -1,101 +1,101 @@
-instrument_tags,mood_tags,genre_tags,tempo_tags,all_tags,sample_id
-bass guitar,sentimental,r&b,slow tempo,"bass guitar, sentimental, r&b, slow tempo",generated_sample_0000
-percussion,suspenseful,ambient,medium-to-high pitch singing,"percussion, suspenseful, ambient, medium-to-high pitch singing",generated_sample_0001
-"percussion, bass guitar, flute, bass drum",vibrant,bossa nova,slower tempo,"percussion, bass guitar, flute, bass drum, vibrant, bossa nova, slower tempo",generated_sample_0002
-"dj mixer, electric guitar, trombone",uplifting,reggae,quick tempo,"dj mixer, electric guitar, trombone, uplifting, reggae, quick tempo",generated_sample_0003
-"acoustic guitar, timpani, bass guitar, saxophone, tabla",passionate singing,christian rock,dance rhythm,"acoustic guitar, timpani, bass guitar, saxophone, tabla, passionate singing, christian rock, dance rhythm",generated_sample_0004
-"ukulele, guitar, strings",passionate,ska,slow to medium tempo,"ukulele, guitar, strings, passionate, ska, slow to medium tempo",generated_sample_0005
-strings,festive,raga,mid tempo,"strings, festive, raga, mid tempo",generated_sample_0006
-"banjo, didgeridoo",passionate,classical,normal tempo,"banjo, didgeridoo, passionate, classical, normal tempo",generated_sample_0007
-"snare, electric guitar",happy,metal,slow tempo,"snare, electric guitar, happy, metal, slow tempo",generated_sample_0008
-"harmonica, viola, bass guitar",tranquil,reggae,steady beat,"harmonica, viola, bass guitar, tranquil, reggae, steady beat",generated_sample_0009
-"piano, cymbals, drum machine, tambourine",cheerful,soul,medium to uptempo,"piano, cymbals, drum machine, tambourine, cheerful, soul, medium to uptempo",generated_sample_0010
-trumpets,serene,house,medium tempo,"trumpets, serene, house, medium tempo",generated_sample_0011
-bells,emotional,classical,fast tempo,"bells, emotional, classical, fast tempo",generated_sample_0012
-"drums, banjo, keyboard, tambourine, church organ",exciting,electronic dance music,fast tempo,"drums, banjo, keyboard, tambourine, church organ, exciting, electronic dance music, fast tempo",generated_sample_0013
-bagpipes,inspirational,pop,slow tempo,"bagpipes, inspirational, pop, slow tempo",generated_sample_0014
-flute,emotional,reggae,slow to medium tempo,"flute, emotional, reggae, slow to medium tempo",generated_sample_0015
-"trumpet, acoustic guitar, cello",soothing,pop,medium fast tempo,"trumpet, acoustic guitar, cello, soothing, pop, medium fast tempo",generated_sample_0016
-vibraphone,emotional,bluegrass,dance rhythm,"vibraphone, emotional, bluegrass, dance rhythm",generated_sample_0017
-"banjo, harp",meditative,gospel,slow tempo,"banjo, harp, meditative, gospel, slow tempo",generated_sample_0018
-"marimba, clarinet",cheerful,edm,normal tempo,"marimba, clarinet, cheerful, edm, normal tempo",generated_sample_0019
-"guitar solo, brass section, cello",energetic,trance,rapid tempo,"guitar solo, brass section, cello, energetic, trance, rapid tempo",generated_sample_0020
-"hand claps, banjo, trumpets",meditative,metal,uptempo,"hand claps, banjo, trumpets, meditative, metal, uptempo",generated_sample_0021
-"harpsichord, percussion, tambourine",romantic mood,classical,uptempo,"harpsichord, percussion, tambourine, romantic mood, classical, uptempo",generated_sample_0022
-kick drum,ominous music,ambient,moderate tempo,"kick drum, ominous music, ambient, moderate tempo",generated_sample_0023
-triangle,ominous,electronic dance music,accelerated tempo,"triangle, ominous, electronic dance music, accelerated tempo",generated_sample_0024
-"bagpipes, congas",chill,funk,normal tempo,"bagpipes, congas, chill, funk, normal tempo",generated_sample_0025
-tabla,dark,gospel,moderate tempo,"tabla, dark, gospel, moderate tempo",generated_sample_0026
-strings,calming,folk song,steady drumming rhythm,"strings, calming, folk song, steady drumming rhythm",generated_sample_0027
-"viola, double bass",exciting,latin pop,fast tempo,"viola, double bass, exciting, latin pop, fast tempo",generated_sample_0028
-"guitar solo, harpsichord",cheerful,country,moderate tempo,"guitar solo, harpsichord, cheerful, country, moderate tempo",generated_sample_0029
-"drums, steel guitar",passionate,electronic dance music,moderate tempo,"drums, steel guitar, passionate, electronic dance music, moderate tempo",generated_sample_0030
-triangle,happy,dance music,medium tempo,"triangle, happy, dance music, medium tempo",generated_sample_0031
-"acoustic guitar, bells",relaxing,new age,medium to uptempo,"acoustic guitar, bells, relaxing, new age, medium to uptempo",generated_sample_0032
-"horn, piano, clarinet",intense,reggae,medium tempo,"horn, piano, clarinet, intense, reggae, medium tempo",generated_sample_0033
-"hand claps, electric piano, acoustic guitar",chill,ballad,pulsating beats,"hand claps, electric piano, acoustic guitar, chill, ballad, pulsating beats",generated_sample_0034
-"trumpets, acoustic guitar, timpani",energetic,techno,steady drumming rhythm,"trumpets, acoustic guitar, timpani, energetic, techno, steady drumming rhythm",generated_sample_0035
-"ukulele, didgeridoo, harpsichord",happy,world music,slow tempo,"ukulele, didgeridoo, harpsichord, happy, world music, slow tempo",generated_sample_0036
-"harp, guitar solo",ominous,metal,moderate tempo,"harp, guitar solo, ominous, metal, moderate tempo",generated_sample_0037
-timpani,happy,country,medium tempo,"timpani, happy, country, medium tempo",generated_sample_0038
-flute,meditative,dance music,medium to uptempo,"flute, meditative, dance music, medium to uptempo",generated_sample_0039
-"bagpipes, theremin",relaxing,indie rock,very fast tempo,"bagpipes, theremin, relaxing, indie rock, very fast tempo",generated_sample_0040
-"steel guitar, electric piano, acoustic guitar",energetic,punk rock,groovy rhythm,"steel guitar, electric piano, acoustic guitar, energetic, punk rock, groovy rhythm",generated_sample_0041
-"trumpets, violin, electric piano, trumpet, marimba",relaxing,r&b,fast beat,"trumpets, violin, electric piano, trumpet, marimba, relaxing, r&b, fast beat",generated_sample_0042
-"sitar, acoustic guitar, guitar solo, tabla, dj mixer",ethereal,r&b,slow tempo,"sitar, acoustic guitar, guitar solo, tabla, dj mixer, ethereal, r&b, slow tempo",generated_sample_0043
-"snare, violin",peaceful,folk,dance rhythm,"snare, violin, peaceful, folk, dance rhythm",generated_sample_0044
-trumpet,relaxing,ballad,steady drumming rhythm,"trumpet, relaxing, ballad, steady drumming rhythm",generated_sample_0045
-"snare, bass guitar, congas, electric guitar, piano",energetic,baroque music,steady drumming rhythm,"snare, bass guitar, congas, electric guitar, piano, energetic, baroque music, steady drumming rhythm",generated_sample_0046
-"bass drum, theremin",uplifting,carnatic music,medium tempo,"bass drum, theremin, uplifting, carnatic music, medium tempo",generated_sample_0047
-"kick drum, tabla",soothing,dance music,slow tempo,"kick drum, tabla, soothing, dance music, slow tempo",generated_sample_0048
-"drums, ukulele",nostalgic,folk,slow tempo,"drums, ukulele, nostalgic, folk, slow tempo",generated_sample_0049
-hi-hat,energetic drums,jazz,slow tempo,"hi-hat, energetic drums, jazz, slow tempo",generated_sample_0050
-"synth bass, bagpipes",soothing,rock,slow tempo,"synth bass, bagpipes, soothing, rock, slow tempo",generated_sample_0051
-"hi-hat, acoustic guitar, acoustic piano",sentimental,country,slow tempo,"hi-hat, acoustic guitar, acoustic piano, sentimental, country, slow tempo",generated_sample_0052
-"percussion, sitar, piano",ominous,rock,4 on the floor kick pattern,"percussion, sitar, piano, ominous, rock, 4 on the floor kick pattern",generated_sample_0053
-"viola, mandolin, string section, bells",suspenseful,blues,uptempo,"viola, mandolin, string section, bells, suspenseful, blues, uptempo",generated_sample_0054
-"harmonica, harp",enthusiastic,carnatic music,4 on the floor kick pattern,"harmonica, harp, enthusiastic, carnatic music, 4 on the floor kick pattern",generated_sample_0055
-"acoustic piano, percussion",uplifting,christian rock,slow tempo,"acoustic piano, percussion, uplifting, christian rock, slow tempo",generated_sample_0056
-bass guitar,heavenly,country,uptempo,"bass guitar, heavenly, country, uptempo",generated_sample_0057
-"didgeridoo, accordion",inspirational,pop,medium fast tempo,"didgeridoo, accordion, inspirational, pop, medium fast tempo",generated_sample_0058
-"vibraphone, percussion",festive,trap,slow to medium tempo,"vibraphone, percussion, festive, trap, slow to medium tempo",generated_sample_0059
-viola,dark,r&b,medium to uptempo,"viola, dark, r&b, medium to uptempo",generated_sample_0060
-"tambourine, bass drum",sentimental,classical,fast tempo,"tambourine, bass drum, sentimental, classical, fast tempo",generated_sample_0061
-"horn, piano, cymbals, electric guitar",heartfelt,hip hop,quick tempo,"horn, piano, cymbals, electric guitar, heartfelt, hip hop, quick tempo",generated_sample_0062
-"tambourine, drum machine",tranquil,classical,medium fast tempo,"tambourine, drum machine, tranquil, classical, medium fast tempo",generated_sample_0063
-"piano, bass drum",playful,r&b,steady drumming rhythm,"piano, bass drum, playful, r&b, steady drumming rhythm",generated_sample_0064
-"harmonica, bass drum",passionate,dance music,medium-to-high pitch singing,"harmonica, bass drum, passionate, dance music, medium-to-high pitch singing",generated_sample_0065
-trumpet,nostalgic,carnatic music,medium to uptempo,"trumpet, nostalgic, carnatic music, medium to uptempo",generated_sample_0066
-"timpani, brass section",emphatic,hip-hop,medium to uptempo,"timpani, brass section, emphatic, hip-hop, medium to uptempo",generated_sample_0067
-guitar solo,sentimental,new age,uptempo,"guitar solo, sentimental, new age, uptempo",generated_sample_0068
-"hi-hat, harpsichord, percussion",vibrant,pop,fast paced,"hi-hat, harpsichord, percussion, vibrant, pop, fast paced",generated_sample_0069
-"tambourine, bass guitar, saxophone, bass drum",joyful,hip-hop,slow tempo,"tambourine, bass guitar, saxophone, bass drum, joyful, hip-hop, slow tempo",generated_sample_0070
-"didgeridoo, timpani",cheerful,hip-hop,steady drumming rhythm,"didgeridoo, timpani, cheerful, hip-hop, steady drumming rhythm",generated_sample_0071
-"acoustic guitar, double bass, bass guitar, bagpipes",haunting,raga,mid-tempo,"acoustic guitar, double bass, bass guitar, bagpipes, haunting, raga, mid-tempo",generated_sample_0072
-cello,mellow,new age,medium tempo,"cello, mellow, new age, medium tempo",generated_sample_0073
-"keyboard, tambourine, guitar solo",mellow,gospel,mid-tempo,"keyboard, tambourine, guitar solo, mellow, gospel, mid-tempo",generated_sample_0074
-"sitar, strings, banjo",cheerful,jazz,medium tempo,"sitar, strings, banjo, cheerful, jazz, medium tempo",generated_sample_0075
-bass guitar,mellow,trance,fast tempo,"bass guitar, mellow, trance, fast tempo",generated_sample_0076
-"piano, congas",charming,classical,steady tempo,"piano, congas, charming, classical, steady tempo",generated_sample_0077
-viola,tranquil,trance,medium to uptempo,"viola, tranquil, trance, medium to uptempo",generated_sample_0078
-synth bass,romantic,soul,medium tempo,"synth bass, romantic, soul, medium tempo",generated_sample_0079
-bells,cheerful,gospel,uptempo,"bells, cheerful, gospel, uptempo",generated_sample_0080
-bells,energetic,reggae,dance rhythm,"bells, energetic, reggae, dance rhythm",generated_sample_0081
-"organ, piano, bass guitar, church organ",playful,techno,medium tempo,"organ, piano, bass guitar, church organ, playful, techno, medium tempo",generated_sample_0082
-"sitar, trumpets, strings",romantic,dance music,groovy rhythm,"sitar, trumpets, strings, romantic, dance music, groovy rhythm",generated_sample_0083
-"accordion, banjo",upbeat,folk,moderate tempo,"accordion, banjo, upbeat, folk, moderate tempo",generated_sample_0084
-"piano, viola",heartfelt,industrial,medium tempo,"piano, viola, heartfelt, industrial, medium tempo",generated_sample_0085
-"drums, harmonica",ethereal,hip-hop,steady beat,"drums, harmonica, ethereal, hip-hop, steady beat",generated_sample_0086
-keyboard,playful,metal,fast paced,"keyboard, playful, metal, fast paced",generated_sample_0087
-"acoustic piano, bass drum, sitar, marimba",dark,folk,fast tempo,"acoustic piano, bass drum, sitar, marimba, dark, folk, fast tempo",generated_sample_0088
-"trumpet, harmonica",dreamy,bluegrass,uptempo,"trumpet, harmonica, dreamy, bluegrass, uptempo",generated_sample_0089
-"church organ, harpsichord, harmonica, woodwind",meditative,hip-hop,uptempo,"church organ, harpsichord, harmonica, woodwind, meditative, hip-hop, uptempo",generated_sample_0090
-"dj mixer, string section, piano",powerful,pop,fast beat,"dj mixer, string section, piano, powerful, pop, fast beat",generated_sample_0091
-theremin,dark,surf rock,steady drumming rhythm,"theremin, dark, surf rock, steady drumming rhythm",generated_sample_0092
-"drums, bass guitar, acoustic guitar",excited,ambient,medium fast tempo,"drums, bass guitar, acoustic guitar, excited, ambient, medium fast tempo",generated_sample_0093
-"bass guitar, ukulele",uplifting,carnatic music,moderate tempo,"bass guitar, ukulele, uplifting, carnatic music, moderate tempo",generated_sample_0094
-"drums, bass guitar, organ",vibrant,folk,steady tempo,"drums, bass guitar, organ, vibrant, folk, steady tempo",generated_sample_0095
-"didgeridoo, bass drum, double bass, tabla",calming,r&b,slow to medium tempo,"didgeridoo, bass drum, double bass, tabla, calming, r&b, slow to medium tempo",generated_sample_0096
-"bass drum, keyboard",chill,indie rock,fast beat,"bass drum, keyboard, chill, indie rock, fast beat",generated_sample_0097
-"synth, string section, double bass, percussion, bass drum, keyboard, electric guitar",sad,pop,medium to uptempo,"synth, string section, double bass, percussion, bass drum, keyboard, electric guitar, sad, pop, medium to uptempo",generated_sample_0098
-"clarinet, drum machine, bells, keyboard",calming,pop,uptempo,"clarinet, drum machine, bells, keyboard, calming, pop, uptempo",generated_sample_0099
+instrument_tags,mood_tags,genre_tags,tempo_tags,aspect_list,sample_id
+"organ, triangle, clarinet, string section","energetic, festive, soulful","dance music, techno, jazz",medium tempo,"organ, triangle, clarinet, string section, energetic, festive, soulful, dance music, techno, jazz, medium tempo",generated_sample_0000
+"flute, dj mixer, electric guitar, trombone, hand claps, trumpet, brass section","heartfelt, melancholic, nostalgic, relaxing, happy, exciting","dance music, indie rock, christian rock, edm, gospel, pop, punk rock",fast tempo,"flute, dj mixer, electric guitar, trombone, hand claps, trumpet, brass section, heartfelt, melancholic, nostalgic, relaxing, happy, exciting, dance music, indie rock, christian rock, edm, gospel, pop, punk rock, fast tempo",generated_sample_0001
+"strings, trumpets, hi-hat, bass guitar, didgeridoo, ukulele","happy, relaxing","christian rock, metal, orchestral, folk, classical, r&b, country","uptempo, moderate tempo","strings, trumpets, hi-hat, bass guitar, didgeridoo, ukulele, happy, relaxing, christian rock, metal, orchestral, folk, classical, r&b, country, uptempo, moderate tempo",generated_sample_0002
+kick drum,"enthusiastic, emotional, meditative","ballad, rock, reggae",uptempo,"kick drum, enthusiastic, emotional, meditative, ballad, rock, reggae, uptempo",generated_sample_0003
+strings,"sentimental, passionate, energetic, heartfelt",rock,"medium tempo, fast tempo","strings, sentimental, passionate, energetic, heartfelt, rock, medium tempo, fast tempo",generated_sample_0004
+"keyboard, saxophone, theremin, cello","energetic, emotional, cheerful",soul,medium to uptempo,"keyboard, saxophone, theremin, cello, energetic, emotional, cheerful, soul, medium to uptempo",generated_sample_0005
+"piano, violin",playful,edm,slow tempo,"piano, violin, playful, edm, slow tempo",generated_sample_0006
+"dj mixer, banjo",romantic,rock,medium to uptempo,"dj mixer, banjo, romantic, rock, medium to uptempo",generated_sample_0007
+"acoustic piano, banjo, violin, bass guitar, congas","sentimental, energetic, soothing",folk song,slow tempo,"acoustic piano, banjo, violin, bass guitar, congas, sentimental, energetic, soothing, folk song, slow tempo",generated_sample_0008
+"percussion, keyboard, harp, hand claps","haunting, vibrant",carnatic music,slow tempo,"percussion, keyboard, harp, hand claps, haunting, vibrant, carnatic music, slow tempo",generated_sample_0009
+harp,energetic,"folk, alternative rock, latin pop, orchestral, new age, ambient, r&b, trap, ballad, techno, electronic dance music, hip-hop",medium tempo,"harp, energetic, folk, alternative rock, latin pop, orchestral, new age, ambient, r&b, trap, ballad, techno, electronic dance music, hip-hop, medium tempo",generated_sample_0010
+harpsichord,"relaxing, cheerful, inspirational, nostalgic",techno,steady drumming rhythm,"harpsichord, relaxing, cheerful, inspirational, nostalgic, techno, steady drumming rhythm",generated_sample_0011
+"piano, xylophone, keyboard, violin, guitar",passionate,"latin pop, folk song, electronic dance music, reggae, metal, folk, rock, pop, funk",moderate tempo,"piano, xylophone, keyboard, violin, guitar, passionate, latin pop, folk song, electronic dance music, reggae, metal, folk, rock, pop, funk, moderate tempo",generated_sample_0012
+electric guitar,"mellow, relaxing, meditative, melancholic","indie rock, alternative rock",moderate tempo,"electric guitar, mellow, relaxing, meditative, melancholic, indie rock, alternative rock, moderate tempo",generated_sample_0013
+"saxophone, flute, horn, snare, acoustic piano","calming, cheerful, playful",fusion music,medium to uptempo,"saxophone, flute, horn, snare, acoustic piano, calming, cheerful, playful, fusion music, medium to uptempo",generated_sample_0014
+"string section, keyboard, harmonica, ukulele, didgeridoo, harpsichord",happy,world music,slow tempo,"string section, keyboard, harmonica, ukulele, didgeridoo, harpsichord, happy, world music, slow tempo",generated_sample_0015
+cello,intense,"ambient, jazz, metal",medium tempo,"cello, intense, ambient, jazz, metal, medium tempo",generated_sample_0016
+"bagpipes, percussion, oboe, theremin",melancholic,"indie rock, world music, techno, folk song, new age, classical, electronic dance music",medium-to-high pitch singing,"bagpipes, percussion, oboe, theremin, melancholic, indie rock, world music, techno, folk song, new age, classical, electronic dance music, medium-to-high pitch singing",generated_sample_0017
+"cymbals, saxophone, synth, brass section, violin, string section","charming, heartfelt, dark, relaxing, emphatic","electronic dance music, ballad, funk, country, blues, jazz, ska, techno",medium tempo,"cymbals, saxophone, synth, brass section, violin, string section, charming, heartfelt, dark, relaxing, emphatic, electronic dance music, ballad, funk, country, blues, jazz, ska, techno, medium tempo",generated_sample_0018
+"bagpipes, double bass, acoustic piano, hand claps",passionate,ambient,medium tempo,"bagpipes, double bass, acoustic piano, hand claps, passionate, ambient, medium tempo",generated_sample_0019
+"djembe, trumpets",enthusiastic,"industrial, bluegrass, pop, jazz",slow song,"djembe, trumpets, enthusiastic, industrial, bluegrass, pop, jazz, slow song",generated_sample_0020
+piano,emotional,gospel,uptempo,"piano, emotional, gospel, uptempo",generated_sample_0021
+"choir, electric guitar, clarinet",melancholic,"indie rock, hip-hop, edm","fast tempo, slow tempo, groovy rhythm","choir, electric guitar, clarinet, melancholic, indie rock, hip-hop, edm, fast tempo, slow tempo, groovy rhythm",generated_sample_0022
+"trumpet, percussion","intense, hopeful",rock,slow tempo,"trumpet, percussion, intense, hopeful, rock, slow tempo",generated_sample_0023
+"accordion, percussion","uplifting, energetic, exciting, fun, mystical, joyful, intense","lo-fi, bossa nova, folk song, blues, indie rock, trance, baroque music",normal tempo,"accordion, percussion, uplifting, energetic, exciting, fun, mystical, joyful, intense, lo-fi, bossa nova, folk song, blues, indie rock, trance, baroque music, normal tempo",generated_sample_0024
+"synth, percussion, drums","nostalgic, ethereal, mysterious, passionate","disco, trance","mid tempo, uptempo, medium-to-high pitch singing","synth, percussion, drums, nostalgic, ethereal, mysterious, passionate, disco, trance, mid tempo, uptempo, medium-to-high pitch singing",generated_sample_0025
+marimba,"mellow, energetic",classical,slow tempo,"marimba, mellow, energetic, classical, slow tempo",generated_sample_0026
+"hi-hat, drum machine, piano, acoustic piano, bass guitar, cymbals, violin","cool, emotional",reggae,medium to uptempo,"hi-hat, drum machine, piano, acoustic piano, bass guitar, cymbals, violin, cool, emotional, reggae, medium to uptempo",generated_sample_0027
+"piano, bass drum, steel drums, synth","powerful, happy, soothing",country,groovy rhythm,"piano, bass drum, steel drums, synth, powerful, happy, soothing, country, groovy rhythm",generated_sample_0028
+"synth, bagpipes",enthusiastic,"trap, folk song, funk, world music","dance rhythm, steady tempo","synth, bagpipes, enthusiastic, trap, folk song, funk, world music, dance rhythm, steady tempo",generated_sample_0029
+bells,"fun, uplifting, excited, joyful","fusion music, rock, dubstep, orchestral",slow tempo,"bells, fun, uplifting, excited, joyful, fusion music, rock, dubstep, orchestral, slow tempo",generated_sample_0030
+"strings, percussion",passionate,"dance music, ambient, ballad, bluegrass, folk song, jazz",rapid tempo,"strings, percussion, passionate, dance music, ambient, ballad, bluegrass, folk song, jazz, rapid tempo",generated_sample_0031
+"bagpipes, didgeridoo","exciting, sentimental, meditative, upbeat",techno,"mid-tempo, slow tempo","bagpipes, didgeridoo, exciting, sentimental, meditative, upbeat, techno, mid-tempo, slow tempo",generated_sample_0032
+"cello, drum machine, brass section, harp, banjo",passionate,jazz,mid-tempo,"cello, drum machine, brass section, harp, banjo, passionate, jazz, mid-tempo",generated_sample_0033
+"drums, piano",fun,soundtrack,medium tempo,"drums, piano, fun, soundtrack, medium tempo",generated_sample_0034
+"didgeridoo, keyboard, organ, acoustic piano, bells","spooky, relaxing, sentimental, uplifting","alternative rock, funk, ambient","medium-to-high pitch singing, fast paced","didgeridoo, keyboard, organ, acoustic piano, bells, spooky, relaxing, sentimental, uplifting, alternative rock, funk, ambient, medium-to-high pitch singing, fast paced",generated_sample_0035
+synth,emotional,"pop, fusion music, ballad, trance","medium tempo, uptempo","synth, emotional, pop, fusion music, ballad, trance, medium tempo, uptempo",generated_sample_0036
+percussion,"vibrant, upbeat, energetic, dreamy, calming",classical,slow tempo,"percussion, vibrant, upbeat, energetic, dreamy, calming, classical, slow tempo",generated_sample_0037
+"electric piano, electric guitar","passionate, soothing, spooky",ballad,"steady beat, steady drumming rhythm","electric piano, electric guitar, passionate, soothing, spooky, ballad, steady beat, steady drumming rhythm",generated_sample_0038
+"conga, acoustic piano, djembe, sitar","hopeful, festive",blues,"fast tempo, medium tempo, slow tempo","conga, acoustic piano, djembe, sitar, hopeful, festive, blues, fast tempo, medium tempo, slow tempo",generated_sample_0039
+"bass drum, trumpets, harpsichord",intense,"carnatic music, world music, gospel, techno",mid-tempo,"bass drum, trumpets, harpsichord, intense, carnatic music, world music, gospel, techno, mid-tempo",generated_sample_0040
+"choir, accordion, tabla percussion","spooky, joyous, inspirational","trance, pop, blues",normal tempo,"choir, accordion, tabla percussion, spooky, joyous, inspirational, trance, pop, blues, normal tempo",generated_sample_0041
+accordion,"uplifting, heartfelt",edm,medium fast tempo,"accordion, uplifting, heartfelt, edm, medium fast tempo",generated_sample_0042
+"flute, double bass","vibrant, energetic, soulful",latin pop,"uptempo, medium tempo, slow tempo","flute, double bass, vibrant, energetic, soulful, latin pop, uptempo, medium tempo, slow tempo",generated_sample_0043
+"accordion, acoustic piano, choir, organ, percussion","emphatic, suspenseful, soulful","latin pop, jazz, hip-hop, pop, techno pop, orchestral, edm, bossa nova",medium-to-high pitch singing,"accordion, acoustic piano, choir, organ, percussion, emphatic, suspenseful, soulful, latin pop, jazz, hip-hop, pop, techno pop, orchestral, edm, bossa nova, medium-to-high pitch singing",generated_sample_0044
+"harmonica, acoustic guitar","heavenly, peaceful, melancholic",reggae,groovy rhythm,"harmonica, acoustic guitar, heavenly, peaceful, melancholic, reggae, groovy rhythm",generated_sample_0045
+brass section,sentimental,classical,fast paced,"brass section, sentimental, classical, fast paced",generated_sample_0046
+"trumpets, trombone, choir, piano, accordion",energetic,lo-fi,moderate tempo,"trumpets, trombone, choir, piano, accordion, energetic, lo-fi, moderate tempo",generated_sample_0047
+strings,"soothing, cheerful","pop, house, gospel, edm",uptempo,"strings, soothing, cheerful, pop, house, gospel, edm, uptempo",generated_sample_0048
+"hand claps, kick drum","enthusiastic, spooky, upbeat","hip-hop, carnatic music",fast tempo,"hand claps, kick drum, enthusiastic, spooky, upbeat, hip-hop, carnatic music, fast tempo",generated_sample_0049
+banjo,sentimental,carnatic music,steady drumming rhythm,"banjo, sentimental, carnatic music, steady drumming rhythm",generated_sample_0050
+"piano, synth, acoustic guitar, synth bass, bass guitar, drum machine, timpani, theremin",vibrant,"jazz, folk song, soul, disco, trap","fast tempo, groovy rhythm, moderate tempo","piano, synth, acoustic guitar, synth bass, bass guitar, drum machine, timpani, theremin, vibrant, jazz, folk song, soul, disco, trap, fast tempo, groovy rhythm, moderate tempo",generated_sample_0051
+"cymbals, bass guitar, guitar","excited, sentimental, suspenseful, calming, dreamy, soulful",blues,"medium tempo, slow tempo","cymbals, bass guitar, guitar, excited, sentimental, suspenseful, calming, dreamy, soulful, blues, medium tempo, slow tempo",generated_sample_0052
+"viola, strings, hi-hat",spooky,techno pop,slower tempo,"viola, strings, hi-hat, spooky, techno pop, slower tempo",generated_sample_0053
+"electric guitar, guitar, strings, steel drums, acoustic guitar, trumpets, double bass",exciting,"folk, soul, gospel",steady drumming rhythm,"electric guitar, guitar, strings, steel drums, acoustic guitar, trumpets, double bass, exciting, folk, soul, gospel, steady drumming rhythm",generated_sample_0054
+"flute, tambourine, marimba",soothing,r&b,moderate tempo,"flute, tambourine, marimba, soothing, r&b, moderate tempo",generated_sample_0055
+"drums, ukulele",energetic,dance music,slow tempo,"drums, ukulele, energetic, dance music, slow tempo",generated_sample_0056
+"bells, saxophone, harp","emotional, melancholic, joyful","trap, funk",medium to uptempo,"bells, saxophone, harp, emotional, melancholic, joyful, trap, funk, medium to uptempo",generated_sample_0057
+"violin, trumpets","energetic, cheerful",christian rock,"medium tempo, slower tempo","violin, trumpets, energetic, cheerful, christian rock, medium tempo, slower tempo",generated_sample_0058
+"synth, hi-hat, bass guitar, dj mixer","sentimental, energetic drums",punk rock,"steady drumming rhythm, medium fast tempo","synth, hi-hat, bass guitar, dj mixer, sentimental, energetic drums, punk rock, steady drumming rhythm, medium fast tempo",generated_sample_0059
+"drum machine, triangle","sentimental, happy",funk,slow tempo,"drum machine, triangle, sentimental, happy, funk, slow tempo",generated_sample_0060
+synth,"powerful, melancholic, melancholy, romantic mood, playful, fun",dubstep,medium tempo,"synth, powerful, melancholic, melancholy, romantic mood, playful, fun, dubstep, medium tempo",generated_sample_0061
+"percussion, trombone",passionate,"jazz, reggae",dance rhythm,"percussion, trombone, passionate, jazz, reggae, dance rhythm",generated_sample_0062
+"banjo, violin, guitar solo",romantic mood,"funk, alternative rock",moderate tempo,"banjo, violin, guitar solo, romantic mood, funk, alternative rock, moderate tempo",generated_sample_0063
+triangle,"calming, charming, haunting, passionate, sentimental",edm,fast tempo,"triangle, calming, charming, haunting, passionate, sentimental, edm, fast tempo",generated_sample_0064
+"sitar, guitar solo, accordion",fun,orchestral,4 on the floor kick pattern,"sitar, guitar solo, accordion, fun, orchestral, 4 on the floor kick pattern",generated_sample_0065
+"strings, string section, acoustic piano, electric guitar, harp, acoustic guitar, hi-hat","mellow, joyful, romantic, romantic mood",trance,very fast tempo,"strings, string section, acoustic piano, electric guitar, harp, acoustic guitar, hi-hat, mellow, joyful, romantic, romantic mood, trance, very fast tempo",generated_sample_0066
+"sitar, banjo, bells, cello, electric guitar",chill,"reggae, pop, classical, electronic dance music, fusion music, indie rock, gospel, jazz, world music",medium tempo,"sitar, banjo, bells, cello, electric guitar, chill, reggae, pop, classical, electronic dance music, fusion music, indie rock, gospel, jazz, world music, medium tempo",generated_sample_0067
+trumpets,"calming, suspenseful, dreamy, sentimental","hip hop, pop, raga, funk, rock, hip-hop, bluegrass",medium tempo,"trumpets, calming, suspenseful, dreamy, sentimental, hip hop, pop, raga, funk, rock, hip-hop, bluegrass, medium tempo",generated_sample_0068
+hi-hat,"intense, calming","r&b, classical",slow tempo,"hi-hat, intense, calming, r&b, classical, slow tempo",generated_sample_0069
+electric guitar,"energetic, fun, peaceful, soothing, mellow","reggae, fusion music, dubstep, afrobeat, symphonic",fast tempo,"electric guitar, energetic, fun, peaceful, soothing, mellow, reggae, fusion music, dubstep, afrobeat, symphonic, fast tempo",generated_sample_0070
+"piano, drums",relaxing,"ambient, jazz","steady drumming rhythm, medium tempo","piano, drums, relaxing, ambient, jazz, steady drumming rhythm, medium tempo",generated_sample_0071
+electric guitar,happy,edm,uptempo,"electric guitar, happy, edm, uptempo",generated_sample_0072
+"electric guitar, ukulele, didgeridoo","energetic, mysterious",r&b,groovy rhythm,"electric guitar, ukulele, didgeridoo, energetic, mysterious, r&b, groovy rhythm",generated_sample_0073
+"organ, guitar, bells",passionate,gospel,moderate tempo,"organ, guitar, bells, passionate, gospel, moderate tempo",generated_sample_0074
+"choir, theremin, drum machine","intense, passionate",hip-hop,medium tempo,"choir, theremin, drum machine, intense, passionate, hip-hop, medium tempo",generated_sample_0075
+"dj mixer, bass guitar, harp","heartfelt, melancholic, passionate","funk, lo-fi, dubstep","steady tempo, fast tempo","dj mixer, bass guitar, harp, heartfelt, melancholic, passionate, funk, lo-fi, dubstep, steady tempo, fast tempo",generated_sample_0076
+steel guitar,dark,gospel,medium tempo,"steel guitar, dark, gospel, medium tempo",generated_sample_0077
+acoustic guitar,"relaxing, festive",blues,slow tempo,"acoustic guitar, relaxing, festive, blues, slow tempo",generated_sample_0078
+"guitar, strings, electric guitar, trumpets, acoustic guitar","passionate, emphatic, relaxing, emotional","pop, folk song, new age",uptempo,"guitar, strings, electric guitar, trumpets, acoustic guitar, passionate, emphatic, relaxing, emotional, pop, folk song, new age, uptempo",generated_sample_0079
+"keyboard, drums, ukulele, acoustic piano, strings, timpani","exciting, cheerful","carnatic music, gospel",moderate tempo,"keyboard, drums, ukulele, acoustic piano, strings, timpani, exciting, cheerful, carnatic music, gospel, moderate tempo",generated_sample_0080
+"theremin, choir, flute","romantic, suspenseful, passionate",rock,4 on the floor kick pattern,"theremin, choir, flute, romantic, suspenseful, passionate, rock, 4 on the floor kick pattern",generated_sample_0081
+"synth bass, hi-hat, double bass","upbeat, happy, mellow, fun, intense","hip hop, trap, country, reggae, pop, ballad",medium tempo,"synth bass, hi-hat, double bass, upbeat, happy, mellow, fun, intense, hip hop, trap, country, reggae, pop, ballad, medium tempo",generated_sample_0082
+"drums, bass guitar",romantic mood,jazz,fast tempo,"drums, bass guitar, romantic mood, jazz, fast tempo",generated_sample_0083
+"harmonica, acoustic piano, steel guitar, accordion","playful, cheerful","classical, indie rock, hip hop",fast tempo,"harmonica, acoustic piano, steel guitar, accordion, playful, cheerful, classical, indie rock, hip hop, fast tempo",generated_sample_0084
+"theremin, keyboard, cymbals, sitar","meditative, passionate, cheerful, solemn, calming, upbeat, ethereal","hip-hop, hip hop",groovy rhythm,"theremin, keyboard, cymbals, sitar, meditative, passionate, cheerful, solemn, calming, upbeat, ethereal, hip-hop, hip hop, groovy rhythm",generated_sample_0085
+strings,melancholic,raga,normal tempo,"strings, melancholic, raga, normal tempo",generated_sample_0086
+saxophone,"sentimental, meditative, passionate, suspenseful","r&b, folk, dance music, funk, orchestral, trance","steady drumming rhythm, uptempo, quick tempo, slow song, medium to uptempo","saxophone, sentimental, meditative, passionate, suspenseful, r&b, folk, dance music, funk, orchestral, trance, steady drumming rhythm, uptempo, quick tempo, slow song, medium to uptempo",generated_sample_0087
+strings,ominous,blues,medium tempo,"strings, ominous, blues, medium tempo",generated_sample_0088
+bass guitar,"festive, soothing melody",pop,medium tempo,"bass guitar, festive, soothing melody, pop, medium tempo",generated_sample_0089
+"electric guitar, keyboard","ethereal, haunting, emotional",ambient,medium fast tempo,"electric guitar, keyboard, ethereal, haunting, emotional, ambient, medium fast tempo",generated_sample_0090
+"congas, tambourine, flute, synth bass, electric guitar","mellow, soothing, festive, vibrant, suspenseful",metal,medium-to-high pitch singing,"congas, tambourine, flute, synth bass, electric guitar, mellow, soothing, festive, vibrant, suspenseful, metal, medium-to-high pitch singing",generated_sample_0091
+electric guitar,"soulful, happy, fun, dreamy, uplifting, hopeful, intense, mellow",pop,medium to uptempo,"electric guitar, soulful, happy, fun, dreamy, uplifting, hopeful, intense, mellow, pop, medium to uptempo",generated_sample_0092
+cello,haunting,trap,uptempo,"cello, haunting, trap, uptempo",generated_sample_0093
+"string section, piano, keyboard, bass guitar",serene,"dance music, r&b, classical, carnatic music, lo-fi, soul",moderate tempo,"string section, piano, keyboard, bass guitar, serene, dance music, r&b, classical, carnatic music, lo-fi, soul, moderate tempo",generated_sample_0094
+"double bass, electric guitar, tambourine, synth bass","ominous, festive","disco, metal",medium tempo,"double bass, electric guitar, tambourine, synth bass, ominous, festive, disco, metal, medium tempo",generated_sample_0095
+"bass guitar, acoustic piano","romantic, dreamy","world music, hip hop, r&b",medium tempo,"bass guitar, acoustic piano, romantic, dreamy, world music, hip hop, r&b, medium tempo",generated_sample_0096
+drums,energetic,folk,groovy rhythm,"drums, energetic, folk, groovy rhythm",generated_sample_0097
+"trumpets, synth",calming,jazz,moderate tempo,"trumpets, synth, calming, jazz, moderate tempo",generated_sample_0098
+acoustic guitar,relaxing,classical,"fast tempo, various tempos","acoustic guitar, relaxing, classical, fast tempo, various tempos",generated_sample_0099

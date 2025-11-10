@@ -15,7 +15,7 @@ from src.utils import RankedLogger
 from src.caption.evaluation import generate_caption
 
 
-def run_inference(
+def run_caption_inference(
     cfg: DictConfig,
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
@@ -34,6 +34,8 @@ def run_inference(
             max_new_tokens=cfg.evaluation.max_new_tokens,
         )
         predictions.append(generated)
+        print(f"ASPECTS: {example[cfg.data.aspect_column]}")
+        print(f"PREDICTION: {generated}\n")
         records.append(
             {
                 "aspect_list": example[cfg.data.aspect_column],

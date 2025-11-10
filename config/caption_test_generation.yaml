@@ -1,7 +1,7 @@
 defaults:
   - model: caption/mistral_7b_instruct
   - data: caption/load_dataset
-  - prompt: caption/default
+  - prompt: default
   - lora: caption/default
   - trainer: caption/default
   - evaluation: caption/default
