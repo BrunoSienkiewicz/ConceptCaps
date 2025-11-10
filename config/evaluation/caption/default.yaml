@@ -5,7 +5,6 @@ metrics:
   - name: bertscore
     kwargs:
         lang: en
-  - name: cider
   - name: bleurt
   - name: meteor
   - name: comet
