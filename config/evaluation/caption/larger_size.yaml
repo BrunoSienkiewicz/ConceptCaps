@@ -1,6 +1,6 @@
 enabled: true
-max_new_tokens: 256
-batch_size: 8
+max_new_tokens: 512
+batch_size: 32
 metrics:
   - name: bleu
     kwargs: {}

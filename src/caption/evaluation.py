@@ -10,6 +10,7 @@ import pandas as pd
 import torch
 from omegaconf import DictConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer, EvalPrediction
+from tqdm import tqdm
 
 from src.utils import RankedLogger
 
@@ -20,6 +21,7 @@ def generate_caption(
     prompt: str,
     max_new_tokens: int,
 ) -> str:
+    """Generate a single caption from a prompt."""
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
     model.eval()
 
@@ -31,8 +33,66 @@ def generate_caption(
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 
+def generate_captions_batch(
+    model: AutoModelForCausalLM,
+    tokenizer: AutoTokenizer,
+    prompts: List[str],
+    max_new_tokens: int,
+    batch_size: int = 8,
+) -> List[str]:
+    """
+    Generate captions for a batch of prompts efficiently.
+    
+    Args:
+        model: Language model for generation
+        tokenizer: Tokenizer for encoding/decoding
+        prompts: List of input prompts
+        max_new_tokens: Maximum tokens to generate per caption
+        batch_size: Number of prompts to process per batch
+        
+    Returns:
+        List of generated captions
+    """
+    model.eval()
+    captions = []
+    
+    with torch.no_grad():
+        for i in tqdm(range(0, len(prompts), batch_size), desc="Generating captions"):
+            batch_prompts = prompts[i : i + batch_size]
+            
+            # Tokenize batch with padding
+            inputs = tokenizer(
+                batch_prompts,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,
+                max_length=512,
+            ).to(model.device)
+            
+            # Generate batch
+            outputs = model.generate(
+                **inputs,
+                max_new_tokens=max_new_tokens,
+                pad_token_id=tokenizer.pad_token_id,
+            )
+            
+            # Decode batch
+            batch_captions = tokenizer.batch_decode(
+                outputs, skip_special_tokens=True
+            )
+            captions.extend(batch_captions)
+    
+    return captions
+
+
 class MetricComputer:
-    def __init__(self, metric_cfgs: Iterable[DictConfig], tokenizer: Optional[AutoTokenizer] = None):
+    """Computes evaluation metrics for generated captions."""
+    
+    def __init__(
+        self,
+        metric_cfgs: Iterable[DictConfig],
+        tokenizer: Optional[AutoTokenizer] = None,
+    ):
         self.metric_cfgs = metric_cfgs
         self.metrics = []
         for metric_cfg in metric_cfgs:
@@ -40,7 +100,10 @@ class MetricComputer:
             self.metrics.append((metric, metric_cfg))
         self.tokenizer = tokenizer
 
-    def _calculate_metrics(self, predictions: List[str], references: List[str]) -> Dict[str, Any]:
+    def _calculate_metrics(
+        self, predictions: List[str], references: List[str]
+    ) -> Dict[str, Any]:
+        """Calculate metrics comparing predictions to references."""
         results: Dict[str, Any] = {}
         for metric, metric_cfg in self.metrics:
             kwargs = metric_cfg.get("kwargs", {})
@@ -60,6 +123,7 @@ class MetricComputer:
         return results
 
     def compute_metrics(self, eval_pred: EvalPrediction):
+        """Compute metrics from model evaluation predictions."""
         predictions = eval_pred.predictions
         references = eval_pred.label_ids
 
@@ -68,10 +132,16 @@ class MetricComputer:
             if len(predictions.shape) == 3:
                 predictions = np.argmax(predictions, axis=-1)
             
-            references = np.where(references != -100, references, self.tokenizer.pad_token_id)
+            references = np.where(
+                references != -100, references, self.tokenizer.pad_token_id
+            )
 
-            decoded_preds = self.tokenizer.batch_decode(predictions, skip_special_tokens=True)
-            decoded_labels = self.tokenizer.batch_decode(references, skip_special_tokens=True)
+            decoded_preds = self.tokenizer.batch_decode(
+                predictions, skip_special_tokens=True
+            )
+            decoded_labels = self.tokenizer.batch_decode(
+                references, skip_special_tokens=True
+            )
             results = self._calculate_metrics(decoded_preds, decoded_labels)
             
         return results
@@ -81,6 +151,7 @@ class MetricComputer:
         predictions: List[str],
         references: List[str],
     ) -> Dict[str, Any]:
+        """Compute metrics from lists of predictions and references."""
         results = self._calculate_metrics(predictions, references)
         return results
 
@@ -94,36 +165,66 @@ def run_test_evaluation(
     output_dir: Path,
     logger: Optional[RankedLogger] = None,
 ) -> Dict[str, Any]:
-    predictions: List[str] = []
-    references: List[str] = []
-    records: List[Dict[str, Any]] = []
+    """
+    Run evaluation on test set using batch processing.
+    
+    Args:
+        cfg: Configuration
+        computer: MetricComputer instance
+        model: Language model
+        tokenizer: Tokenizer
+        eval_examples: List of evaluation examples
+        output_dir: Directory to save results
+        logger: Logger instance
+        batch_size: Batch size for generation
+        
+    Returns:
+        Dictionary of computed metrics
+    """
+    # Extract prompts and references from examples
+    prompts = [example[cfg.data.text_column] for example in eval_examples]
+    references = [example[cfg.data.caption_column] for example in eval_examples]
+    aspects = [example.get(cfg.data.aspect_column, "") for example in eval_examples]
 
-    for example in eval_examples:
-        generated = generate_caption(
-            model,
-            tokenizer,
-            example[cfg.data.text_column],
-            cfg.evaluation.max_new_tokens,
-        )
-        predictions.append(generated)
-        references.append(example[cfg.data.caption_column])
-        records.append(
-            {
-                "aspect_list": example[cfg.data.aspect_column],
-                "reference": example[cfg.data.caption_column],
-                "prediction": generated,
-            }
-        )
+    # Generate captions in batches
+    if logger:
+        logger.info(f"Generating captions for {len(prompts)} examples with batch size {cfg.evaluation.batch_size}...")
+    predictions = generate_captions_batch(
+        model,
+        tokenizer,
+        prompts,
+        cfg.evaluation.max_new_tokens,
+        batch_size=cfg.evaluation.batch_size,
+    )
 
+    # Compute metrics
+    if logger:
+        logger.info("Computing evaluation metrics...")
     metrics = computer.compute_test_metrics(predictions, references)
 
+    # Save results
     output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Save metrics
     metrics_path = output_dir / "evaluation_metrics.json"
     metrics_path.write_text(json.dumps(metrics, indent=2))
+    if logger:
+        logger.info(f"Metrics saved to {metrics_path}")
 
+    # Save predictions
     if cfg.evaluation.output_predictions:
+        records = [
+            {
+                "aspect_list": aspect,
+                "reference": reference,
+                "prediction": prediction,
+            }
+            for aspect, reference, prediction in zip(aspects, references, predictions)
+        ]
         predictions_path = output_dir / cfg.evaluation.predictions_file
         pd.DataFrame(records).to_csv(predictions_path, index=False)
+        if logger:
+            logger.info(f"Predictions saved to {predictions_path}")
 
     if logger:
         logger.info(f"Evaluation metrics: {metrics}")

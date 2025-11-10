@@ -7,7 +7,6 @@ import gc
 import torch
 import wandb
 
-from peft import PeftModel
 from datasets import load_dataset
 
 from src.caption.config import CaptionGenerationConfig
@@ -59,6 +58,16 @@ def run_training(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
 
 
 def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
+    """
+    Run evaluation on test set with batch processing.
+    
+    Args:
+        log: Logger instance
+        cfg: Configuration
+        
+    Returns:
+        Dictionary of evaluation metrics
+    """
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
 
@@ -81,7 +90,16 @@ def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     model, tokenizer = prepare_evaluation_model_tokenizer(log, cfg.model)
 
     model.to(device)
-    metrics = run_test_evaluation(cfg, metric_computer, model, tokenizer, test_examples, output_dir, log)
+    
+    metrics = run_test_evaluation(
+        cfg, 
+        metric_computer, 
+        model, 
+        tokenizer, 
+        test_examples, 
+        output_dir, 
+        log,
+    )
 
     if metrics and wandb.run is not None:
         payload: Dict[str, float] = {}
@@ -92,7 +110,17 @@ def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     return metrics
 
 
-def run_inference(log, cfg: CaptionGenerationConfig):
+def run_inference(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
+    """
+    Run inference on test set with batch processing.
+    
+    Args:
+        log: Logger instance
+        cfg: Configuration
+        
+    Returns:
+        DataFrame with predictions
+    """
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
 
@@ -101,14 +129,25 @@ def run_inference(log, cfg: CaptionGenerationConfig):
     examples = dataset["test"]
 
     log.info("Loading tokenizer...")
+    tokenizer = prepare_tokenizer(cfg.model)
 
     output_dir = Path(cfg.paths.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     log.info("Running inference...")
+    log.info(f"Examples count: {len(examples)}")
     model, tokenizer = prepare_evaluation_model_tokenizer(log, cfg.model)
     model.to(device)
-
-    run_caption_inference(cfg, model, tokenizer, examples, output_dir, log)
+    
+    results_df = run_caption_inference(
+        cfg, 
+        model, 
+        tokenizer, 
+        examples, 
+        output_dir, 
+        log,
+    )
+    
+    return {"results": results_df}
 
     

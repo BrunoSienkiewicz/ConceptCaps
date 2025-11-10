@@ -88,6 +88,7 @@ class EvaluationMetricConfig:
 @dataclass
 class EvaluationConfig:
     enabled: bool = True
+    batch_size: int = 8
     max_new_tokens: int = 256
     metrics: List[EvaluationMetricConfig] = field(default_factory=list)
     output_predictions: bool = True
