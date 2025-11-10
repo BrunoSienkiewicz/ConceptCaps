@@ -119,6 +119,17 @@ class MetricComputer:
                     references=references,
                     **kwargs,
                 )
+
+            # Compute average for metrics that return multiple scores
+            if isinstance(value, dict):
+                for k, v in value.items():
+                    if isinstance(v, (int, float, np.floating)):
+                        results[f"{metric_cfg.name}_{k}"] = v
+                    elif isinstance(v, list):
+                        results[f"{metric_cfg.name}_{k}"] = float(np.mean(v))
+            else:
+                results[metric_cfg.name] = value
+
             results[metric_cfg.name] = value
         return results
 
