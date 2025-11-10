@@ -36,7 +36,7 @@ def run_caption_inference(
         predictions.append(generated)
         if logger:
             logger.info(f"Generated caption: {generated}")
-            logger.info(f"Reference caption: {example[cfg.data.caption_column]}")
+            logger.info(f"Reference prompt: {example[cfg.data.text_column]}")
         records.append(
             {
                 "aspect_list": example[cfg.data.aspect_column],
