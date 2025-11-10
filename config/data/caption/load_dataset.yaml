@@ -1,0 +1,7 @@
+dataset_name: bsienkiewicz/musiccaps-tag-to-caption
+aspect_column: aspect_list
+caption_column: caption
+text_column: text
+remove_columns: null
+max_train_samples: null
+max_eval_samples: null

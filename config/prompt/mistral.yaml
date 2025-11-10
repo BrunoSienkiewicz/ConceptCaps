@@ -1,0 +1,6 @@
+template: |
+  [INST] {system_prompt}\n\n{user_prompt} [/INST]{assistant_response}</s>
+eval_template: |
+  [INST] {system_prompt}\n\n{user_prompt} [/INST]
+system_prompt: You are a music description expert that creates detailed, technical descriptions of songs based on their musical characteristics.
+user_prompt_template: Generate a detailed song description based on the following tags:{tags}

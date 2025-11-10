@@ -1,0 +1,10 @@
+defaults:
+  - data: caption/load_random_dataset
+  - model: caption/mistral_7b_instruct
+  - prompt: caption/default
+  - paths: default
+  - hydra: default
+
+task_name: caption_inference
+device: cuda
+random_state: 42

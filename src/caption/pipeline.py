@@ -9,31 +9,14 @@ import wandb
 
 from peft import PeftModel
 from datasets import load_dataset
-from transformers.modeling_utils import load_sharded_checkpoint
 
 from src.caption.config import CaptionGenerationConfig
-from src.caption.data import prepare_datasets, create_datasets
+from src.caption.data import prepare_datasets, prepare_inference_datasets
 from src.caption.evaluation import run_test_evaluation, MetricComputer
+from src.caption.inference import run_inference
 from src.caption.logging_utils import flatten_numeric_metrics
 from src.caption.modeling import prepare_training_model, prepare_tokenizer, prepare_evaluation_model_tokenizer
 from src.caption.trainer import create_trainer
-
-
-def create_caption_generation_datasets(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
-    data_dir = Path(cfg.paths.data_dir)
-    data_dir.mkdir(parents=True, exist_ok=True)
-
-    log.info("Preparing datasets...")
-    create_datasets(log, cfg.data, data_dir)
-
-    if cfg.data.push_to_hub:
-        data_files = {
-            "train": cfg.data.train_file,
-            "validation": cfg.data.validation_file,
-            "test": cfg.data.test_file,
-        }
-        dataset = load_dataset("csv", data_files=data_files)
-        dataset.push_to_hub(cfg.data.hub_repo_name, private=cfg.data.hub_private_repo)
 
 
 def run_training(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
@@ -45,8 +28,8 @@ def run_training(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     model_dir.mkdir(parents=True, exist_ok=True) 
 
     log.info("Loading datasets...")
-    dataset = load_dataset(cfg.data.hub_repo_name)
-    dataset = prepare_datasets(cfg.data, dataset)
+    dataset = load_dataset(cfg.data.dataset_name)
+    dataset = prepare_datasets(cfg.data, cfg.prompt, dataset)
     log.info(
         f"Dataset loaded with {len(dataset['train'])} training and {len(dataset['validation'])} validation samples.",
     )
@@ -79,8 +62,8 @@ def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
 
-    dataset = load_dataset(cfg.data.hub_repo_name)
-    dataset = prepare_datasets(cfg.data, dataset)
+    dataset = load_dataset(cfg.data.dataset_name)
+    dataset = prepare_datasets(cfg.data, cfg.prompt, dataset)
     test_examples = dataset["test"]
 
     log.info("Loading tokenizer...")
@@ -107,3 +90,25 @@ def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
         wandb.log(payload)
 
     return metrics
+
+
+def run_inference(log, cfg: CaptionGenerationConfig):
+    device = torch.device(cfg.device)
+    log.info(f"Using device: {device}")
+
+    dataset = load_dataset(cfg.data.dataset_name)
+    dataset = prepare_inference_datasets(cfg.data, cfg.prompt, dataset)
+    examples = dataset["all"]
+
+    log.info("Loading tokenizer...")
+
+    output_dir = Path(cfg.paths.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    log.info("Running inference...")
+    model, tokenizer = prepare_evaluation_model_tokenizer(log, cfg.model)
+    model.to(device)
+
+    run_inference(cfg, model, tokenizer, examples, output_dir, log)
+
+    

@@ -1,0 +1,10 @@
+template: |
+  <|begin_of_text|><|start_header_id|>system<|end_header_id|>{system_prompt}<|eot_id|>
+  <|start_header_id|>user<|end_header_id|>{user_prompt}<|eot_id|>
+  <|start_header_id|>assistant<|end_header_id|>{assistant_response}<|eot_id|>
+eval_template: |
+  <|begin_of_text|><|start_header_id|>system<|end_header_id|>{system_prompt}<|eot_id|>
+  <|start_header_id|>user<|end_header_id|>{user_prompt}<|eot_id|>
+  <|start_header_id|>assistant<|end_header_id|>
+system_prompt: You are a music description expert that creates detailed, technical descriptions of songs based on their musical characteristics.
+user_prompt_template: Generate a detailed song description based on the following tags:{tags}

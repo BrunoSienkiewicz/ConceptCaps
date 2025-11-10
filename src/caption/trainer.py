@@ -7,7 +7,6 @@ from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from trl import SFTTrainer
 
-from src.caption.logging_utils import WandbMonitoringCallback
 from src.caption.evaluation import MetricComputer
 
 
