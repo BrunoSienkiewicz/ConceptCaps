@@ -34,8 +34,9 @@ def run_caption_inference(
             max_new_tokens=cfg.evaluation.max_new_tokens,
         )
         predictions.append(generated)
-        print(f"ASPECTS: {example[cfg.data.aspect_column]}")
-        print(f"PREDICTION: {generated}\n")
+        if logger:
+            logger.info(f"Generated caption: {generated}")
+            logger.info(f"Reference caption: {example[cfg.data.caption_column]}")
         records.append(
             {
                 "aspect_list": example[cfg.data.aspect_column],
