@@ -2,11 +2,16 @@ enabled: true
 max_new_tokens: 256
 batch_size: 8
 metrics:
+  - name: bleu
+    kwargs: {}
+  - name: rouge
+    kwargs: {}
   - name: bertscore
     kwargs:
         lang: en
-  - name: bleurt
   - name: meteor
+    kwargs: {}
   - name: comet
+    kwargs: {}
 output_predictions: true
 predictions_file: predictions.csv

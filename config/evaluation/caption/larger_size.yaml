@@ -9,8 +9,6 @@ metrics:
   - name: bertscore
     kwargs:
         lang: en
-  - name: bleurt
-    kwargs: {}
   - name: meteor
     kwargs: {}
   - name: comet
