@@ -71,6 +71,9 @@ def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
 
+    wandb.login()
+    wandb.init(project="huggingface", config=cfg)
+
     dataset = load_dataset(cfg.data.dataset_name)
     dataset = prepare_datasets(cfg.data, cfg.prompt, dataset)
     test_examples = dataset["test"]
