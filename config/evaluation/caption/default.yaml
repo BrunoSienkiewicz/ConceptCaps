@@ -11,7 +11,5 @@ metrics:
         lang: en
   - name: meteor
     kwargs: {}
-  - name: comet
-    kwargs: {}
 output_predictions: true
 predictions_file: predictions.csv
