@@ -1,0 +1,12 @@
+_target_: "src.tta.config.ModelConfig"
+model:
+  _target_: "src.tcav.model.CustomMusicGen"
+  processor:
+    _target_: "transformers.AutoProcessor.from_pretrained"
+    pretrained_model_name_or_path: "facebook/musicgen-large"
+    device: ${device}
+  model:
+    _target_: "transformers.MusicgenForConditionalGeneration.from_pretrained"
+    pretrained_model_name_or_path: "facebook/musicgen-large"
+  max_new_tokens: 256
+model_id: "musicgen-large"

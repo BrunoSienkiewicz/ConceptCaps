@@ -1,8 +1,8 @@
 # @package _global_
 defaults:
   - override /paths: plgrid
-  - override /model: tta/musicgen-small
-  - override /data: tta/music_caps
+  - override /model: tta/musicgen-large
+  - override /data: tta/random_tags
   - override /logger: wandb
 
 data:
