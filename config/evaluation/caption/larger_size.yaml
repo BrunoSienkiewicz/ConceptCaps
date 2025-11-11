@@ -11,5 +11,7 @@ metrics:
         lang: en
   - name: meteor
     kwargs: {}
+  - name: google_bleu
+    kwargs: {}
 output_predictions: true
 predictions_file: predictions.csv
