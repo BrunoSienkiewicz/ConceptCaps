@@ -59,12 +59,13 @@ class TextDescriptions(GenericDataModule):
     def _transform(self, dataset: pd.DataFrame):
         dataset = dataset.drop(
             columns=[
-                "start_s",
-                "end_s",
-                "audioset_positive_labels",
-                "author_id",
-                "is_balanced_subset",
-                "is_audioset_eval",
+                # "start_s",
+                # "end_s",
+                # "audioset_positive_labels",
+                # "author_id",
+                # "is_balanced_subset",
+                # "is_audioset_eval",
+                "aspect_list"
             ]
         )
 
