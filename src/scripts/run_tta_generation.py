@@ -24,7 +24,10 @@ def tta(cfg: TTAConfig):
     pl.seed_everything(random_state)
 
     log.info("Instantiating loggers...")
+
     wandb.login()
+    wandb.init(project="tta_generation")
+
     logger = instantiate_loggers(cfg.get("logger"))
 
     device = torch.device(cfg.device)
