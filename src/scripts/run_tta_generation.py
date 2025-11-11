@@ -6,6 +6,7 @@ import scipy.io
 import rootutils
 import torch
 import scipy
+import tqdm
 import pytorch_lightning as pl
 
 from src.utils import (RankedLogger, instantiate_loggers, log_hyperparameters,
@@ -42,7 +43,7 @@ def tta(cfg: TTAConfig):
 
     data_module.dataset.to_csv(Path(cfg.paths.output_dir) / "full_dataset.csv", index=False)
 
-    for i, batch in enumerate(data_module.random_dataloader()):
+    for i, batch in tqdm.tqdm(enumerate(data_module.random_dataloader()), total=len(data_module.random_dataloader())):
         input_ids, attention_mask = batch
         audio_values = model.model(input_ids=input_ids, attention_mask=attention_mask, max_new_tokens=cfg.model.model.max_new_tokens)
         sampling_rate = model.model.model.config.audio_encoder.sampling_rate
