@@ -112,6 +112,5 @@ class CaptionGenerationConfig(DictConfig):
     trainer: TrainerConfig
     evaluation: EvaluationConfig
     paths: PathsConfig
-    logger: Optional[DictConfig] = None
     device: str = "cuda"
     random_state: int = 42
