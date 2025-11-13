@@ -43,8 +43,6 @@ class DatasetConfig:
     caption_column: str = "caption"
     text_column: str = "text"
     remove_columns: Optional[List[str]] = None
-    max_train_samples: Optional[int] = None
-    max_eval_samples: Optional[int] = None
 
 
 @dataclass
@@ -87,7 +85,6 @@ class EvaluationMetricConfig:
 
 @dataclass
 class EvaluationConfig:
-    enabled: bool = True
     batch_size: int = 8
     max_new_tokens: int = 256
     metrics: List[EvaluationMetricConfig] = field(default_factory=list)

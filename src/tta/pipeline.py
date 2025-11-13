@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import rootutils
 import hydra
 import pytorch_lightning as pl
 import torch
@@ -13,10 +14,11 @@ from src.tta.audio import generate_audio_samples
 from src.tta.config import TTAConfig
 from src.utils import RankedLogger, instantiate_loggers
 
+rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+
+log = RankedLogger(__name__, rank_zero_only=True)
 
 def run_tta_generation(cfg: TTAConfig) -> None:
-    log = RankedLogger(__name__, rank_zero_only=True)
-
     pl.seed_everything(cfg.random_state)
 
     log.info("Instantiating loggers...")
@@ -57,8 +59,6 @@ def run_tta_generation(cfg: TTAConfig) -> None:
     
 
 def evaluate_tta_generation(cfg: TTAConfig) -> None:
-    log = RankedLogger(__name__, rank_zero_only=True)
-
     pl.seed_everything(cfg.random_state)
 
     log.info("Instantiating loggers...")
@@ -82,7 +82,31 @@ def evaluate_tta_generation(cfg: TTAConfig) -> None:
     output_root = Path(cfg.paths.output_dir)
 
     log.info("Evaluating TTA generated samples...")
-    # Evaluation logic would go here
+    
+    for evaluation_name, evaluation_cfg in cfg.evaluation.items():
+        log.info(f"Running evaluation: {evaluation_name}")
+        if evaluation_cfg.type == "fad":
+            fad_computer = FrechetAudioDistance(
+                device=device,
+                feature_extractor_name=evaluation_cfg.feature_extractor_name,
+            )
+            score = fad_computer.compute_fad(
+                real_audio_dir=output_root / "real_audio",
+                generated_audio_dir=output_root / "tta_generation",
+            )
+            log.info(f"FAD Score: {score}")
+        elif evaluation_cfg.type == "clap":
+            clap_computer = CLAPScore(
+                device=device,
+                model_name=evaluation_cfg.model_name,
+            )
+            score = clap_computer.compute_clap_score(
+                real_audio_dir=output_root / "real_audio",
+                generated_audio_dir=output_root / "tta_generation",
+            )
+            log.info(f"CLAP Score: {score}")
+        else:
+            log.warning(f"Unknown evaluation type: {evaluation_cfg.type}")
 
     if experiment_loggers:
         log.info("TTA evaluation completed and logged.")

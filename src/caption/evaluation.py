@@ -15,6 +15,8 @@ from tqdm import tqdm
 from src.utils import RankedLogger
 
 
+log = RankedLogger(__name__, rank_zero_only=True)
+
 def generate_caption(
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
@@ -173,8 +175,7 @@ def run_test_evaluation(
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
     eval_examples: List[dict],
-    output_dir: Path,
-    logger: Optional[RankedLogger] = None,
+    output_dir: Path
 ) -> Dict[str, Any]:
     """
     Run evaluation on test set using batch processing.
@@ -186,7 +187,6 @@ def run_test_evaluation(
         tokenizer: Tokenizer
         eval_examples: List of evaluation examples
         output_dir: Directory to save results
-        logger: Logger instance
         batch_size: Batch size for generation
         
     Returns:
@@ -198,8 +198,8 @@ def run_test_evaluation(
     aspects = [example.get(cfg.data.aspect_column, "") for example in eval_examples]
 
     # Generate captions in batches
-    if logger:
-        logger.info(f"Generating captions for {len(prompts)} examples with batch size {cfg.evaluation.batch_size}...")
+    if log:
+        log.info(f"Generating captions for {len(prompts)} examples with batch size {cfg.evaluation.batch_size}...")
     predictions = generate_captions_batch(
         model,
         tokenizer,
@@ -209,8 +209,8 @@ def run_test_evaluation(
     )
 
     # Compute metrics
-    if logger:
-        logger.info("Computing evaluation metrics...")
+    if log:
+        log.info("Computing evaluation metrics...")
     metrics = computer.compute_test_metrics(predictions, references)
 
     # Save results
@@ -219,8 +219,8 @@ def run_test_evaluation(
     # Save metrics
     metrics_path = output_dir / "evaluation_metrics.json"
     metrics_path.write_text(json.dumps(metrics, indent=2))
-    if logger:
-        logger.info(f"Metrics saved to {metrics_path}")
+    if log:
+        log.info(f"Metrics saved to {metrics_path}")
 
     # Save predictions
     if cfg.evaluation.output_predictions:
@@ -234,10 +234,10 @@ def run_test_evaluation(
         ]
         predictions_path = output_dir / cfg.evaluation.predictions_file
         pd.DataFrame(records).to_csv(predictions_path, index=False)
-        if logger:
-            logger.info(f"Predictions saved to {predictions_path}")
+        if log:
+            log.info(f"Predictions saved to {predictions_path}")
 
-    if logger:
-        logger.info(f"Evaluation metrics: {metrics}")
+    if log:
+        log.info(f"Evaluation metrics: {metrics}")
 
     return metrics

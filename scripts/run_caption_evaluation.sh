@@ -1,5 +1,5 @@
 #!/bin/bash -l
-#SBATCH -J run_caption_test_generation
+#SBATCH -J run_caption_evaluation
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=8GB
@@ -52,4 +52,4 @@ export OUT_DIR="$OUT_DIR"
 export CONDA_DIR="$CONDA_DIR"
 
 mkdir -p "$HF_HOME"
-srun "$ENV_DIR/bin/python" src/scripts/caption/test_generation.py "${HYDRA_OVERRIDES[@]}"
+srun "$ENV_DIR/bin/python" src/scripts/caption/run_evaluation.py "${HYDRA_OVERRIDES[@]}"

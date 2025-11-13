@@ -2,7 +2,7 @@
 defaults:
   - override /paths: plgrid
   - override /prompt: llama
-  - override /model: caption/llama_3.1_70b_instruct.yaml
+  - override /model: caption/llama_3.1_8b_instruct.yaml
   - override /trainer: caption/5_epochs
   - override /lora: caption/regularization
   - override /evaluation: caption/larger_size

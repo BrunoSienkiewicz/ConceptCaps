@@ -16,13 +16,14 @@ from src.utils import RankedLogger
 from src.caption.evaluation import generate_captions_batch
 
 
+log = RankedLogger(__name__, rank_zero_only=True)
+
 def run_caption_inference(
     cfg: DictConfig,
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
     examples: List[dict],
-    predictions_path: Path,
-    logger: Optional[RankedLogger] = None
+    predictions_path: Path
 ) -> pd.DataFrame:
     """
     Run inference on examples using batch processing.
@@ -33,7 +34,7 @@ def run_caption_inference(
         tokenizer: Tokenizer
         examples: List of examples to process
         predictions_path: Path to save results
-        logger: Logger instance
+        log: log instance
         batch_size: Batch size for generation
         
     Returns:
@@ -44,8 +45,8 @@ def run_caption_inference(
     aspects = [example.get(cfg.data.aspect_column, "") for example in examples]
 
     # Generate captions in batches
-    if logger:
-        logger.info(
+    if log:
+        log.info(
             f"Running inference on {len(prompts)} examples with batch size {cfg.evaluation.batch_size}..."
         )
     predictions = generate_captions_batch(
@@ -70,8 +71,8 @@ def run_caption_inference(
     results_df = pd.DataFrame(records)
     results_df.to_csv(predictions_path, index=False)
     
-    if logger:
-        logger.info(f"Inference completed. Predictions saved to {predictions_path}")
+    if log:
+        log.info(f"Inference completed. Predictions saved to {predictions_path}")
 
     return results_df
     

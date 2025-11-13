@@ -9,6 +9,6 @@ defaults:
   - logger: null
   - hydra: default
 
-task_name: caption_test_generation
+task_name: caption_evaluation
 random_state: 42
 device: cuda

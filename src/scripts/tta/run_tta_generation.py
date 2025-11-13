@@ -13,21 +13,16 @@ from src.utils import (RankedLogger, instantiate_loggers, log_hyperparameters,
                        print_config_tree)
 from src.tta.config import TTAConfig
 
-rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
+rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
 def tta(cfg: TTAConfig):
-    random_state = cfg.random_state
-    pl.seed_everything(random_state)
+    pl.seed_everything(cfg.random_state)
 
     log.info("Instantiating loggers...")
-
-    wandb.login()
-    wandb.init(project="tta_generation")
-
-    logger = instantiate_loggers(cfg.get("logger"))
+    _ = instantiate_loggers(cfg.get("logger"))
 
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")

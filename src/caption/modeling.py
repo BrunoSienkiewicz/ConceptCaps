@@ -9,6 +9,10 @@ from omegaconf import DictConfig, OmegaConf
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training, PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
+from src.utils.pylogger import RankedLogger
+
+
+log = RankedLogger(__name__, rank_zero_only=True)
 
 def build_quantization_config(model_cfg: DictConfig) -> BitsAndBytesConfig | None:
     quant_cfg = model_cfg.get("quantization")
@@ -36,7 +40,7 @@ def prepare_tokenizer(model_cfg: DictConfig) -> AutoTokenizer:
     return tokenizer
 
 
-def prepare_training_model(log, model_cfg: DictConfig, lora_cfg: DictConfig) -> Tuple[AutoModelForCausalLM, LoraConfig]:
+def prepare_training_model(model_cfg: DictConfig, lora_cfg: DictConfig) -> Tuple[AutoModelForCausalLM, LoraConfig]:
     quantization_config = build_quantization_config(model_cfg)
     model = AutoModelForCausalLM.from_pretrained(
         model_cfg.name,
@@ -59,7 +63,7 @@ def prepare_training_model(log, model_cfg: DictConfig, lora_cfg: DictConfig) -> 
     model.print_trainable_parameters()
     return model, lora_config
 
-def prepare_evaluation_model_tokenizer(log, model_cfg: DictConfig) -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
+def prepare_evaluation_model_tokenizer(model_cfg: DictConfig) -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
     tokenizer = prepare_tokenizer(model_cfg)
     quantization_config = build_quantization_config(model_cfg)
     model = AutoModelForCausalLM.from_pretrained(

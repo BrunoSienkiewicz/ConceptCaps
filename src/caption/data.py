@@ -31,8 +31,6 @@ def prepare_datasets(data_cfg, prompt_cfg, raw_dataset: DatasetDict) -> DatasetD
     caption_column = data_cfg.caption_column
     aspect_column = data_cfg.aspect_column
     remove_columns = data_cfg.remove_columns
-    if remove_columns is None:
-        remove_columns = raw_dataset["train"].column_names
 
     def _transform_train_row(row: Dict[str, Any]) -> Dict[str, str]:
         formatted = _format_prompt(
@@ -60,19 +58,11 @@ def prepare_datasets(data_cfg, prompt_cfg, raw_dataset: DatasetDict) -> DatasetD
                 _transform_train_row,
                 remove_columns=remove_columns,
             )
-            if data_cfg.max_train_samples is not None:
-                processed_dataset[split] = processed_dataset[split].select(
-                    range(data_cfg.max_train_samples)
-                )
         else:
             processed_dataset[split] = raw_dataset[split].map(
                 _transform_eval_row,
                 remove_columns=remove_columns,
             )
-            if data_cfg.max_eval_samples is not None:
-                processed_dataset[split] = processed_dataset[split].select(
-                    range(data_cfg.max_eval_samples)
-                )
 
     return processed_dataset
 

@@ -16,9 +16,12 @@ from src.caption.inference import run_caption_inference
 from src.caption.logging_utils import flatten_numeric_metrics
 from src.caption.modeling import prepare_training_model, prepare_tokenizer, prepare_evaluation_model_tokenizer
 from src.caption.trainer import create_trainer
+from src.utils.pylogger import RankedLogger
 
 
-def run_training(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
+log = RankedLogger(__name__, rank_zero_only=True)
+
+def run_training(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     device = torch.device(cfg.device)
 
     output_dir = Path(cfg.paths.output_dir)
@@ -57,7 +60,7 @@ def run_training(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     torch.cuda.empty_cache()
 
 
-def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
+def run_evaluation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     """
     Run evaluation on test set with batch processing.
     
@@ -70,9 +73,6 @@ def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     """
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
-
-    wandb.login()
-    wandb.init(project="huggingface")
 
     dataset = load_dataset(cfg.data.dataset_name)
     dataset = prepare_datasets(cfg.data, cfg.prompt, dataset)
@@ -107,7 +107,9 @@ def run_evaluation(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     if metrics and wandb.run is not None:
         payload: Dict[str, float] = {}
         for key, value in metrics.items():
-            payload.update(flatten_numeric_metrics(value, f"test/{key}"))
+            if not isinstance(value, (int, float)):
+                continue  # skip non-numeric values
+            payload[f"test/{key}"] = value
         wandb.log(payload)
 
     return metrics
