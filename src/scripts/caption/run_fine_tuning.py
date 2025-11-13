@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 import torch
 import hydra
 import rootutils
@@ -30,6 +31,8 @@ def main(cfg: CaptionGenerationConfig) -> None:
     print_config_tree(cfg)
 
     run_training(log, cfg)
+
+    time.sleep(5)  # Ensure training deallocations are complete
 
     if (cfg.evaluation.enabled):
         run_evaluation(log, cfg)

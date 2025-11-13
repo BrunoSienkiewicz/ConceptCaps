@@ -1,0 +1,16 @@
+metrics:
+  - name: clap_score
+    kwargs:
+      model_name: "vggish"
+      submodel_name: "630k-audioset"
+      verbose: false
+      audio_load_worker: 4
+  - name: fad
+    kwargs: 
+      model_name: "vggish"
+      submodel_name: "630k-audioset"
+      verbose: false
+      audio_load_worker: 4
+text_path: ${paths.data_dir}
+audio_path: ${paths.data_dir}/audio_samples
+text_column: caption
