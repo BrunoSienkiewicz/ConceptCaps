@@ -1,16 +1,20 @@
+"""Simplified TTA dataset loader.
+
+Direct dataset loading and tokenization without unnecessary abstractions.
+"""
+
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
 import torch
 from datasets import load_dataset
 from torch.utils.data import DataLoader, Dataset
 from transformers import AutoProcessor
 
-from src.data.generic_data_module import GenericDataModule
-
 
 class TTADataset(Dataset):
+    """Simple TTA dataset wrapper."""
+
     def __init__(
         self,
         input_ids: torch.Tensor,
@@ -24,88 +28,69 @@ class TTADataset(Dataset):
     def __len__(self) -> int:
         return len(self.input_ids)
 
-    def __getitem__(
-        self, idx
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        return (
-            self.input_ids[idx],
-            self.attention_mask[idx]
-        )
+    def __getitem__(self, idx) -> Tuple[torch.Tensor, torch.Tensor]:
+        return (self.input_ids[idx], self.attention_mask[idx])
 
 
-class TextDescriptions(GenericDataModule):
-    def __init__(
-        self,
-        dataset: str,
-        batch_size: int,
-        processor: AutoProcessor,
-        emotions: list[str],
-        instruments: list[str],
-        genres: list[str],
-        subset: str = "train",
-        subset_size: float = 0.1,
-        max_sequence_length: int = 256,
-        device: torch.device = torch.device("cpu"),
-    ):
-        self.processor = processor
-        self.max_sequence_length = max_sequence_length
-        self.emotions = emotions
-        self.instruments = instruments
-        self.genres = genres
-        self.subset = subset
-        self.subset_size = subset_size
-        super().__init__(dataset, batch_size, device)
+def load_and_tokenize_dataset(
+    dataset_name: str,
+    processor: AutoProcessor,
+    subset: str = "train",
+    subset_size: float = 0.1,
+    max_sequence_length: int = 256,
+    caption_column: str = "caption",
+    device: torch.device = torch.device("cpu"),
+) -> Tuple[TTADataset, pd.DataFrame]:
+    """Load a dataset and tokenize captions.
+    
+    Args:
+        dataset_name: HuggingFace dataset identifier
+        processor: Tokenizer/processor to use
+        subset: Dataset split to load
+        subset_size: Fraction of dataset to use
+        max_sequence_length: Max tokenization length
+        caption_column: Name of caption column
+        device: Device to load tensors to
+        
+    Returns:
+        (TTADataset, metadata_dataframe)
+    """
+    # Load dataset
+    dataset_dict = load_dataset(dataset_name)
+    df = dataset_dict[subset].to_pandas()
+    
+    # Sample subset
+    df = df.sample(frac=subset_size).reset_index(drop=True)
+    
+    # Tokenize captions
+    captions = df[caption_column].tolist()
+    inputs = processor(
+        text=captions,
+        max_length=max_sequence_length,
+        padding=True,
+        return_tensors="pt",
+        truncation=True,
+    )
+    
+    # Create dataset
+    tta_dataset = TTADataset(
+        input_ids=inputs["input_ids"],
+        attention_mask=inputs["attention_mask"],
+        device=device,
+    )
+    
+    return tta_dataset, df
 
-    def _transform(self, dataset: pd.DataFrame):
-        dataset = dataset.drop(
-            columns=[
-                # "start_s",
-                # "end_s",
-                # "audioset_positive_labels",
-                # "author_id",
-                # "is_balanced_subset",
-                # "is_audioset_eval",
-                "aspect_list"
-            ]
-        )
 
-        # TODO: Extract concept tags
+def get_dataloader(
+    dataset: TTADataset,
+    batch_size: int = 4,
+    shuffle: bool = False,
+) -> DataLoader:
+    """Get a DataLoader for the TTA dataset."""
+    return DataLoader(
+        dataset=dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+    )
 
-        return dataset
-
-    def _tokenize(self, text: list[str]) -> dict[str, torch.Tensor]:
-        inputs = self.processor(
-            text=text,
-            max_length=self.max_sequence_length,
-            padding=True,
-            return_tensors="pt",
-            truncation=True,
-        )
-        # {"input_ids": ..., "attention_mask": ...}
-        return inputs
-
-    def prepare_data(self):
-        self.dataset_loaded = load_dataset(self.dataset)
-        self.dataset = self._transform(
-            self.dataset_loaded[self.subset].to_pandas()
-        )
-        self.dataset = self.dataset.sample(
-            frac=self.subset_size
-        ).reset_index(drop=True)
-
-    def setup(self, stage=None):
-        self.dataset_all = self._tokenize(
-            self.dataset["caption"].tolist()
-        )
-
-    def random_dataloader(self):
-        concept_dataset = TTADataset(
-            input_ids=self.dataset_all["input_ids"],
-            attention_mask=self.dataset_all["attention_mask"],
-            device=self.device,
-        )
-        return DataLoader(
-            dataset=concept_dataset,
-            batch_size=self.batch_size,
-            shuffle=False,
-        )

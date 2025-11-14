@@ -8,8 +8,8 @@
 #SBATCH --time=10:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
-#SBATCH --output="output.out"
-#SBATCH --error="error.err"
+#SBATCH --output=logs/caption_evaluation/${SLURM_JOB_ID}.out
+#SBATCH --error=logs/caption_evaluation/${SLURM_JOB_ID}.err
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
