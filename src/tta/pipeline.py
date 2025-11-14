@@ -23,7 +23,6 @@ def run_tta_generation(cfg: TTAConfig) -> None:
 
     log.info("Instantiating loggers...")
     experiment_loggers = instantiate_loggers(cfg.get("logger"))
-    wandb.login()
 
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
@@ -63,7 +62,6 @@ def evaluate_tta_generation(cfg: TTAConfig) -> None:
 
     log.info("Instantiating loggers...")
     experiment_loggers = instantiate_loggers(cfg.get("logger"))
-    wandb.login()
 
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
@@ -95,6 +93,8 @@ def evaluate_tta_generation(cfg: TTAConfig) -> None:
                 generated_audio_dir=output_root / "tta_generation",
             )
             log.info(f"FAD Score: {score}")
+            if wandb.run is not None:
+                wandb.log({f"FAD/{evaluation_name}": score})
         elif evaluation_cfg.type == "clap":
             clap_computer = CLAPScore(
                 device=device,
@@ -105,6 +105,8 @@ def evaluate_tta_generation(cfg: TTAConfig) -> None:
                 generated_audio_dir=output_root / "tta_generation",
             )
             log.info(f"CLAP Score: {score}")
+            if wandb.run is not None:
+                wandb.log({f"CLAP/{evaluation_name}": score})
         else:
             log.warning(f"Unknown evaluation type: {evaluation_cfg.type}")
 

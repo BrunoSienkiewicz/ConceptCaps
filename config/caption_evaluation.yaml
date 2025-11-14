@@ -9,6 +9,7 @@ defaults:
   - logger: null
   - hydra: default
 
+run_id: ${now:%Y%m%d_%H%M%S}
 task_name: caption_evaluation
 random_state: 42
 device: cuda

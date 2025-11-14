@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from pathlib import Path
+import time
 from typing import Any, Dict
 
-import gc
 import torch
 import wandb
 
@@ -13,7 +13,6 @@ from src.caption.config import CaptionGenerationConfig
 from src.caption.data import prepare_datasets, prepare_inference_datasets
 from src.caption.evaluation import run_test_evaluation, MetricComputer
 from src.caption.inference import run_caption_inference
-from src.caption.logging_utils import flatten_numeric_metrics
 from src.caption.modeling import prepare_training_model, prepare_tokenizer, prepare_evaluation_model_tokenizer
 from src.caption.trainer import create_trainer
 from src.utils.pylogger import RankedLogger
@@ -24,8 +23,6 @@ log = RankedLogger(__name__, rank_zero_only=True)
 def run_training(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     device = torch.device(cfg.device)
 
-    output_dir = Path(cfg.paths.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
     model_dir = Path(cfg.paths.model_dir)
     model_dir.mkdir(parents=True, exist_ok=True) 
 
@@ -54,11 +51,6 @@ def run_training(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     log.info("Saving final model...")
     trainer.save_model(model_dir)
 
-    # Clean up
-    del model
-    gc.collect()
-    torch.cuda.empty_cache()
-
 
 def run_evaluation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     """
@@ -83,10 +75,8 @@ def run_evaluation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
 
     metric_computer = MetricComputer(cfg.evaluation.metrics, tokenizer)
 
-    output_dir = Path(cfg.paths.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    model_dir = Path(cfg.paths.model_dir)
-    model_dir.mkdir(parents=True, exist_ok=True) 
+    data_dir = Path(cfg.paths.data_dir)
+    data_dir.mkdir(parents=True, exist_ok=True)
 
     log.info("Running evaluation...")
     log.info(f"Test examples count: {len(test_examples)}")
@@ -100,7 +90,7 @@ def run_evaluation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
         model, 
         tokenizer, 
         test_examples, 
-        output_dir, 
+        data_dir, 
         log,
     )
 
@@ -115,7 +105,7 @@ def run_evaluation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     return metrics
 
 
-def run_inference(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
+def run_inference(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     """
     Run inference on test set with batch processing.
     
@@ -135,8 +125,8 @@ def run_inference(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     log.info("Loading tokenizer...")
     tokenizer = prepare_tokenizer(cfg.model)
 
-    output_dir = Path(cfg.paths.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    data_dir = Path(cfg.paths.data_dir)
+    data_dir.mkdir(parents=True, exist_ok=True)
 
     log.info("Running inference...")
     model, tokenizer = prepare_evaluation_model_tokenizer(log, cfg.model)
@@ -144,7 +134,7 @@ def run_inference(log, cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     
     for split in dataset.keys():
         examples = dataset[split]
-        predictions_path = output_dir / f"{split}.csv"
+        predictions_path = data_dir / f"{split}.csv"
         results_df = run_caption_inference(
             cfg,
             model,
