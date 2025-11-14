@@ -1,0 +1,29 @@
+defaults:
+  - logger: wandb
+  - hydra: default
+
+run_id: ${now:%Y%m%d_%H%M%S}
+
+dataset:
+  base_dir: ${paths.data_dir}/generated_captions/pipeline
+  ready_dir: ${paths.data_dir}/generated_captions/pipeline/latest
+
+storage:
+  cache_dir: ${paths.root_dir}/.cache/huggingface
+  out_dir: ${paths.root_dir}
+
+pipeline:
+  base_overrides:
+    - logger=wandb
+    - "+preset=caption/llama_plgrid"
+  inference_stage: inference
+  stages:
+    - name: fine_tuning
+      script: src/scripts/caption/run_fine_tuning.py
+      overrides: []
+    - name: evaluation
+      script: src/scripts/caption/run_evaluation.py
+      overrides: []
+    - name: inference
+      script: src/scripts/caption/run_inference.py
+      overrides: []
