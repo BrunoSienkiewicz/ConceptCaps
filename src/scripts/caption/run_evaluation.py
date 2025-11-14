@@ -1,4 +1,5 @@
 from __future__ import annotations
+import time
 
 import torch
 import hydra
@@ -26,7 +27,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
             wandb.login()
             run_name = logger.run_name if logger.run_name else None
             if run_name is None:
-                run_name = f"caption-evaluation-{cfg.model.name}-{int(torch.randint(0, 1e6, (1,)).item())}"
+                run_name = f"caption-evaluation-{cfg.model.name}-{time.strftime('%Y%m%d-%H%M%S')}"
             wandb.init(project=logger.project, name=run_name)
 
     device = torch.device(cfg.device)

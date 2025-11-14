@@ -40,7 +40,7 @@ def load_and_tokenize_dataset(
     max_sequence_length: int = 256,
     caption_column: str = "caption",
     device: torch.device = torch.device("cpu"),
-) -> Tuple[TTADataset, pd.DataFrame]:
+) -> TTADataset:
     """Load a dataset and tokenize captions.
     
     Args:
@@ -81,16 +81,26 @@ def load_and_tokenize_dataset(
     
     return tta_dataset, df
 
-
-def get_dataloader(
-    dataset: TTADataset,
-    batch_size: int = 4,
-    shuffle: bool = False,
-) -> DataLoader:
-    """Get a DataLoader for the TTA dataset."""
-    return DataLoader(
-        dataset=dataset,
-        batch_size=batch_size,
-        shuffle=shuffle,
+def prepare_dataloader(cfg: dict, processor: AutoProcessor) -> DataLoader:
+    """Prepare DataLoader for TTA dataset.
+    
+    Args:
+        cfg: Configuration dictionary with dataset and dataloader parameters.
+    Returns:
+        DataLoader for the TTA dataset.
+    """
+    dataset = load_and_tokenize_dataset(
+        dataset_name=cfg["dataset_name"],
+        processor=processor,
+        subset=cfg.get("subset", "train"),
+        subset_size=cfg.get("subset_size", 0.1),
+        max_sequence_length=cfg.get("max_sequence_length", 256),
+        caption_column=cfg.get("caption_column", "caption"),
+        device=torch.device(cfg.get("device", "cpu")),
     )
-
+    dataloader = DataLoader(
+        dataset=dataset,
+        batch_size=cfg.get("batch_size", 4),
+        shuffle=cfg.get("shuffle", False),
+    )
+    return dataloader
