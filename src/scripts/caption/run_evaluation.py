@@ -24,7 +24,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
 
     loggers = instantiate_loggers(cfg.get("logger"))
     for logger in loggers:
-        if isinstance(logger, pl.loggers.wandb.WandbLogger):
+        if isinstance(logger, pl.loggers.pytorch.wandb.WandbLogger):
             wandb.login()
             run_name = logger.run_name if logger.run_name else None
             if run_name is None:

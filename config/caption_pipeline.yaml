@@ -24,6 +24,6 @@ pipeline:
     - name: evaluation
       script: src/scripts/caption/run_evaluation.py
       overrides: []
-    - name: inference
-      script: src/scripts/caption/run_inference.py
-      overrides: []
+    # - name: inference
+    #   script: src/scripts/caption/run_inference.py
+    #   overrides: []
