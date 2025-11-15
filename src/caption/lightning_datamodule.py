@@ -38,6 +38,7 @@ class CaptionDataModule(pl.LightningDataModule):
         self.data_collator = DataCollatorForLanguageModeling(
             tokenizer=self.tokenizer,
             mlm=False,  # Causal LM, not masked LM
+            padding=True, 
         )
 
     def tokenize_function(self, examples):
@@ -49,7 +50,7 @@ class CaptionDataModule(pl.LightningDataModule):
             examples[text_column],
             truncation=True,
             max_length=self.max_length,
-            padding=False,  # Dynamic padding in collator
+            padding=True,
         )
         
         # For training, labels are the same as input_ids
