@@ -1,7 +1,7 @@
 # @package _global_
 defaults:
   - override /paths: plgrid
-  - override /prompt: llama
+  - override /prompt: qwen
   - override /model: caption/qwen2.5-7b_instruct
   - override /trainer: caption/5_epochs
   - override /lora: caption/regularization
