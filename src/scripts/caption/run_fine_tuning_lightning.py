@@ -1,15 +1,14 @@
 from __future__ import annotations
 
+import torch
 import hydra
 import rootutils
 import lightning as pl
-from lightning.pytorch.callbacks import ModelCheckpoint, EarlyStopping, LearningRateMonitor
-from lightning.pytorch.loggers import WandbLogger
 from pathlib import Path
 from datasets import load_dataset
 
 from src.caption import CaptionGenerationConfig
-from src.utils import print_config_tree, RankedLogger, instantiate_loggers
+from src.utils import print_config_tree, RankedLogger, instantiate_loggers, instantiate_callbacks
 from src.caption.data import prepare_datasets
 from src.caption.modeling import prepare_tokenizer
 from src.caption.evaluation import MetricComputer
@@ -30,6 +29,9 @@ def main(cfg: CaptionGenerationConfig) -> None:
     log.info(f"Setting random seed to {cfg.random_state}...")
     pl.seed_everything(cfg.random_state, workers=True)
 
+    device = torch.device(cfg.device)
+    log.info(f"Using device: {device}")
+
     # Print configuration
     print_config_tree(cfg)
 
@@ -42,6 +44,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
     # Load and prepare datasets
     log.info("Loading datasets...")
     dataset = load_dataset(cfg.data.dataset_name)
+    log.info("Preparing datasets...")
     dataset = prepare_datasets(cfg.data, cfg.prompt, dataset)
     log.info(
         f"Dataset loaded with {len(dataset['train'])} training "
@@ -78,32 +81,10 @@ def main(cfg: CaptionGenerationConfig) -> None:
 
     # Setup callbacks
     callbacks = []
-    
-    # Model checkpoint callback
-    checkpoint_callback = ModelCheckpoint(
-        dirpath=checkpoint_dir,
-        filename="checkpoint-{epoch:02d}-{val/loss:.4f}",
-        monitor="val/loss",
-        mode="min",
-        save_top_k=cfg.trainer.get("save_total_limit", 3),
-        save_last=True,
-        verbose=True,
-    )
-    callbacks.append(checkpoint_callback)
-    
-    # Early stopping callback
-    if cfg.trainer.get("early_stopping_patience"):
-        early_stop_callback = EarlyStopping(
-            monitor="val/loss",
-            patience=cfg.trainer.early_stopping_patience,
-            mode="min",
-            verbose=True,
-        )
-        callbacks.append(early_stop_callback)
-    
-    # Learning rate monitor
-    lr_monitor = LearningRateMonitor(logging_interval="step")
-    callbacks.append(lr_monitor)
+    if cfg.get("callbacks"):
+        pl_callbacks = instantiate_callbacks(cfg.callbacks)
+        if pl_callbacks:
+            callbacks.extend(pl_callbacks if isinstance(pl_callbacks, list) else [pl_callbacks])
 
     # Setup loggers
     loggers = []
@@ -147,7 +128,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
         model.model.save_pretrained(final_model_path)
         log.info(f"Saved LoRA adapter to {final_model_path}")
     
-    log.info(f"Training complete! Best model saved to {checkpoint_callback.best_model_path}")
+    log.info(f"Training completed. Model and checkpoints are saved in {checkpoint_dir}")
 
 
 if __name__ == "__main__":
