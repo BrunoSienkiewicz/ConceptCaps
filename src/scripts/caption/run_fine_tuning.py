@@ -27,7 +27,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
         if isinstance(logger, pl.pytorch.loggers.wandb.WandbLogger):
             wandb.login()
             run_name = f"caption-fine-tuning-{cfg.model.name}-{time.strftime('%Y%m%d-%H%M%S')}"
-            wandb.init(project=logger.project, name=run_name)
+            wandb.init(project=logger.experiment.project, name=run_name)
 
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
