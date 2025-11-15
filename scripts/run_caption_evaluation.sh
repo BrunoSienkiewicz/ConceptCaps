@@ -41,14 +41,14 @@ if [[ -n "$PRESET" ]]; then
   HYDRA_OVERRIDES+=("+preset=$PRESET")
 fi
 
-OUT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
+ROOT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
 CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
 ENV_DIR="$CONDA_DIR/envs/$(grep -E '^name:' environment.yml | awk '{print $2}')"
 
 export HYDRA_FULL_ERROR=1
 export PYTHONPATH="$PYTHONPATH:$(pwd)"
-export HF_HOME="$OUT_DIR/.cache/huggingface"
-export OUT_DIR="$OUT_DIR"
+export HF_HOME="$ROOT_DIR/.cache/huggingface"
+export OUT_DIR="$ROOT_DIR/caption_evaluation"
 export CONDA_DIR="$CONDA_DIR"
 
 mkdir -p "$HF_HOME"
