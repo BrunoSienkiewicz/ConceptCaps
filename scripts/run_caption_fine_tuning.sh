@@ -53,4 +53,4 @@ export PROJECT_ROOT="$ROOT_DIR"
 export CONDA_DIR="$CONDA_DIR"
 
 mkdir -p "$HF_HOME"
-srun "$ENV_DIR/bin/python" src/scripts/caption/run_fine_tuning.py "${HYDRA_OVERRIDES[@]}"
+srun "$ENV_DIR/bin/python" src/scripts/caption/run_fine_tuning_lightning.py "${HYDRA_OVERRIDES[@]}"

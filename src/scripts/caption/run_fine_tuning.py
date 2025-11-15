@@ -57,7 +57,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
     metric_computer = MetricComputer(cfg.evaluation.metrics, tokenizer)
 
     log.info("Instantiating trainer...")
-    trainer = create_trainer(cfg, model, tokenizer, dataset, lora_config, metric_computer, logger=logger)
+    trainer = create_trainer(cfg, model, tokenizer, dataset, lora_config, metric_computer)
 
     log.info("Starting training...")
     trainer.train()
