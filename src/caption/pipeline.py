@@ -37,7 +37,7 @@ def run_training(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     tokenizer = prepare_tokenizer(cfg.model)
 
     log.info("Loading model...")
-    model, lora_config = prepare_training_model(log, cfg.model, cfg.lora)
+    model, lora_config = prepare_training_model(cfg.model, cfg.lora)
     model.to(device)
 
     metric_computer = MetricComputer(cfg.evaluation.metrics, tokenizer)
