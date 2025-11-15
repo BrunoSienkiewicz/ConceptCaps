@@ -40,7 +40,7 @@ def load_and_tokenize_dataset(
     max_sequence_length: int = 256,
     caption_column: str = "caption",
     device: torch.device = torch.device("cpu"),
-) -> TTADataset:
+) -> Tuple[TTADataset, pd.DataFrame]:
     """Load a dataset and tokenize captions.
     
     Args:
@@ -81,7 +81,7 @@ def load_and_tokenize_dataset(
     
     return tta_dataset, df
 
-def prepare_dataloader(cfg: dict, processor: AutoProcessor) -> DataLoader:
+def prepare_dataloader(cfg: dict, processor: AutoProcessor) -> Tuple[DataLoader, pd.DataFrame]:
     """Prepare DataLoader for TTA dataset.
     
     Args:
@@ -89,7 +89,7 @@ def prepare_dataloader(cfg: dict, processor: AutoProcessor) -> DataLoader:
     Returns:
         DataLoader for the TTA dataset.
     """
-    dataset = load_and_tokenize_dataset(
+    dataset, df = load_and_tokenize_dataset(
         dataset_name=cfg["dataset_name"],
         processor=processor,
         subset=cfg.get("subset", "train"),
@@ -103,4 +103,22 @@ def prepare_dataloader(cfg: dict, processor: AutoProcessor) -> DataLoader:
         batch_size=cfg.get("batch_size", 4),
         shuffle=cfg.get("shuffle", False),
     )
-    return dataloader
+    return dataloader, df
+
+
+def save_dataframe_metadata(
+    df: pd.DataFrame,
+    data_dir: str,
+    id_column: str = "id",
+    filename_template: str = "{}.wav",
+) -> None:
+    """Save dataframe metadata with audio file paths.
+    
+    Args:
+        df: DataFrame containing metadata
+        data_dir: Directory where audio files are stored
+        id_column: Column in df that contains unique IDs
+        filename_template: Template for audio filenames
+    """
+    df["filename"] = df[id_column].apply(lambda x: filename_template.format(x))
+    df.to_csv(f"{data_dir}/metadata.csv", index=False)

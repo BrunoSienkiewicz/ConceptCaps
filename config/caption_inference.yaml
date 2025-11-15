@@ -1,6 +1,6 @@
 defaults:
-  - data: caption/load_random_dataset
-  - model: caption/mistral_7b_instruct
+  - data: caption/load_mtg_causal_dataset
+  - model: caption/llama_3.1_8b_instruct
   - prompt: default
   - lora: caption/default
   - trainer: caption/default

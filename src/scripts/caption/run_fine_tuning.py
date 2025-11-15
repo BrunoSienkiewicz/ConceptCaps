@@ -5,6 +5,7 @@ import torch
 import hydra
 import rootutils
 import wandb
+import lightning as pl
 
 from transformers.trainer_utils import set_seed
 
@@ -23,7 +24,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
 
     loggers = instantiate_loggers(cfg.get("logger"))
     for logger in loggers:
-        if isinstance(logger, wandb.WandbLogger):
+        if isinstance(logger, pl.loggers.wandb.WandbLogger):
             run_name = logger.run_name if logger.run_name else None
             if run_name is None:
                 run_name = f"caption-fine-tuning-{cfg.model.name}-{time.strftime('%Y%m%d-%H%M%S')}"
