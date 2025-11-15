@@ -49,7 +49,7 @@ def run_training(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     trainer.train()
 
     log.info("Saving final model...")
-    trainer.save_model(model_dir)
+    trainer.save_model(model_dir / cfg.model.name / cfg.run_id)
 
 
 def run_evaluation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
@@ -84,13 +84,15 @@ def run_evaluation(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
 
     model.to(device)
     
+    output_dir = Path(cfg.paths.data_dir) / cfg.model.name / cfg.run_id
+    output_dir.mkdir(parents=True, exist_ok=True)
     metrics = run_test_evaluation(
         cfg, 
         metric_computer, 
         model, 
         tokenizer, 
         test_examples, 
-        data_dir, 
+        output_dir,
         log,
     )
 
@@ -134,7 +136,8 @@ def run_inference(cfg: CaptionGenerationConfig) -> Dict[str, Any]:
     
     for split in dataset.keys():
         examples = dataset[split]
-        predictions_path = data_dir / f"{split}.csv"
+        predictions_path = data_dir / cfg.model.name / cfg.run_id / f"{split}_predictions.csv"
+        predictions_path.parent.mkdir(parents=True, exist_ok=True)
         results_df = run_caption_inference(
             cfg,
             model,

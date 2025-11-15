@@ -1,6 +1,5 @@
 # @package _global_
 defaults:
-  - override /paths: plgrid
   - override /prompt: gpt
   - override /model: caption/gpt-oss-20b_instruct
   - override /trainer: caption/5_epochs

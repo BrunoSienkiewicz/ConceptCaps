@@ -1,6 +1,5 @@
 # @package _global_
 defaults:
-  - override /paths: plgrid
   - override /prompt: qwen
   - override /model: caption/qwen2.5-7b_instruct
   - override /trainer: caption/5_epochs

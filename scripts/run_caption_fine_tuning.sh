@@ -49,6 +49,7 @@ export HYDRA_FULL_ERROR=1
 export PYTHONPATH="$PYTHONPATH:$(pwd)"
 export HF_HOME="$ROOT_DIR/.cache/huggingface"
 export OUT_DIR="$ROOT_DIR/caption_fine_tuning"
+export PROJECT_ROOT="$ROOT_DIR"
 export CONDA_DIR="$CONDA_DIR"
 
 mkdir -p "$HF_HOME"

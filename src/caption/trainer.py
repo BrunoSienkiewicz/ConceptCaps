@@ -16,7 +16,8 @@ def create_trainer(
     tokenizer: AutoTokenizer,
     dataset: DatasetDict,
     lora_config: LoraConfig,
-    metric_computer: MetricComputer
+    metric_computer: MetricComputer,
+    logger=None,
 ) -> SFTTrainer:
     training_args_dict = OmegaConf.to_container(cfg.trainer, resolve=True)
     training_args_dict = dict(training_args_dict)
@@ -35,6 +36,7 @@ def create_trainer(
         eval_dataset=dataset["validation"],
         peft_config=lora_config,
         processing_class=tokenizer,
-        compute_metrics=metric_computer.compute_metrics
+        compute_metrics=metric_computer.compute_metrics,
+        logger=logger,
     )
     return trainer

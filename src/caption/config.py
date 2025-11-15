@@ -111,3 +111,5 @@ class CaptionGenerationConfig(DictConfig):
     paths: PathsConfig
     device: str = "cuda"
     random_state: int = 42
+    run_id: str = "default_run"
+    task_name: str = "caption_generation"

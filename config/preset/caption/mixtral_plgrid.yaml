@@ -1,6 +1,5 @@
 # @package _global_
 defaults:
-  - override /paths: plgrid
   - override /prompt: mistral
   - override /model: caption/mixtral_8x7b_instruct
   - override /trainer: caption/15_epochs

@@ -10,7 +10,8 @@ dataset:
 
 storage:
   cache_dir: ${paths.root_dir}/.cache/huggingface
-  out_dir: ${paths.root_dir}
+  out_dir: ${paths.root_dir}/caption_pipeline
+  project_root: ${paths.root_dir}
 
 pipeline:
   base_overrides:
@@ -23,7 +24,9 @@ pipeline:
       overrides: []
     - name: evaluation
       script: src/scripts/caption/run_evaluation.py
-      overrides: []
-    # - name: inference
-    #   script: src/scripts/caption/run_inference.py
-    #   overrides: []
+      overrides:
+        - model.checkpoint_dir=${paths.model_dir}/${model.name}/${run_id}
+    - name: inference
+      script: src/scripts/caption/run_inference.py
+      overrides: 
+        - model.checkpoint_dir=${paths.model_dir}/${model.name}/${run_id}
