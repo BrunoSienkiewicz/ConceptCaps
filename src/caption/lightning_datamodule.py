@@ -38,7 +38,6 @@ class CaptionDataModule(pl.LightningDataModule):
         self.data_collator = DataCollatorForLanguageModeling(
             tokenizer=self.tokenizer,
             mlm=False,  # Causal LM, not masked LM
-            padding=True, 
         )
 
     def tokenize_function(self, examples):
