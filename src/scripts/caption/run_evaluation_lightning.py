@@ -1,10 +1,8 @@
-from __future__ import annotations
-
-import torch
 import hydra
+from pathlib import Path
+import torch
 import rootutils
 import lightning as pl
-from pathlib import Path
 from datasets import load_dataset
 
 from src.caption import CaptionGenerationConfig
@@ -20,10 +18,9 @@ rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
-
-@hydra.main(version_base=None, config_path="../../../config", config_name="caption_fine_tuning")
+@hydra.main(version_base=None, config_path="../../../config", config_name="caption_evaluation")
 def main(cfg: CaptionGenerationConfig) -> None:
-    """Main training function using PyTorch Lightning."""
+    """Main evaluation function using PyTorch Lightning."""
     
     # Set random seed for reproducibility
     log.info(f"Setting random seed to {cfg.random_state}...")
@@ -46,10 +43,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
     dataset = load_dataset(cfg.data.dataset_name)
     log.info("Preparing datasets...")
     dataset = prepare_datasets(cfg.data, cfg.prompt, dataset)
-    log.info(
-        f"Dataset loaded with {len(dataset['train'])} training "
-        f"and {len(dataset['validation'])} validation samples."
-    )
+    log.info(f"Test examples count: {len(dataset['test'])}")
 
     # Load tokenizer
     log.info("Loading tokenizer...")
@@ -103,22 +97,15 @@ def main(cfg: CaptionGenerationConfig) -> None:
         logger=loggers,
     )
 
-    # Train the model
-    log.info("Starting training...")
-    trainer.fit(model, datamodule=datamodule)
-
-    # Save final model
-    log.info("Saving final model...")
-    final_model_path = checkpoint_dir / "final_model"
-    trainer.save_checkpoint(final_model_path / "checkpoint.ckpt")
-    
-    # Save the adapter weights separately (for LoRA)
-    if hasattr(model.model, "save_pretrained"):
-        model.model.save_pretrained(final_model_path)
-        log.info(f"Saved LoRA adapter to {final_model_path}")
-    
-    log.info(f"Training completed. Model and checkpoints are saved in {checkpoint_dir}")
-
+    # Test model
+    log.info("Running evaluation...")
+    checkpoint_path = checkpoint_dir / "best.ckpt"
+    log.info(f"Loading best checkpoint from {checkpoint_path}...")
+    trainer.test(
+        model=model,
+        datamodule=datamodule,
+        ckpt_path=str(checkpoint_path),
+    )
 
 if __name__ == "__main__":
     main()

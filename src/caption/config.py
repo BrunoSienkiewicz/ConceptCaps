@@ -57,24 +57,28 @@ class LoRAConfig:
 
 @dataclass
 class TrainerConfig:
-    per_device_train_batch_size: int = 8
-    gradient_accumulation_steps: int = 2
-    warmup_steps: int = 5
-    learning_rate: float = 2e-4
-    num_train_epochs: int = 3
-    optim: str = "adamw_8bit"
-    weight_decay: float = 0.01
-    lr_scheduler_type: str = "linear"
-    seed: int = 3407
-    output_dir: str = "outputs"
-    report_to: List[str] = field(default_factory=lambda: ["none"])
-    logging_steps: int = 1
-    logging_strategy: str = "steps"
-    save_strategy: str = "no"
-    load_best_model_at_end: bool = True
-    save_only_model: bool = False
-    fp16: Optional[bool] = None
-    bf16: Optional[bool] = None
+    # per_device_train_batch_size: int = 8
+    # gradient_accumulation_steps: int = 2
+    # warmup_steps: int = 5
+    # learning_rate: float = 2e-4
+    # num_train_epochs: int = 3
+    # optim: str = "adamw_8bit"
+    # weight_decay: float = 0.01
+    # lr_scheduler_type: str = "linear"
+    # seed: int = 3407
+    # output_dir: str = "outputs"
+    # report_to: List[str] = field(default_factory=lambda: ["none"])
+    # logging_steps: int = 1
+    # logging_strategy: str = "steps"
+    # save_strategy: str = "no"
+    # load_best_model_at_end: bool = True
+    # save_only_model: bool = False
+    # fp16: Optional[bool] = None
+    # bf16: Optional[bool] = None
+    max_epochs: int = 3
+    optimizer: DictConfig = field(default_factory=lambda: DictConfig({}))
+    lr_scheduler: DictConfig = field(default_factory=lambda: DictConfig({}))
+
 
 
 @dataclass
