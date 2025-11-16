@@ -4,9 +4,10 @@ from typing import Any, Dict, Optional
 
 import lightning as pl
 import torch
-from omegaconf import DictConfig
+from omegaconf import OmegaConf, DictConfig
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import EvalPrediction
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR, LinearLR
 
@@ -51,7 +52,7 @@ class CaptionFineTuningModule(pl.LightningModule):
         model = AutoModelForCausalLM.from_pretrained(
             self.model_cfg.name,
             quantization_config=quantization_config,
-            device_map=None,  # Let Lightning handle device placement
+            device_map=self.model_cfg.device_map,
             trust_remote_code=self.model_cfg.trust_remote_code,
         )
         
@@ -60,7 +61,6 @@ class CaptionFineTuningModule(pl.LightningModule):
             model = prepare_model_for_kbit_training(model)
         
         # Apply LoRA
-        from omegaconf import OmegaConf
         lora_config = LoraConfig(**OmegaConf.to_container(self.lora_cfg, resolve=True))
         model = get_peft_model(model, lora_config)
         
@@ -125,7 +125,6 @@ class CaptionFineTuningModule(pl.LightningModule):
             all_labels = torch.cat([x["labels"] for x in self.validation_step_outputs])
             
             # Compute metrics
-            from transformers import EvalPrediction
             eval_pred = EvalPrediction(
                 predictions=all_predictions.cpu().numpy(),
                 label_ids=all_labels.cpu().numpy(),
