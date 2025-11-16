@@ -107,6 +107,13 @@ def main(cfg: CaptionGenerationConfig) -> None:
     log.info("Starting training...")
     trainer.fit(model, datamodule=datamodule)
 
+    # Test model
+    log.info("Running evaluation...")
+    trainer.test(
+        model=model,
+        datamodule=datamodule,
+    )
+
     # Save final model
     log.info("Saving final model...")
     final_model_path = checkpoint_dir / "final_model"

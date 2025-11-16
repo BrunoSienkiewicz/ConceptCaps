@@ -21,6 +21,7 @@ log = RankedLogger(__name__, rank_zero_only=True)
 @hydra.main(version_base=None, config_path="../../../config", config_name="caption_evaluation")
 def main(cfg: CaptionGenerationConfig) -> None:
     """Main evaluation function using PyTorch Lightning."""
+    assert cfg.model.checkpoint_dir
     
     # Set random seed for reproducibility
     log.info(f"Setting random seed to {cfg.random_state}...")
@@ -31,12 +32,6 @@ def main(cfg: CaptionGenerationConfig) -> None:
 
     # Print configuration
     print_config_tree(cfg)
-
-    # Setup directories
-    model_dir = Path(cfg.paths.model_dir)
-    model_dir.mkdir(parents=True, exist_ok=True)
-    checkpoint_dir = model_dir / cfg.model.name / cfg.run_id
-    checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     # Load and prepare datasets
     log.info("Loading datasets...")
@@ -99,12 +94,9 @@ def main(cfg: CaptionGenerationConfig) -> None:
 
     # Test model
     log.info("Running evaluation...")
-    checkpoint_path = checkpoint_dir / "best.ckpt"
-    log.info(f"Loading best checkpoint from {checkpoint_path}...")
     trainer.test(
         model=model,
         datamodule=datamodule,
-        ckpt_path=str(checkpoint_path),
     )
 
 if __name__ == "__main__":

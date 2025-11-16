@@ -9,8 +9,7 @@ from omegaconf import OmegaConf, DictConfig
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers import EvalPrediction
-from torch.optim import AdamW
-from torch.optim.lr_scheduler import CosineAnnealingLR, LinearLR
+from peft import PeftModel
 
 from src.caption.evaluation import MetricComputer
 from src.caption.modeling import build_quantization_config, prepare_tokenizer
@@ -43,7 +42,10 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.metric_computer = metric_computer
         
         # Initialize model
-        self.model = self._setup_model()
+        if self.model_cfg.checkpoint_dir:
+            self.model = self._setup_pretrained_model()
+        else:
+            self.model = self._setup_model()
         
         # For validation metrics accumulation
         self.validation_step_outputs = []
@@ -69,6 +71,28 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         log.info("Model prepared with LoRA:")
         model.print_trainable_parameters()
+        
+        return model
+
+    def _setup_pretrained_model(self) -> AutoModelForCausalLM:
+        """Load a pretrained model from checkpoint for evaluation."""
+        quantization_config = build_quantization_config(self.model_cfg)
+        
+        model = AutoModelForCausalLM.from_pretrained(
+            self.model_cfg.name,
+            quantization_config=quantization_config,
+            device_map=self.model_cfg.device_map,
+            trust_remote_code=self.model_cfg.trust_remote_code,
+        )
+        
+        log.info(f"Loading model weights from checkpoint: {self.model_cfg.checkpoint_dir}...")
+        model = PeftModel.from_pretrained(
+            model,
+            self.model_cfg.checkpoint_dir,
+            device_map=self.model_cfg.device_map,
+            low_cpu_mem_usage=True,
+        )
+        model = model.merge_and_unload()
         
         return model
 

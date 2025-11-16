@@ -1,5 +1,5 @@
 _target_: lightning.pytorch.Trainer
-max_epochs: 5
+max_epochs: 15
 accelerator: auto
 devices: auto
 strategy: ddp
