@@ -10,6 +10,8 @@ from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers import EvalPrediction
 from peft import PeftModel
+from torch.optim import AdamW
+from torch.optim.lr_scheduler import CosineAnnealingLR
 
 from src.caption.evaluation import MetricComputer
 from src.caption.modeling import build_quantization_config, prepare_tokenizer
@@ -220,17 +222,24 @@ class CaptionFineTuningModule(pl.LightningModule):
         trainable_params = [p for p in self.model.parameters() if p.requires_grad]
         
         # Optimizer
-        self.optimizer_cfg["params"] = trainable_params
-        optimizer = hydra.utils.instantiate(
-            self.optimizer_cfg,
+        optimizer = AdamW(
+            trainable_params,
+            lr=self.optimizer_cfg.get("lr", 2e-4),
+            weight_decay=self.optimizer_cfg.get("weight_decay", 0.01),
+            betas=(
+                self.optimizer_cfg.get("adam_beta1", 0.9),
+                self.optimizer_cfg.get("adam_beta2", 0.999),
+            ),
+            eps=self.optimizer_cfg.get("eps", 1e-8),
         )
         
         # Scheduler
-        self.lr_scheduler_cfg["optimizer"] = optimizer
-        scheduler = hydra.utils.instantiate(
-            self.lr_scheduler_cfg,
+        scheduler = CosineAnnealingLR(
+            optimizer,
+            T_max=self.trainer.max_epochs,
+            eta_min=self.optimizer_cfg.get("min_lr", 0),
         )
-
+        
         return {
             "optimizer": optimizer,
             "lr_scheduler": {
