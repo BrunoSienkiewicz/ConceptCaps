@@ -42,7 +42,9 @@ class DatasetConfig:
     aspect_column: str = "aspect_list"
     caption_column: str = "caption"
     text_column: str = "text"
+    batch_size: int = 8
     max_length: int = 512
+    dataloader_num_workers: int = 4
     remove_columns: Optional[List[str]] = None
 
 
@@ -59,14 +61,13 @@ class LoRAConfig:
 @dataclass
 class TrainerConfig:
     max_epochs: int = 3
-    per_device_train_batch_size: int = 8
-    gradient_accumulation_steps: int = 2
     dataloader_num_workers: int = 1
     accelerator: str = "auto"
     devices: Union[str, int, List[int]] = "auto"
     strategy: Union[str, dict, None] = "ddp"
     precision: Union[str, int] = "bf16"
     gradient_clip_val: float = 1.0
+    accumulate_grad_batches: int = 1
     log_every_n_steps: int = 5
     val_check_interval: Union[float, int, None] = 1.0
     check_val_every_n_epoch: int = 1

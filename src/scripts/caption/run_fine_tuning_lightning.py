@@ -66,8 +66,8 @@ def main(cfg: CaptionGenerationConfig) -> None:
         dataset=dataset,
         tokenizer=tokenizer,
         data_cfg=cfg.data,
-        batch_size=cfg.trainer.per_device_train_batch_size,
-        num_workers=cfg.trainer.dataloader_num_workers,
+        batch_size=cfg.data.batch_size,
+        num_workers=cfg.data.dataloader_num_workers,
         max_length=cfg.data.max_length 
     )
 
@@ -106,14 +106,13 @@ def main(cfg: CaptionGenerationConfig) -> None:
         strategy=cfg.trainer.strategy,
         precision=cfg.trainer.precision,
         gradient_clip_val=cfg.trainer.gradient_clip_val,
+        accumulate_grad_batches=cfg.trainer.accumulate_grad_batches,
         log_every_n_steps=cfg.trainer.log_every_n_steps,
         val_check_interval=cfg.trainer.val_check_interval,
         check_val_every_n_epoch=cfg.trainer.check_val_every_n_epoch,
         enable_progress_bar=cfg.trainer.enable_progress_bar,
         enable_model_summary=cfg.trainer.enable_model_summary,
         deterministic=cfg.trainer.deterministic,
-        amp_backend=cfg.training.get("amp_backend", "native"),
-        limit_train_batches=cfg.training.get("limit_train_batches", 1.0),
         callbacks=callbacks,
         logger=loggers,
     )
