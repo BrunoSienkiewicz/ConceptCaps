@@ -2,6 +2,7 @@ dataset_name: bsienkiewicz/mtg_causal_tags_dataset
 aspect_column: aspect_list
 caption_column: caption
 text_column: text
+id_column: id
 remove_columns: null
 max_train_samples: null
 max_eval_samples: null

@@ -42,6 +42,7 @@ class DatasetConfig:
     aspect_column: str = "aspect_list"
     caption_column: str = "caption"
     text_column: str = "text"
+    id_column: str = "id"
     batch_size: int = 8
     max_length: int = 512
     dataloader_num_workers: int = 4

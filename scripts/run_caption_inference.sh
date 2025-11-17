@@ -48,8 +48,9 @@ ENV_DIR="$CONDA_DIR/envs/$(grep -E '^name:' environment.yml | awk '{print $2}')"
 export HYDRA_FULL_ERROR=1
 export PYTHONPATH="$PYTHONPATH:$(pwd)"
 export HF_HOME="$ROOT_DIR/.cache/huggingface"
-export OUT_DIR="$ROOT_DIR/caption_inference"
+export OUT_DIR="$OUT_DIR"
+export PLGRID_ARTIFACTS_DIR="$PLGRID_ARTIFACTS_DIR"
 export CONDA_DIR="$CONDA_DIR"
 
 mkdir -p "$HF_HOME"
-srun "$ENV_DIR/bin/python" src/scripts/caption/run_inference.py "${HYDRA_OVERRIDES[@]}"
+srun "$ENV_DIR/bin/python" src/scripts/caption/run_inference_lightning.py "${HYDRA_OVERRIDES[@]}"

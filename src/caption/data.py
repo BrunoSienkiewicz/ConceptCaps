@@ -74,6 +74,7 @@ def prepare_inference_datasets(
 ) -> DatasetDict:
     text_column = data_cfg.text_column
     aspect_column = data_cfg.aspect_column
+    id_column = data_cfg.id_column
     remove_columns = data_cfg.remove_columns
     if remove_columns is None:
         remove_columns = raw_dataset["test"].column_names
@@ -86,6 +87,7 @@ def prepare_inference_datasets(
         return {
             text_column: formatted,
             aspect_column: row[aspect_column],
+            id_column: row[id_column],
         }
 
     processed_dataset = DatasetDict()

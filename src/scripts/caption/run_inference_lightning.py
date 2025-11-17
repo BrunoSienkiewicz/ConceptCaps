@@ -84,6 +84,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
         examples = dataset[split]
         
         # Extract prompts and aspects
+        ids = [example[cfg.data.id_column] for example in examples]
         prompts = [example[cfg.data.text_column] for example in examples]
         aspects = [example.get(cfg.data.aspect_column, "") for example in examples]
         
@@ -101,10 +102,11 @@ def main(cfg: CaptionGenerationConfig) -> None:
         # Prepare output records
         records = [
             {
+                "id": id_,
                 "aspect_list": aspect,
                 "prediction": prediction,
             }
-            for aspect, prediction in zip(aspects, predictions)
+            for id_, aspect, prediction in zip(ids, aspects, predictions)
         ]
         
         # Save results
