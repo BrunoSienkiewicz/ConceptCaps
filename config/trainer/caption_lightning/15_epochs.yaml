@@ -16,6 +16,7 @@ enable_model_summary: true
 deterministic: true
 optimizer:
   _target_: torch.optim.AdamW
+  params: null
   lr: 0.0005
   weight_decay: 0.05
   betas:
@@ -24,5 +25,6 @@ optimizer:
   eps: 1e-08
 lr_scheduler:
   _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+  optimizer: null
   T_max: 5
   eta_min: 0

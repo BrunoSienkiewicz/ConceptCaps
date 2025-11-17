@@ -222,13 +222,13 @@ class CaptionFineTuningModule(pl.LightningModule):
         # Optimizer
         optimizer = hydra.utils.instantiate(
             self.optimizer_cfg,
-            args=(trainable_params,),
+            params=trainable_params,
         )
         
         # Scheduler
         scheduler = hydra.utils.instantiate(
             self.lr_scheduler_cfg,
-            args=(optimizer,),
+            optimizer=optimizer,
         )
 
         return {
