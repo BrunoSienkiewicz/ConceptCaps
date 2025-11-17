@@ -63,9 +63,11 @@ class CaptionFineTuningModule(pl.LightningModule):
             trust_remote_code=self.model_cfg.trust_remote_code,
         )
         
-        # Prepare for k-bit training if quantized
         if quantization_config is not None:
             model = prepare_model_for_kbit_training(model)
+
+        if self.model_cfg.get("gradient_checkpointing", True):
+            model.gradient_checkpointing_enable()
         
         # Apply LoRA
         lora_config = LoraConfig(**OmegaConf.to_container(self.lora_cfg, resolve=True))
