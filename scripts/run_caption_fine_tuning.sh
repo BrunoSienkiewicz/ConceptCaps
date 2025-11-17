@@ -42,14 +42,16 @@ if [[ -n "$PRESET" ]]; then
 fi
 
 ROOT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
+OUT_DIR="$ROOT_DIR/caption_fine_tuning"
+PLGRID_ARTIFACTS_DIR="$ROOT_DIR/artifacts"
 CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
 ENV_DIR="$CONDA_DIR/envs/$(grep -E '^name:' environment.yml | awk '{print $2}')"
 
 export HYDRA_FULL_ERROR=1
 export PYTHONPATH="$PYTHONPATH:$(pwd)"
 export HF_HOME="$ROOT_DIR/.cache/huggingface"
-export OUT_DIR="$ROOT_DIR/caption_fine_tuning"
-export PROJECT_ROOT="$ROOT_DIR"
+export OUT_DIR="$OUT_DIR"
+export PLGRID_ARTIFACTS_DIR="$PLGRID_ARTIFACTS_DIR"
 export CONDA_DIR="$CONDA_DIR"
 
 mkdir -p "$HF_HOME"
