@@ -96,9 +96,20 @@ def main(cfg: CaptionGenerationConfig) -> None:
 
     # Create Trainer
     log.info("Creating Lightning Trainer...")
-    trainer = hydra.utils.instantiate(
-        cfg.trainer,
-        model=model,
+    trainer = pl.Trainer(
+        default_root_dir=str(checkpoint_dir),
+        max_epochs=cfg.trainer.max_epochs,
+        accelerator=cfg.trainer.accelerator,
+        devices=cfg.trainer.devices,
+        strategy=cfg.trainer.strategy,
+        precision=cfg.trainer.precision,
+        gradient_clip_val=cfg.trainer.gradient_clip_val,
+        log_every_n_steps=cfg.trainer.log_every_n_steps,
+        val_check_interval=cfg.trainer.val_check_interval,
+        check_val_every_n_epoch=cfg.trainer.check_val_every_n_epoch,
+        enable_progress_bar=cfg.trainer.enable_progress_bar,
+        enable_model_summary=cfg.trainer.enable_model_summary,
+        deterministic=cfg.trainer.deterministic,
         callbacks=callbacks,
         logger=loggers,
     )

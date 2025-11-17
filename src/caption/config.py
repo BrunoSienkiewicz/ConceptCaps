@@ -58,26 +58,21 @@ class LoRAConfig:
 
 @dataclass
 class TrainerConfig:
-    # gradient_accumulation_steps: int = 2
-    # warmup_steps: int = 5
-    # learning_rate: float = 2e-4
-    # num_train_epochs: int = 3
-    # optim: str = "adamw_8bit"
-    # weight_decay: float = 0.01
-    # lr_scheduler_type: str = "linear"
-    # seed: int = 3407
-    # output_dir: str = "outputs"
-    # report_to: List[str] = field(default_factory=lambda: ["none"])
-    # logging_steps: int = 1
-    # logging_strategy: str = "steps"
-    # save_strategy: str = "no"
-    # load_best_model_at_end: bool = True
-    # save_only_model: bool = False
-    # fp16: Optional[bool] = None
-    # bf16: Optional[bool] = None
     max_epochs: int = 3
     per_device_train_batch_size: int = 8
-    dataloader_num_workers: int = 4
+    gradient_accumulation_steps: int = 2
+    dataloader_num_workers: int = 1
+    accelerator: str = "auto"
+    devices: Union[str, int, List[int]] = "auto"
+    strategy: Union[str, dict, None] = "ddp"
+    precision: Union[str, int] = "bf16"
+    gradient_clip_val: float = 1.0
+    log_every_n_steps: int = 5
+    val_check_interval: Union[float, int, None] = 1.0
+    check_val_every_n_epoch: int = 1
+    enable_progress_bar: bool = False
+    enable_model_summary: bool = False
+    deterministic: bool = False
     optimizer: DictConfig = field(default_factory=lambda: DictConfig({}))
     lr_scheduler: DictConfig = field(default_factory=lambda: DictConfig({}))
 
