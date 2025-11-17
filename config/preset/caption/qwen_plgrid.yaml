@@ -2,7 +2,7 @@
 defaults:
   - override /prompt: qwen
   - override /model: caption/qwen2.5-7b_instruct
-  - override /trainer: caption_lightning/5_epochs
+  - override /trainer: caption_lightning/15_epochs
   - override /lora: caption/regularization
   - override /evaluation: caption/larger_size
   - override /logger: wandb
