@@ -32,6 +32,8 @@ def main(cfg: CaptionGenerationConfig) -> None:
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
 
+    torch.set_float32_matmul_precision("medium")
+
     # Print configuration
     print_config_tree(cfg)
 
@@ -110,6 +112,8 @@ def main(cfg: CaptionGenerationConfig) -> None:
         enable_progress_bar=cfg.trainer.enable_progress_bar,
         enable_model_summary=cfg.trainer.enable_model_summary,
         deterministic=cfg.trainer.deterministic,
+        amp_backend=cfg.training.get("amp_backend", "native"),
+        limit_train_batches=cfg.training.get("limit_train_batches", 1.0),
         callbacks=callbacks,
         logger=loggers,
     )
