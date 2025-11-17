@@ -236,8 +236,8 @@ class CaptionFineTuningModule(pl.LightningModule):
         # Scheduler
         scheduler = CosineAnnealingLR(
             optimizer,
-            T_max=self.trainer.max_epochs,
-            eta_min=self.optimizer_cfg.get("min_lr", 0),
+            T_max=self.lr_scheduler_cfg.get("T_max", 10),
+            eta_min=self.optimizer_cfg.get("eta_min", 0),
         )
         
         return {
