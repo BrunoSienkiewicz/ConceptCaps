@@ -8,4 +8,5 @@ defaults:
   - override /logger: wandb
 
 data:
+  max_length: 512
   batch_size: 32

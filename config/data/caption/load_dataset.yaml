@@ -5,3 +5,4 @@ text_column: text
 remove_columns: null
 max_train_samples: null
 max_eval_samples: null
+max_length: 256
