@@ -41,6 +41,7 @@ def generate_captions_batch(
     prompts: List[str],
     max_new_tokens: int,
     batch_size: int = 8,
+    max_length: int = 256,
 ) -> List[str]:
     """
     Generate captions for a batch of prompts efficiently.
@@ -68,7 +69,7 @@ def generate_captions_batch(
                 return_tensors="pt",
                 padding=True,
                 truncation=True,
-                max_length=512,
+                max_length=max_length,
             ).to(model.device)
             
             # Generate batch

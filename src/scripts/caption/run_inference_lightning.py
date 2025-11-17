@@ -97,6 +97,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
             prompts,
             cfg.evaluation.max_new_tokens,
             batch_size=cfg.evaluation.batch_size,
+            max_length=cfg.data.max_length,
         )
         
         # Prepare output records
