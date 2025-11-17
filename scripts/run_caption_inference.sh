@@ -42,6 +42,8 @@ if [[ -n "$PRESET" ]]; then
 fi
 
 ROOT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
+OUT_DIR="$ROOT_DIR/caption_inference"
+PLGRID_ARTIFACTS_DIR="$ROOT_DIR/artifacts"
 CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
 ENV_DIR="$CONDA_DIR/envs/$(grep -E '^name:' environment.yml | awk '{print $2}')"
 
