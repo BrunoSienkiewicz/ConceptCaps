@@ -220,15 +220,15 @@ class CaptionFineTuningModule(pl.LightningModule):
         trainable_params = [p for p in self.model.parameters() if p.requires_grad]
         
         # Optimizer
+        self.optimizer_cfg["params"] = trainable_params
         optimizer = hydra.utils.instantiate(
             self.optimizer_cfg,
-            params=trainable_params,
         )
         
         # Scheduler
+        self.lr_scheduler_cfg["optimizer"] = optimizer
         scheduler = hydra.utils.instantiate(
             self.lr_scheduler_cfg,
-            optimizer=optimizer,
         )
 
         return {
