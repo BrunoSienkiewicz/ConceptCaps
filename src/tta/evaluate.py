@@ -4,10 +4,13 @@ import json
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 
+import librosa
 import numpy as np
 import pandas as pd
 import torch
 from tqdm import tqdm
+from fadtk import FAD
+from transformers import ClapModel, ClapProcessor
 
 from src.utils import RankedLogger
 
@@ -25,22 +28,14 @@ class CLAPScore:
             model_name: HuggingFace model identifier for CLAP
             device: Device to run the model on
         """
-        try:
-            from transformers import ClapModel, ClapProcessor
-            
-            self.device = torch.device(device if torch.cuda.is_available() else "cpu")
-            log.info(f"Loading CLAP model: {model_name}")
-            
-            self.model = ClapModel.from_pretrained(model_name).to(self.device)
-            self.processor = ClapProcessor.from_pretrained(model_name)
-            self.model.eval()
-            
-            log.info(f"CLAP model loaded on {self.device}")
-        except ImportError:
-            raise ImportError(
-                "transformers library with CLAP support is required. "
-                "Install with: pip install transformers"
-            )
+        self.device = torch.device(device if torch.cuda.is_available() else "cpu")
+        log.info(f"Loading CLAP model: {model_name}")
+        
+        self.model = ClapModel.from_pretrained(model_name).to(self.device)
+        self.processor = ClapProcessor.from_pretrained(model_name)
+        self.model.eval()
+        
+        log.info(f"CLAP model loaded on {self.device}")
     
     def compute_score(
         self,
@@ -68,7 +63,6 @@ class CLAPScore:
                 batch_texts = texts[i:i + batch_size]
                 
                 # Load and process audio
-                import librosa
                 audios = []
                 for audio_path in batch_audio_paths:
                     audio, sr = librosa.load(audio_path, sr=48000, mono=True)
@@ -121,7 +115,6 @@ class FADScore:
             device: Device to run the model on
         """
         try:
-            from fadtk import FAD
             
             self.device = device if torch.cuda.is_available() else "cpu"
             log.info(f"Initializing FAD evaluator with {model_name}")

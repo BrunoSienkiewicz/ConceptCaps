@@ -3,6 +3,7 @@ from __future__ import annotations
 import hydra
 import rootutils
 import torch
+import lightning as pl
 from pathlib import Path
 
 from src.tta.config import TTAConfig
@@ -18,9 +19,6 @@ log = RankedLogger(__name__, rank_zero_only=True)
 @hydra.main(version_base=None, config_path="../../../config", config_name="tta")
 def main(cfg: TTAConfig) -> None:
     """Main evaluation function for TTA generation."""
-    
-    # Set random seed for reproducibility
-    import pytorch_lightning as pl
     pl.seed_everything(cfg.random_state)
 
     # Setup device
@@ -30,9 +28,7 @@ def main(cfg: TTAConfig) -> None:
     # Print configuration
     print_config_tree(cfg)
 
-    # Setup loggers
-    if cfg.get("logger"):
-        loggers = instantiate_loggers(cfg.logger)
+    loggers = instantiate_loggers(cfg.logger)
 
     # Setup paths
     generated_audio_dir = Path(cfg.paths.data_dir) / "audio_samples"
@@ -89,6 +85,11 @@ def main(cfg: TTAConfig) -> None:
         filename_column=cfg.data.get("filename_column", "filename"),
         batch_size=cfg.evaluation.get("batch_size", 8),
     )
+
+    if loggers:
+        for logger in loggers:
+            if hasattr(logger, "log_metrics"):
+                logger.log_metrics(results, step=0)
 
     # Log results
     log.info("=" * 50)

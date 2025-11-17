@@ -65,8 +65,8 @@ def main(cfg: CaptionGenerationConfig) -> None:
         tokenizer=tokenizer,
         data_cfg=cfg.data,
         batch_size=cfg.trainer.per_device_train_batch_size,
-        num_workers=cfg.trainer.get("dataloader_num_workers", 4),
-        max_length=cfg.data.get("max_length", 512),
+        num_workers=cfg.trainer.dataloader_num_workers,
+        max_length=cfg.data.max_length 
     )
 
     # Create Lightning Module

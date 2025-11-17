@@ -42,6 +42,7 @@ class DatasetConfig:
     aspect_column: str = "aspect_list"
     caption_column: str = "caption"
     text_column: str = "text"
+    max_length: int = 512
     remove_columns: Optional[List[str]] = None
 
 
@@ -57,7 +58,6 @@ class LoRAConfig:
 
 @dataclass
 class TrainerConfig:
-    # per_device_train_batch_size: int = 8
     # gradient_accumulation_steps: int = 2
     # warmup_steps: int = 5
     # learning_rate: float = 2e-4
@@ -76,6 +76,8 @@ class TrainerConfig:
     # fp16: Optional[bool] = None
     # bf16: Optional[bool] = None
     max_epochs: int = 3
+    per_device_train_batch_size: int = 8
+    dataloader_num_workers: int = 4
     optimizer: DictConfig = field(default_factory=lambda: DictConfig({}))
     lr_scheduler: DictConfig = field(default_factory=lambda: DictConfig({}))
 

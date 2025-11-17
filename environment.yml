@@ -62,4 +62,4 @@ dependencies:
       - bert-score
       - unbabel-comet
       - psutil
-      - frechet_audio_distance
+      - fadtk
