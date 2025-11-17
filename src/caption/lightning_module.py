@@ -106,7 +106,7 @@ class CaptionFineTuningModule(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         """Training step."""
-        outputs = self(
+        outputs = self.model(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
             labels=batch["labels"],
@@ -122,7 +122,7 @@ class CaptionFineTuningModule(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         """Validation step."""
-        outputs = self(
+        outputs = self.model(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
             labels=batch["labels"],
@@ -146,7 +146,7 @@ class CaptionFineTuningModule(pl.LightningModule):
 
     def test_step(self, batch, batch_idx):
         """Test step."""
-        outputs = self(
+        outputs = self.model(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
             labels=batch["labels"],
@@ -217,7 +217,7 @@ class CaptionFineTuningModule(pl.LightningModule):
     def configure_optimizers(self):
         """Configure optimizer and learning rate scheduler."""
         # Get trainable parameters
-        trainable_params = [p for p in self.parameters() if p.requires_grad]
+        trainable_params = [p for p in self.model.parameters() if p.requires_grad]
         
         # Optimizer
         optimizer = hydra.utils.instantiate(
