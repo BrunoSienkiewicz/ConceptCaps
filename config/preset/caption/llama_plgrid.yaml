@@ -17,6 +17,12 @@ data:
   max_test_samples: 50
 
 callbacks:
+  model_checkpoint:
+    monitor: val/bertscore_f1
+    mode: max
+    save_top_k: 1
+    filename: best-checkpoint
+
   early_stopping:
     monitor: val/bertscore_f1
     mode: max
