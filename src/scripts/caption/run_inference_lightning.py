@@ -55,13 +55,10 @@ def main(cfg: CaptionGenerationConfig) -> None:
     # Load model from checkpoint
     log.info(f"Loading model from checkpoint: {cfg.model.checkpoint_dir}...")
     
-    model = CaptionFineTuningModule(
+    # Init Lightning Module
+    log.info("Loading pretrained model for inference...")
+    model = CaptionFineTuningModule.load_pretrained_model(
         model_cfg=cfg.model,
-        lora_cfg=cfg.lora,
-        optimizer_cfg=cfg.trainer.get("optimizer", {}),
-        lr_scheduler_cfg=cfg.trainer.get("lr_scheduler", {}),
-        tokenizer=tokenizer,
-        metric_computer=None,
     )
     
     model.eval()
@@ -101,7 +98,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
         
         # Generate captions in batches
         predictions = generate_captions_batch(
-            model.model,  # Access the underlying model
+            model,
             tokenizer,
             prompts,
             cfg.evaluation.max_new_tokens,

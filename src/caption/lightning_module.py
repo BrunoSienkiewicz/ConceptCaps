@@ -44,10 +44,7 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.metric_computer = metric_computer
         
         # Initialize model
-        if self.model_cfg.checkpoint_dir:
-            self.model = self._setup_pretrained_model()
-        else:
-            self.model = self._setup_model()
+        self.model = self._setup_model()
         
         # For validation metrics accumulation
         self.validation_step_outputs = []
@@ -78,25 +75,25 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         return model
 
-    def _setup_pretrained_model(self) -> AutoModelForCausalLM:
-        """Load a pretrained model from checkpoint for evaluation."""
-        quantization_config = build_quantization_config(self.model_cfg)
+    @staticmethod
+    def load_pretrained_model(model_cfg: DictConfig) -> AutoModelForCausalLM:
+        """Load a pre-trained model from checkpoint for inference."""
+        quantization_config = build_quantization_config(model_cfg)
         
         model = AutoModelForCausalLM.from_pretrained(
-            self.model_cfg.name,
+            model_cfg.name,
             quantization_config=quantization_config,
-            device_map=self.model_cfg.device_map,
-            trust_remote_code=self.model_cfg.trust_remote_code,
+            device_map=model_cfg.device_map,
+            trust_remote_code=model_cfg.trust_remote_code,
         )
         
-        log.info(f"Loading model weights from checkpoint: {self.model_cfg.checkpoint_dir}...")
+        log.info(f"Loading model weights from checkpoint: {model_cfg.checkpoint_dir}...")
         model = PeftModel.from_pretrained(
             model,
-            self.model_cfg.checkpoint_dir,
-            device_map=self.model_cfg.device_map,
+            model_cfg.checkpoint_dir,
+            device_map=model_cfg.device_map,
             low_cpu_mem_usage=True,
         )
-        model = model.merge_and_unload()
         
         return model
 

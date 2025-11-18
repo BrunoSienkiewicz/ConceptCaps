@@ -71,7 +71,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
         max_length=cfg.data.max_length 
     )
 
-    # Create Lightning Module
+    # Init Lightning Module
     log.info("Creating Lightning Module...")
     model = CaptionFineTuningModule(
         model_cfg=cfg.model,
@@ -123,8 +123,8 @@ def main(cfg: CaptionGenerationConfig) -> None:
 
     # Save final model
     log.info("Saving final model...")
-    final_model_path = checkpoint_dir / "final_model"
-    trainer.save_checkpoint(final_model_path / "checkpoint.ckpt")
+    final_model_path = checkpoint_dir / "final.ckpt"
+    trainer.save_checkpoint(final_model_path)
 
     best_model_path = None
     for callback in callbacks:
@@ -133,9 +133,8 @@ def main(cfg: CaptionGenerationConfig) -> None:
             break
     if best_model_path:
         log.info(f"Best model checkpoint found at {best_model_path}")
-        best_model_save_path = checkpoint_dir / "best_model"
-        trainer.save_checkpoint(best_model_save_path / "checkpoint.ckpt")
-        log.info(f"Saved best model checkpoint to {best_model_save_path}")
+        best_model_save_path = checkpoint_dir / "best.ckpt"
+        pl.pytorch.utilities.rank_zero_only(lambda: Path(best_model_path).rename(best_model_save_path))()
 
     # Test model
     log.info("Running evaluation...")
