@@ -15,7 +15,4 @@ data:
 
 callbacks:
   early_stopping:
-    monitor: val/bertscore_precision
-    mode: max
     patience: 5
-    check_on_train_epoch_end: True
