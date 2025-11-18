@@ -82,6 +82,15 @@ def main(cfg: CaptionGenerationConfig) -> None:
         log.info(f"{'='*60}")
         
         examples = dataset[split]
+        if cfg.data.max_test_samples and split == "test":
+            examples = examples.select(range(cfg.data.max_test_samples))
+            log.info(f"Limiting to first {cfg.data.max_test_samples} samples for testing.")
+        elif cfg.data.max_val_samples and split == "validation":
+            examples = examples.select(range(cfg.data.max_val_samples))
+            log.info(f"Limiting to first {cfg.data.max_val_samples} samples for validation.")
+        elif cfg.data.max_train_samples and split == "train":
+            examples = examples.select(range(cfg.data.max_train_samples))
+            log.info(f"Limiting to first {cfg.data.max_train_samples} samples for training.")
         
         # Extract prompts and aspects
         ids = [example[cfg.data.id_column] for example in examples]

@@ -47,6 +47,9 @@ class DatasetConfig:
     max_length: int = 512
     dataloader_num_workers: int = 4
     remove_columns: Optional[List[str]] = None
+    max_train_samples: Optional[int] = None
+    max_val_samples: Optional[int] = None
+    max_test_samples: Optional[int] = None
 
 
 @dataclass
