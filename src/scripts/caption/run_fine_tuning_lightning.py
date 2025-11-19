@@ -133,21 +133,18 @@ def main(cfg: CaptionGenerationConfig) -> None:
             break
     if best_model_path:
         log.info(f"Best model checkpoint found at {best_model_path}")
-        best_model_save_path = checkpoint_dir / "best.ckpt"
-        pl.pytorch.utilities.rank_zero_only(lambda: Path(best_model_path).rename(best_model_save_path))()
 
     # Test model
     log.info("Running evaluation...")
     trainer.test(
         model=model,
         datamodule=datamodule,
-        ckpt_path=best_model_path if best_model_path else final_model_path / "checkpoint.ckpt",
     )
 
     # Save the adapter weights separately (for LoRA)
     if hasattr(model.model, "save_pretrained"):
-        model.model.save_pretrained(final_model_path)
-        log.info(f"Saved LoRA adapter to {final_model_path}")
+        model.model.save_pretrained(checkpoint_dir / "lora_adapter")
+        log.info(f"Saved LoRA adapter to {checkpoint_dir / 'lora_adapter'}")
     
     log.info(f"Training completed. Model and checkpoints are saved in {checkpoint_dir}")
 
