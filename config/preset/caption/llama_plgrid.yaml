@@ -2,7 +2,7 @@
 defaults:
   - override /prompt: llama
   - override /model: caption/llama_3.1_8b_instruct
-  - override /trainer: caption_lightning/15_epochs
+  - override /trainer: caption_lightning/stable
   - override /lora: caption/default
   - override /evaluation: caption/larger_size
   - override /paths: plgrid
