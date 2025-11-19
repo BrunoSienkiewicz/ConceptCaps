@@ -13,7 +13,7 @@ data:
   batch_size: 8
   dataloader_num_workers: 4
   max_train_samples: 100
-  max_eval_samples: 50
+  max_val_samples: 50
   max_test_samples: 50
 
 callbacks:

@@ -3,8 +3,6 @@ aspect_column: aspect_list
 caption_column: caption
 text_column: text
 remove_columns: null
-max_train_samples: null
-max_eval_samples: null
 batch_size: 8
 max_length: 256
 dataloader_num_workers: 4
