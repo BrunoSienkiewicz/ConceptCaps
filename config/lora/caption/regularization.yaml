@@ -1,5 +1,5 @@
 r: 16  # Rank remains same for fair comparison
-lora_alpha: 16
+lora_alpha: 32
 target_modules:
   - q_proj
   - k_proj
@@ -8,7 +8,7 @@ target_modules:
   - gate_proj
   - up_proj
   - down_proj
-lora_dropout: 0.1
+lora_dropout: 0.05
 bias: none
 task_type: CAUSAL_LM
 init_lora_weights: true

@@ -205,8 +205,8 @@ def run_test_evaluation(
         model,
         tokenizer,
         prompts,
-        cfg.evaluation.max_new_tokens,
-        batch_size=cfg.evaluation.batch_size,
+        cfg.generation.max_new_tokens,
+        batch_size=cfg.generation.batch_size,
     )
 
     # Compute metrics

@@ -35,7 +35,6 @@ class PromptConfig:
     system_prompt: str
     user_prompt_template: str
 
-
 @dataclass
 class DatasetConfig:
     dataset_name: str = ""
@@ -43,8 +42,6 @@ class DatasetConfig:
     caption_column: str = "caption"
     text_column: str = "text"
     id_column: str = "id"
-    batch_size: int = 8
-    max_length: int = 512
     dataloader_num_workers: int = 4
     remove_columns: Optional[List[str]] = None
     max_train_samples: Optional[int] = None
@@ -82,6 +79,20 @@ class TrainerConfig:
     lr_scheduler: DictConfig = field(default_factory=lambda: DictConfig({}))
 
 
+@dataclass
+class GenerationConfig:
+    batch_size: int = 8
+    max_new_tokens: int = 256
+    max_length: int = 512
+    temperature: float = 1.0
+    top_k: int = 50
+    top_p: float = 0.95
+    do_sample: bool = True
+    repetition_penalty: float = 1.0
+    prompt: PromptConfig = field(default_factory=PromptConfig)
+
+
+
 
 @dataclass
 class EvaluationMetricConfig:
@@ -91,8 +102,6 @@ class EvaluationMetricConfig:
 
 @dataclass
 class EvaluationConfig:
-    batch_size: int = 8
-    max_new_tokens: int = 256
     metrics: List[EvaluationMetricConfig] = field(default_factory=list)
     output_predictions: bool = True
     predictions_file: str = "predictions.csv"
@@ -115,6 +124,7 @@ class CaptionGenerationConfig(DictConfig):
     trainer: TrainerConfig
     evaluation: EvaluationConfig
     paths: PathsConfig
+    generation: GenerationConfig
     device: str = "cuda"
     random_state: int = 42
     run_id: str = "default_run"

@@ -1,5 +1,5 @@
 r: 8
-lora_alpha: 8
+lora_alpha: 16
 target_modules:
   - q_proj
   - k_proj
@@ -8,7 +8,7 @@ target_modules:
   - gate_proj
   - up_proj
   - down_proj
-lora_dropout: 0.15
+lora_dropout: 0.1
 bias: none
 task_type: CAUSAL_LM
 init_lora_weights: true

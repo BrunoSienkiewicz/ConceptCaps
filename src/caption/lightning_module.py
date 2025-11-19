@@ -27,6 +27,7 @@ class CaptionFineTuningModule(pl.LightningModule):
     def __init__(
         self,
         model_cfg: DictConfig,
+        generation_cfg: DictConfig,
         lora_cfg: DictConfig,
         optimizer_cfg: DictConfig,
         lr_scheduler_cfg: DictConfig,
@@ -248,14 +249,15 @@ class CaptionFineTuningModule(pl.LightningModule):
             },
         }
 
-    def generate(self, input_ids, attention_mask, max_new_tokens=256):
+    def generate(self, input_ids, attention_mask):
         """Generate captions."""
         self.model.eval()
         with torch.no_grad():
             outputs = self.model.generate(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
-                max_new_tokens=max_new_tokens,
                 pad_token_id=self.tokenizer.pad_token_id,
+                max_new_tokens=self.generation_cfg.max_new_tokens,
+                **self.hparams.generation_cfg.to_container(resolve=True)
             )
         return outputs

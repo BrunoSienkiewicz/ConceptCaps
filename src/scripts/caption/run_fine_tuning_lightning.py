@@ -56,6 +56,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
     # Load tokenizer
     log.info("Loading tokenizer...")
     tokenizer = prepare_tokenizer(cfg.model)
+    tokenizer.pad_token = tokenizer.eos_token
 
     # Create metric computer
     metric_computer = MetricComputer(cfg.evaluation.metrics, tokenizer)
@@ -66,15 +67,16 @@ def main(cfg: CaptionGenerationConfig) -> None:
         dataset=dataset,
         tokenizer=tokenizer,
         data_cfg=cfg.data,
-        batch_size=cfg.data.batch_size,
+        batch_size=cfg.generation.batch_size,
         num_workers=cfg.data.dataloader_num_workers,
-        max_length=cfg.data.max_length 
+        max_length=cfg.generation.max_length 
     )
 
     # Init Lightning Module
     log.info("Creating Lightning Module...")
     model = CaptionFineTuningModule(
         model_cfg=cfg.model,
+        generation_cfg=cfg.generation,
         lora_cfg=cfg.lora,
         optimizer_cfg=cfg.trainer.optimizer,
         lr_scheduler_cfg=cfg.trainer.lr_scheduler,

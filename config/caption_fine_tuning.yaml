@@ -5,6 +5,7 @@ defaults:
   - lora: caption/default
   - trainer: caption/default
   - evaluation: caption/default
+  - generation: default
   - paths: default
   - logger: null
   - callbacks: default

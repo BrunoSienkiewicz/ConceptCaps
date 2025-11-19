@@ -51,6 +51,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
     # Load tokenizer
     log.info("Loading tokenizer...")
     tokenizer = prepare_tokenizer(cfg.model)
+    tokenizer.pad_token = tokenizer.eos_token
 
     # Load model from checkpoint
     log.info(f"Loading model from checkpoint: {cfg.model.checkpoint_dir}...")
@@ -101,9 +102,9 @@ def main(cfg: CaptionGenerationConfig) -> None:
             model,
             tokenizer,
             prompts,
-            cfg.evaluation.max_new_tokens,
-            batch_size=cfg.evaluation.batch_size,
-            max_length=cfg.data.max_length,
+            cfg.generation.max_new_tokens,
+            batch_size=cfg.generation.batch_size,
+            max_length=cfg.generation.max_length,
         )
         
         # Prepare output records
