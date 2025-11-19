@@ -118,7 +118,6 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         # Log metrics
         self.log("train/loss", loss, on_step=True, on_epoch=True, prog_bar=True, sync_dist=True)
-        self.log("train/perplexity", torch.exp(loss), on_step=True, on_epoch=True, sync_dist=True)
         
         return loss
 
@@ -134,7 +133,6 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         # Log metrics
         self.log("val/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
-        self.log("val/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
         
         # Store predictions for metric computation
         if self.metric_computer is not None:

@@ -11,7 +11,10 @@ metrics:
         lang: en
   - name: meteor
     kwargs: {}
-  - name: google_bleu
+  - name: perplexity
+    kwargs: 
+      model_id: "gpt2"
+  - name: mauve
     kwargs: {}
 output_predictions: true
 predictions_file: predictions.csv
