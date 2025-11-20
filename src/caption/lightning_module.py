@@ -37,6 +37,8 @@ class CaptionFineTuningModule(pl.LightningModule):
     ):
         super().__init__()
         self.save_hyperparameters(ignore=["tokenizer", "metric_computer"])
+
+        generation_cfg.remove("batch_size", None)
         
         self.model_cfg = model_cfg
         self.generation_cfg = generation_cfg
