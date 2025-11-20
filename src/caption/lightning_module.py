@@ -113,8 +113,6 @@ class CaptionFineTuningModule(pl.LightningModule):
         outputs = self.model.generate(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
-            pad_token_id=self.tokenizer.pad_token_id,
-            max_new_tokens=self.generation_cfg.max_new_tokens,
             **self.generation_cfg
         )
         
@@ -130,8 +128,6 @@ class CaptionFineTuningModule(pl.LightningModule):
         outputs = self.model.generate(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
-            pad_token_id=self.tokenizer.pad_token_id,
-            max_new_tokens=self.generation_cfg.max_new_tokens,
             **self.generation_cfg
         )
         
@@ -280,8 +276,6 @@ class CaptionFineTuningModule(pl.LightningModule):
             outputs = self.model.generate(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
-                pad_token_id=self.tokenizer.pad_token_id,
-                max_new_tokens=self.generation_cfg.max_new_tokens,
                 **self.generation_cfg
             )
         return outputs
