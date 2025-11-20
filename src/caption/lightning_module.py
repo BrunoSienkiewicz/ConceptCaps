@@ -184,15 +184,16 @@ class CaptionFineTuningModule(pl.LightningModule):
             )
             
             metrics = self.metric_computer.compute_metrics(eval_pred)
+            exclude_types = (dict, list, str, tuple, set)
             
             # Log metrics
             for key, value in metrics.items():
                 if isinstance(value, dict):
                     for sub_key, sub_value in value.items():
-                        if not isinstance(sub_value, (dict, list)):
+                        if not isinstance(sub_value, exclude_types):
                             self.log(f"test/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
                     continue
-                if not isinstance(value, list):
+                if not isinstance(value, exclude_types):
                     self.log(f"test/{key}", value, on_epoch=True, sync_dist=True)
         
         # Clear outputs
@@ -212,15 +213,16 @@ class CaptionFineTuningModule(pl.LightningModule):
             )
             
             metrics = self.metric_computer.compute_metrics(eval_pred)
+            exclude_types = (dict, list, str, tuple, set)
             
             # Log metrics
             for key, value in metrics.items():
                 if isinstance(value, dict):
                     for sub_key, sub_value in value.items():
-                        if not isinstance(sub_value, (dict, list)):
+                        if not isinstance(sub_value, exclude_types):
                             self.log(f"test/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
                     continue
-                if not isinstance(value, list):
+                if not isinstance(value, exclude_types):
                     self.log(f"test/{key}", value, on_epoch=True, sync_dist=True)
         
         # Clear outputs
