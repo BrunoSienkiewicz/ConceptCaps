@@ -8,6 +8,7 @@ quantization:
   bnb_4bit_quant_type: nf4
   bnb_4bit_compute_dtype: bfloat16
 tokenizer:
-  padding_side: left
+  padding_side: right
   use_fast: null
-  pad_token_as_eos: true
+  pad_token_as_eos: false
+  pad_token: <|finetune_right_pad_id|>

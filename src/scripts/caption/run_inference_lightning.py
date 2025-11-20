@@ -51,7 +51,6 @@ def main(cfg: CaptionGenerationConfig) -> None:
     # Load tokenizer
     log.info("Loading tokenizer...")
     tokenizer = prepare_tokenizer(cfg.model)
-    tokenizer.pad_token = tokenizer.eos_token
 
     # Load model from checkpoint
     log.info(f"Loading model from checkpoint: {cfg.model.checkpoint_dir}...")

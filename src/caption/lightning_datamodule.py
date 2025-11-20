@@ -43,10 +43,15 @@ class CaptionDataModule(pl.LightningDataModule):
     def tokenize_function(self, examples):
         """Tokenize the text column."""
         text_column = self.data_cfg.text_column
+        # Add EOS token if not present
+        _examples = [
+            text + self.tokenizer.eos_token if not text.endswith(self.tokenizer.eos_token) else text
+            for text in examples[text_column]
+        ]
         
         # Tokenize
         tokenized = self.tokenizer(
-            examples[text_column],
+            _examples,
             truncation=True,
             max_length=self.max_length,
             padding=True,

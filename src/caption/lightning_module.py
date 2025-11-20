@@ -39,6 +39,7 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.save_hyperparameters(ignore=["tokenizer", "metric_computer"])
         
         self.model_cfg = model_cfg
+        self.generation_cfg = generation_cfg
         self.lora_cfg = lora_cfg
         self.optimizer_cfg = optimizer_cfg
         self.lr_scheduler_cfg = lr_scheduler_cfg

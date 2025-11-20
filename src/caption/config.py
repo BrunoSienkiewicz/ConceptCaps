@@ -34,6 +34,7 @@ class PromptConfig:
     template: str
     system_prompt: str
     user_prompt_template: str
+    pad_token: Optional[str] = None
 
 @dataclass
 class DatasetConfig:

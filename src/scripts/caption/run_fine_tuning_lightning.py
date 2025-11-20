@@ -56,7 +56,6 @@ def main(cfg: CaptionGenerationConfig) -> None:
     # Load tokenizer
     log.info("Loading tokenizer...")
     tokenizer = prepare_tokenizer(cfg.model)
-    tokenizer.pad_token = tokenizer.eos_token
 
     # Create metric computer
     metric_computer = MetricComputer(cfg.evaluation.metrics, tokenizer)
