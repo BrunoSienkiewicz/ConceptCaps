@@ -193,6 +193,9 @@ class CaptionFineTuningModule(pl.LightningModule):
                         if not isinstance(sub_value, exclude_types):
                             self.log(f"test/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
                     continue
+                if key == "mauve":
+                    self.log(f"test/{key}", value.mauve, on_epoch=True, sync_dist=True)
+                    continue
                 if not isinstance(value, exclude_types):
                     self.log(f"test/{key}", value, on_epoch=True, sync_dist=True)
         
@@ -221,6 +224,9 @@ class CaptionFineTuningModule(pl.LightningModule):
                     for sub_key, sub_value in value.items():
                         if not isinstance(sub_value, exclude_types):
                             self.log(f"test/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
+                    continue
+                if key == "mauve":
+                    self.log(f"test/{key}", value.mauve, on_epoch=True, sync_dist=True)
                     continue
                 if not isinstance(value, exclude_types):
                     self.log(f"test/{key}", value, on_epoch=True, sync_dist=True)
