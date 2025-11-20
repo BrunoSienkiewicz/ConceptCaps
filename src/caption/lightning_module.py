@@ -191,13 +191,13 @@ class CaptionFineTuningModule(pl.LightningModule):
                 if isinstance(value, dict):
                     for sub_key, sub_value in value.items():
                         if not isinstance(sub_value, exclude_types):
-                            self.log(f"test/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
+                            self.log(f"val/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
                     continue
                 if key == "mauve":
-                    self.log(f"test/{key}", value.mauve, on_epoch=True, sync_dist=True)
+                    self.log(f"val/{key}", value.mauve, on_epoch=True, sync_dist=True)
                     continue
                 if not isinstance(value, exclude_types):
-                    self.log(f"test/{key}", value, on_epoch=True, sync_dist=True)
+                    self.log(f"val/{key}", value, on_epoch=True, sync_dist=True)
         
         # Clear outputs
         self.validation_step_outputs.clear()
