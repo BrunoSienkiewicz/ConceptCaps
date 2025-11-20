@@ -30,6 +30,7 @@ def prepare_datasets(data_cfg, prompt_cfg, raw_dataset: DatasetDict) -> DatasetD
     text_column = data_cfg.text_column
     caption_column = data_cfg.caption_column
     aspect_column = data_cfg.aspect_column
+    remove_columns = data_cfg.remove_columns
 
     def _transform_train_row(row: Dict[str, Any]) -> Dict[str, str]:
         formatted = _format_prompt(
@@ -55,10 +56,12 @@ def prepare_datasets(data_cfg, prompt_cfg, raw_dataset: DatasetDict) -> DatasetD
         if split == "train":
             processed_dataset[split] = raw_dataset[split].map(
                 _transform_train_row,
+                remove_columns=remove_columns,
             )
         else:
             processed_dataset[split] = raw_dataset[split].map(
                 _transform_eval_row,
+                remove_columns=remove_columns,
             )
 
     return processed_dataset
