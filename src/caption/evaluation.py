@@ -39,9 +39,7 @@ def generate_captions_batch(
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
     prompts: List[str],
-    max_new_tokens: int,
-    batch_size: int = 8,
-    max_length: int = 256,
+    generate_cfg: DictConfig,
 ) -> List[str]:
     """
     Generate captions for a batch of prompts efficiently.
@@ -60,8 +58,8 @@ def generate_captions_batch(
     captions = []
     
     with torch.no_grad():
-        for i in tqdm(range(0, len(prompts), batch_size), desc="Generating captions"):
-            batch_prompts = prompts[i : i + batch_size]
+        for i in tqdm(range(0, len(prompts), generate_cfg.batch_size), desc="Generating captions"):
+            batch_prompts = prompts[i : i + generate_cfg.batch_size]
             
             # Tokenize batch with padding
             inputs = tokenizer(
@@ -69,14 +67,13 @@ def generate_captions_batch(
                 return_tensors="pt",
                 padding=True,
                 truncation=True,
-                max_length=max_length,
+                max_length=generate_cfg.max_length,
             ).to(model.device)
             
             # Generate batch
             outputs = model.generate(
                 **inputs,
-                max_new_tokens=max_new_tokens,
-                pad_token_id=tokenizer.pad_token_id,
+                **generate_cfg
             )
             
             # Decode batch
@@ -205,8 +202,6 @@ def run_test_evaluation(
         model,
         tokenizer,
         prompts,
-        cfg.generation.max_new_tokens,
-        batch_size=cfg.generation.batch_size,
     )
 
     # Compute metrics
