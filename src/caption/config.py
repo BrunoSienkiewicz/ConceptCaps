@@ -17,6 +17,7 @@ class ModelTokenizerConfig:
     padding_side: str = "right"
     use_fast: Optional[bool] = None
     pad_token_as_eos: bool = True
+    pad_token: Optional[str] = None
 
 
 @dataclass
