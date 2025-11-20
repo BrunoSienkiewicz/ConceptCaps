@@ -44,6 +44,7 @@ class DatasetConfig:
     caption_column: str = "caption"
     text_column: str = "text"
     id_column: str = "id"
+    batch_size: int = 8
     dataloader_num_workers: int = 4
     remove_columns: Optional[List[str]] = None
     max_train_samples: Optional[int] = None
@@ -83,7 +84,6 @@ class TrainerConfig:
 
 @dataclass
 class GenerationConfig:
-    batch_size: int = 8
     max_new_tokens: int = 256
     max_length: int = 512
     temperature: float = 1.0

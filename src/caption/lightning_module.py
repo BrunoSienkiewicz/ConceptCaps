@@ -38,10 +38,6 @@ class CaptionFineTuningModule(pl.LightningModule):
         super().__init__()
         self.save_hyperparameters(ignore=["tokenizer", "metric_computer"])
 
-        # Remove batch size from generation config if present
-        if "batch_size" in generation_cfg:
-            del generation_cfg["batch_size"]
-
         self.model_cfg = model_cfg
         self.generation_cfg = generation_cfg
         self.lora_cfg = lora_cfg

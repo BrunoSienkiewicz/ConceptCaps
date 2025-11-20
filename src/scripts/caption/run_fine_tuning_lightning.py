@@ -66,7 +66,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
         dataset=dataset,
         tokenizer=tokenizer,
         data_cfg=cfg.data,
-        batch_size=cfg.generation.batch_size,
+        batch_size=cfg.data.batch_size,
         num_workers=cfg.data.dataloader_num_workers,
         max_length=cfg.generation.max_length 
     )

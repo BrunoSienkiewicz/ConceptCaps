@@ -40,6 +40,7 @@ def generate_captions_batch(
     tokenizer: AutoTokenizer,
     prompts: List[str],
     generate_cfg: DictConfig,
+    batch_size: int = 8,
 ) -> List[str]:
     """
     Generate captions for a batch of prompts efficiently.
@@ -58,8 +59,8 @@ def generate_captions_batch(
     captions = []
     
     with torch.no_grad():
-        for i in tqdm(range(0, len(prompts), generate_cfg.batch_size), desc="Generating captions"):
-            batch_prompts = prompts[i : i + generate_cfg.batch_size]
+        for i in tqdm(range(0, len(prompts), batch_size), desc="Generating captions"):
+            batch_prompts = prompts[i : i + batch_size]
             
             # Tokenize batch with padding
             inputs = tokenizer(

@@ -102,6 +102,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
             tokenizer,
             prompts,
             generate_cfg=cfg.generation,
+            batch_size=cfg.data.batch_size,
         )
         
         # Prepare output records
