@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
+import numpy as np
 import lightning as pl
 import torch
 import hydra
@@ -185,8 +186,12 @@ class CaptionFineTuningModule(pl.LightningModule):
             
             # Log metrics
             for key, value in metrics.items():
-                if isinstance(value, (int, float)):
-                    self.log(f"val/{key}", value, on_epoch=True, sync_dist=True)
+                if isinstance(value, dict):
+                    for sub_key, sub_value in value.items():
+                        if not isinstance(sub_value, (dict, list)):
+                            self.log(f"test/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
+                if not isinstance(value, list):
+                    self.log(f"test/{key}", value, on_epoch=True, sync_dist=True)
         
         # Clear outputs
         self.validation_step_outputs.clear()
@@ -208,7 +213,11 @@ class CaptionFineTuningModule(pl.LightningModule):
             
             # Log metrics
             for key, value in metrics.items():
-                if isinstance(value, (int, float)):
+                if isinstance(value, dict):
+                    for sub_key, sub_value in value.items():
+                        if not isinstance(sub_value, (dict, list)):
+                            self.log(f"test/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
+                if not isinstance(value, list):
                     self.log(f"test/{key}", value, on_epoch=True, sync_dist=True)
         
         # Clear outputs
