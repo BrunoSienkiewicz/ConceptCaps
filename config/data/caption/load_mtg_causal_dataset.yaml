@@ -1,3 +1,4 @@
+batch_size: 8
 dataset_name: bsienkiewicz/mtg_causal_tags_dataset
 aspect_column: aspect_list
 caption_column: caption

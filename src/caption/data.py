@@ -43,7 +43,7 @@ def prepare_datasets(data_cfg, prompt_cfg, raw_dataset: DatasetDict) -> DatasetD
     def _transform_eval_row(row: Dict[str, Any]) -> Dict[str, str]:
         formatted = _format_eval_prompt(
             prompt_cfg,
-            row[data_cfg.aspect_column],
+            row[aspect_column],
         )
         return {
             text_column: formatted, 
