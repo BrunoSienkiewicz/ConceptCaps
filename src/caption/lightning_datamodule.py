@@ -55,7 +55,6 @@ class CaptionDataModule(pl.LightningDataModule):
             truncation=True,
             max_length=self.max_length,
             padding=True,
-            add_special_tokens=False,
         )
         
         # For training, labels are the same as input_ids
