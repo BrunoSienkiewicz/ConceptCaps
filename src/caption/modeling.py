@@ -37,6 +37,8 @@ def prepare_tokenizer(model_cfg: DictConfig) -> AutoTokenizer:
         tokenizer.padding_side = tokenizer_cfg["padding_side"]
     if tokenizer_cfg.get("pad_token_as_eos", True) and tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
+    if tokenizer_cfg.get("pad_token") is not None:
+        tokenizer.pad_token = tokenizer_cfg["pad_token"]
     return tokenizer
 
 

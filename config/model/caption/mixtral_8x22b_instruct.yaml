@@ -2,7 +2,6 @@ name: mistralai/Mixtral-8x22B-Instruct-v0.1
 checkpoint_dir: ""
 device_map: sequential
 trust_remote_code: true
-pad_token: <|finetune_right_pad_id|>
 quantization:
   load_in_4bit: true
   bnb_4bit_use_double_quant: true
