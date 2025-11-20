@@ -110,10 +110,12 @@ class CaptionFineTuningModule(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         """Training step."""
-        outputs = self.model(
+        outputs = self.model.generate(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
-            labels=batch["labels"],
+            pad_token_id=self.tokenizer.pad_token_id,
+            max_new_tokens=self.generation_cfg.max_new_tokens,
+            **self.hparams.generation_cfg.to_container(resolve=True)
         )
         
         loss = outputs.loss
@@ -125,10 +127,12 @@ class CaptionFineTuningModule(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         """Validation step."""
-        outputs = self.model(
+        outputs = self.model.generate(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
-            labels=batch["labels"],
+            pad_token_id=self.tokenizer.pad_token_id,
+            max_new_tokens=self.generation_cfg.max_new_tokens,
+            **self.hparams.generation_cfg.to_container(resolve=True)
         )
         
         loss = outputs.loss
@@ -148,10 +152,12 @@ class CaptionFineTuningModule(pl.LightningModule):
 
     def test_step(self, batch, batch_idx):
         """Test step."""
-        outputs = self.model(
+        outputs = self.model.generate(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
-            labels=batch["labels"],
+            pad_token_id=self.tokenizer.pad_token_id,
+            max_new_tokens=self.generation_cfg.max_new_tokens,
+            **self.hparams.generation_cfg.to_container(resolve=True)
         )
         
         loss = outputs.loss
