@@ -3,7 +3,7 @@ defaults:
   - override /prompt: llama
   - override /model: caption/llama_3.1_8b_instruct
   - override /trainer: caption_lightning/stable
-  - override /lora: caption/more_regularization
+  - override /lora: caption/regularization
   - override /evaluation: caption/larger_size
   - override /generation: regularization
   - override /paths: plgrid
@@ -25,4 +25,4 @@ callbacks:
   early_stopping:
     monitor: val/bertscore_f1
     mode: max
-    patience: 2
+    patience: 3
