@@ -55,6 +55,7 @@ class CaptionDataModule(pl.LightningDataModule):
             truncation=True,
             max_length=self.max_length,
             padding=True,
+            add_special_tokens=False,
         )
         
         # For training, labels are the same as input_ids
@@ -70,7 +71,6 @@ class CaptionDataModule(pl.LightningDataModule):
                 self.train_dataset = self.dataset["train"].map(
                     self.tokenize_function,
                     batched=True,
-                    remove_columns=self.dataset["train"].column_names,
                     desc="Tokenizing training dataset",
                 )
             
@@ -79,7 +79,6 @@ class CaptionDataModule(pl.LightningDataModule):
                 self.val_dataset = self.dataset["validation"].map(
                     self.tokenize_function,
                     batched=True,
-                    remove_columns=self.dataset["validation"].column_names,
                     desc="Tokenizing validation dataset",
                 )
         
@@ -89,7 +88,6 @@ class CaptionDataModule(pl.LightningDataModule):
                 self.test_dataset = self.dataset["test"].map(
                     self.tokenize_function,
                     batched=True,
-                    remove_columns=self.dataset["test"].column_names,
                     desc="Tokenizing test dataset",
                 )
 
