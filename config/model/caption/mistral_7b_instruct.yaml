@@ -9,5 +9,5 @@ quantization:
   bnb_4bit_compute_dtype: bfloat16
 tokenizer:
   padding_side: right
-  use_fast: null
+  use_fast: true
   pad_token_as_eos: true
