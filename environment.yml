@@ -5,10 +5,11 @@
 # - conda allows for installing packages without requiring certain compilers or
 #   libraries to be available in the system, since it installs precompiled binaries
 
-name: music-gen-inter
+name: music-gen-interpretability2
 
 channels:
   - pytorch
+  - nvidia
   - conda-forge
   - defaults
 
@@ -34,6 +35,7 @@ dependencies:
   - sentencepiece=0.2.*
   - hydra-core=1.*
   - libmamba=2.*
+  - faiss-gpu=1.13.*
 
   # --------- loggers --------- #
   - wandb
