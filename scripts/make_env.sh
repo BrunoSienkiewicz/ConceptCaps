@@ -15,10 +15,10 @@ cd "$SLURM_SUBMIT_DIR" || exit 1
 
 CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
 
-module load CUDA/12.4.0
-module load GCCcore/12.2.0
-module load CMake/3.24.3
+module load CUDA/12.8.0
 module load GCC/11.2.0
+module load GCCcore/11.3.0
+module load CMake/3.24.3
 module load Miniconda3/23.3.1-0
 conda init --all
 
@@ -32,3 +32,16 @@ conda config --set solver libmamba
 conda env create --file environment.yml
 conda activate music-gen-interpretability2
 pip install torch==2.6
+
+cd .. && git clone https://github.com/bitsandbytes-foundation/bitsandbytes.git && cd bitsandbytes/
+cmake -DCOMPUTE_BACKEND=cuda -DCOMPUTE_CAPABILITY=80 -S .
+make
+pip install -e .
+
+cd .. && git clone https://github.com/huggingface/peft
+cd peft
+pip install -e .
+
+cd .. && git clone https://github.com/huggingface/trl.git
+cd trl/
+pip install -e .
