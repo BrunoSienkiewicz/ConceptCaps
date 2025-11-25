@@ -57,9 +57,20 @@ def main(cfg: CaptionGenerationConfig) -> None:
     
     # Init Lightning Module
     log.info("Loading pretrained model for inference...")
-    model = CaptionFineTuningModule.load_pretrained_model(
-        model_cfg=cfg.model,
-    )
+    if cfg.model.checkpoint_dir:
+        model = CaptionFineTuningModule.load_pretrained_model(
+            model_cfg=cfg.model,
+        )
+    else:
+        model = CaptionFineTuningModule(
+            model_cfg=cfg.model,
+            generation_cfg=cfg.generation,
+            lora_cfg=cfg.lora,
+            optimizer_cfg=cfg.trainer.optimizer,
+            lr_scheduler_cfg=cfg.trainer.lr_scheduler,
+            tokenizer=tokenizer,
+        )
+
     
     model.eval()
     model.to(device)
