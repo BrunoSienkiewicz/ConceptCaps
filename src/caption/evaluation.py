@@ -72,9 +72,8 @@ def generate_captions_batch(
             ).to(model.device)
             
             # Generate batch
-            outputs = model(
+            outputs = model.generate(
                 **inputs,
-                **generate_cfg
             )
             
             # Decode batch
