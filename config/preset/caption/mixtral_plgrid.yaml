@@ -16,12 +16,12 @@ data:
 
 callbacks:
   model_checkpoint:
-    monitor: val/mauve
+    monitor: val/bertscore_f1
     mode: max
     save_top_k: 1
     filename: best-checkpoint
 
   early_stopping:
-    monitor: val/mauve
+    monitor: val/bertscore_f1
     mode: max
     patience: 3
