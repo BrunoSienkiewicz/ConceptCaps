@@ -2,13 +2,26 @@
 defaults:
   - override /prompt: mistral
   - override /model: caption/mixtral_8x7b_instruct
-  - override /trainer: caption_lightning/15_epochs
-  - override /lora: caption/more_regularization
+  - override /trainer: caption_lightning/learn
+  - override /lora: caption/regularization
   - override /evaluation: caption/larger_size
   - override /paths: plgrid
   - override /logger: wandb
 
 data:
-  max_length: 256
-  batch_size: 8
   dataloader_num_workers: 4
+  max_train_samples: 100
+  max_val_samples: 50
+  max_test_samples: 50
+
+callbacks:
+  model_checkpoint:
+    monitor: val/mauve
+    mode: max
+    save_top_k: 1
+    filename: best-checkpoint
+
+  early_stopping:
+    monitor: val/mauve
+    mode: max
+    patience: 3
