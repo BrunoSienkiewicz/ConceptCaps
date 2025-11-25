@@ -30,7 +30,7 @@ conda config --add envs\_dirs $CONDA_DIR/envs
 conda config --set solver libmamba
 
 conda env create --file environment.yml
-conda activate music-gen-interpretability2
+conda activate music-gen-interpretability3
 pip install torch==2.6
 
 cd .. && git clone https://github.com/bitsandbytes-foundation/bitsandbytes.git && cd bitsandbytes/
