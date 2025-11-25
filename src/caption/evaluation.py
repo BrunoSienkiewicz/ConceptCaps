@@ -72,7 +72,7 @@ def generate_captions_batch(
             ).to(model.device)
             
             # Generate batch
-            outputs = model.generate(
+            outputs = model(
                 **inputs,
                 **generate_cfg
             )
