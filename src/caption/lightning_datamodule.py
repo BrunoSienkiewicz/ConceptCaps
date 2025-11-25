@@ -62,6 +62,31 @@ class CaptionDataModule(pl.LightningDataModule):
         
         return tokenized
 
+    def tokenize_eval_function(self, examples):
+        """Tokenize the text column and prepare for generation."""
+        text_column = self.data_cfg.text_column
+        caption_column = self.data_cfg.caption_column
+        
+        # Tokenize the input prompt
+        tokenized = self.tokenizer(
+            examples[text_column],
+            truncation=True,
+            max_length=self.max_length,
+            padding=True,
+        )
+        
+        # Tokenize the captions separately for labels
+        with self.tokenizer.as_target_tokenizer():
+            labels = self.tokenizer(
+                examples[caption_column],
+                truncation=True,
+                max_length=self.max_length,
+                padding=True,
+            )
+        tokenized["labels"] = labels["input_ids"]
+        
+        return tokenized
+
     def setup(self, stage: Optional[str] = None):
         """Setup datasets for training/validation/test."""
         if stage == "fit" or stage is None:
@@ -77,7 +102,7 @@ class CaptionDataModule(pl.LightningDataModule):
             # Tokenize validation dataset
             if "validation" in self.dataset:
                 self.val_dataset = self.dataset["validation"].map(
-                    self.tokenize_function,
+                    self.tokenize_eval_function,
                     batched=True,
                     remove_columns=self.dataset["validation"].column_names,
                     desc="Tokenizing validation dataset",
@@ -87,7 +112,7 @@ class CaptionDataModule(pl.LightningDataModule):
             # Tokenize test dataset
             if "test" in self.dataset:
                 self.test_dataset = self.dataset["test"].map(
-                    self.tokenize_function,
+                    self.tokenize_eval_function,
                     batched=True,
                     remove_columns=self.dataset["test"].column_names,
                     desc="Tokenizing test dataset",

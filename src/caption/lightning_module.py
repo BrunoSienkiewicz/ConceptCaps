@@ -51,6 +51,7 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         # For validation metrics accumulation
         self.validation_step_outputs = []
+        self.test_step_outputs = []
 
     def _setup_model(self) -> AutoModelForCausalLM:
         """Initialize and prepare the model with LoRA."""
@@ -163,7 +164,7 @@ class CaptionFineTuningModule(pl.LightningModule):
         # Store predictions for metric computation
         if self.metric_computer is not None:
             predictions = outputs.logits.argmax(dim=-1)
-            self.validation_step_outputs.append({
+            self.test_step_outputs.append({
                 "predictions": predictions.detach(),
                 "labels": batch["labels"].detach(),
             })
@@ -204,10 +205,10 @@ class CaptionFineTuningModule(pl.LightningModule):
 
     def on_test_epoch_end(self):
         """Compute metrics at the end of test epoch."""
-        if self.metric_computer is not None and len(self.validation_step_outputs) > 0:
+        if self.metric_computer is not None and len(self.test_step_outputs) > 0:
             # Gather all predictions and labels
-            all_predictions = torch.cat([x["predictions"] for x in self.validation_step_outputs])
-            all_labels = torch.cat([x["labels"] for x in self.validation_step_outputs])
+            all_predictions = torch.cat([x["predictions"] for x in self.test_step_outputs])
+            all_labels = torch.cat([x["labels"] for x in self.test_step_outputs])
             
             # Compute metrics
             eval_pred = EvalPrediction(
@@ -232,7 +233,7 @@ class CaptionFineTuningModule(pl.LightningModule):
                     self.log(f"test/{key}", value, on_epoch=True, sync_dist=True)
         
         # Clear outputs
-        self.validation_step_outputs.clear()
+        self.test_step_outputs.clear()
 
     def configure_optimizers(self):
         """Configure optimizer and learning rate scheduler."""

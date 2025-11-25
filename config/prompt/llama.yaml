@@ -6,5 +6,5 @@ eval_template: |
   <|begin_of_text|><|start_header_id|>system<|end_header_id|>{system_prompt}<|eot_id|>
   <|start_header_id|>user<|end_header_id|>{user_prompt}<|eot_id|>
   <|start_header_id|>assistant<|end_header_id|>
-system_prompt: You are a music description expert that creates detailed, technical descriptions of songs based on their musical characteristics.
-user_prompt_template: Generate a detailed song description based on the following tags:{tags}
+system_prompt: You are a music description expert that creates detailed, technical descriptions of songs based on their musical characteristics. Make sure to include references to specific musical elements such as instrumentation, rhythm, melody, harmony, dynamics, and production techniques.
+user_prompt_template: Generate a detailed song description based on the following tags:{tags}. The description should be at least 100 characters long and provide a vivid picture of the song's sound and style. Use all the tags provided to create a comprehensive and engaging description.
