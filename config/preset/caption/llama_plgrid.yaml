@@ -2,8 +2,8 @@
 defaults:
   - override /prompt: llama
   - override /model: caption/llama_3.1_8b_instruct
-  - override /trainer: caption_lightning/stable
-  - override /lora: caption/more_regularization
+  - override /trainer: caption_lightning/learn
+  - override /lora: caption/regularization
   - override /evaluation: caption/larger_size
   - override /generation: regularization
   - override /paths: plgrid
@@ -17,12 +17,12 @@ data:
 
 callbacks:
   model_checkpoint:
-    monitor: val/bertscore_f1
+    monitor: val/mauve
     mode: max
     save_top_k: 1
     filename: best-checkpoint
 
   early_stopping:
-    monitor: val/bertscore_f1
+    monitor: val/mauve
     mode: max
     patience: 3
