@@ -1,7 +1,7 @@
 # @package _global_
 defaults:
   - override /prompt: llama
-  - override /model: caption/llama_3.1_8b_instruct
+  - override /model: caption/llama_3.1_70b_instruct
   - override /trainer: caption_lightning/learn
   - override /lora: caption/regularization
   - override /evaluation: caption/larger_size

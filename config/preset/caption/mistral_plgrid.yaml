@@ -25,4 +25,4 @@ callbacks:
   early_stopping:
     monitor: val/bertscore_f1
     mode: max
-    patience: 6
+    patience: 3
