@@ -67,6 +67,10 @@ class CaptionFineTuningModule(pl.LightningModule):
         if quantization_config is not None:
             model = prepare_model_for_kbit_training(model)
         
+        if getattr(self.model_cfg, 'gradient_checkpointing', False):
+            model.gradient_checkpointing_enable()
+            model.enable_input_require_grads()
+        
         # Apply LoRA
         lora_config = LoraConfig(**OmegaConf.to_container(self.lora_cfg, resolve=True))
         model = get_peft_model(model, lora_config)

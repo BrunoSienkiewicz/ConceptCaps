@@ -1,0 +1,23 @@
+max_epochs: 3
+accumulate_grad_batches: 16
+dataloader_num_workers: 2
+accelerator: auto
+devices: auto
+strategy: fsdp
+precision: bf16-mixed
+gradient_clip_val: 0.5
+log_every_n_steps: 5
+val_check_interval: 0.5
+check_val_every_n_epoch: 1
+enable_progress_bar: true
+enable_model_summary: false
+deterministic: false
+optimizer:
+  lr: 0.00001
+  weight_decay: 0.05
+  adam_beta1: 0.9
+  adam_beta2: 0.98
+  eps: 1e-08
+lr_scheduler:
+  T_max: 3
+  eta_min: 0
