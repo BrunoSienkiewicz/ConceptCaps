@@ -103,6 +103,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
         default_root_dir=str(checkpoint_dir),
         max_epochs=cfg.trainer.max_epochs,
         accelerator=cfg.trainer.accelerator,
+        num_nodes=cfg.trainer.num_nodes,
         devices=cfg.trainer.devices,
         strategy=cfg.trainer.strategy,
         precision=cfg.trainer.precision,

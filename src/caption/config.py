@@ -67,6 +67,7 @@ class TrainerConfig:
     max_epochs: int = 3
     dataloader_num_workers: int = 1
     accelerator: str = "auto"
+    num_nodes: int = 1
     devices: Union[str, int, List[int]] = "auto"
     strategy: Union[str, dict, None] = "ddp"
     precision: Union[str, int] = "bf16"
