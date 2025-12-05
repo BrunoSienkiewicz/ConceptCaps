@@ -2,7 +2,7 @@
 #SBATCH -J run_caption_fine_tuning
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
-#SBATCH --mem-per-cpu=8GB
+#SBATCH --mem-per-cpu=4GB
 #SBATCH --gres=gpu:2
 #SBATCH --cpus-per-task=16
 #SBATCH --time=10:00:00
