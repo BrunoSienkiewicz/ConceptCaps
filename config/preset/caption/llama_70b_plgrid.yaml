@@ -2,8 +2,8 @@
 defaults:
   - override /prompt: llama
   - override /model: caption/llama_3.1_70b_instruct
-  - override /trainer: caption_lightning/learn
-  - override /lora: caption/regularization
+  - override /trainer: caption_lightning/large_model
+  - override /lora: caption/more_regularization
   - override /evaluation: caption/larger_size
   - override /generation: regularization
   - override /paths: plgrid
