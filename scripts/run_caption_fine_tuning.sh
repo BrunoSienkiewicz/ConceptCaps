@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #SBATCH -J run_caption_fine_tuning
-#SBATCH -N 1
+#SBATCH -N 2
 #SBATCH --ntasks-per-node=2
 #SBATCH --mem-per-cpu=4GB
 #SBATCH --gres=gpu:2
