@@ -1,6 +1,6 @@
 name: meta-llama/Llama-3.1-70B-Instruct
 checkpoint_dir: ""
-device_map: auto
+device_map: null
 trust_remote_code: true
 gradient_checkpointing: true
 quantization:

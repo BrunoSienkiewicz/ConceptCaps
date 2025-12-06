@@ -1,7 +1,7 @@
 #!/bin/bash -l
 #SBATCH -J run_caption_fine_tuning
 #SBATCH -N 1
-#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-node=2
 #SBATCH --mem-per-cpu=8GB
 #SBATCH --gres=gpu:2
 #SBATCH --cpus-per-task=16
@@ -55,4 +55,4 @@ export PLGRID_ARTIFACTS_DIR="$PLGRID_ARTIFACTS_DIR"
 export CONDA_DIR="$CONDA_DIR"
 
 mkdir -p "$HF_HOME"
-"$ENV_DIR/bin/python" src/scripts/caption/run_fine_tuning_lightning.py "${HYDRA_OVERRIDES[@]}"
+srun "$ENV_DIR/bin/python" src/scripts/caption/run_fine_tuning_lightning.py "${HYDRA_OVERRIDES[@]}"
