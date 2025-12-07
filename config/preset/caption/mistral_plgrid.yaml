@@ -2,8 +2,8 @@
 defaults:
   - override /prompt: mistral
   - override /model: caption/mistral_7b_instruct
-  - override /trainer: caption_lightning/stable
-  - override /lora: caption/regularization
+  - override /trainer: caption_lightning/learn
+  - override /lora: caption/default
   - override /evaluation: caption/larger_size
   - override /generation: regularization
   - override /paths: plgrid
