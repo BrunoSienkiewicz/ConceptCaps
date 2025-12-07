@@ -1,0 +1,9 @@
+r: 64
+lora_alpha: 16
+target_modules:
+  - q_proj
+  - v_proj
+lora_dropout: 0.01
+bias: none
+task_type: CAUSAL_LM
+init_lora_weights: true
