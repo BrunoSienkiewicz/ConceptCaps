@@ -1,4 +1,4 @@
-r: 64
+r: 32
 lora_alpha: 16
 target_modules:
   - q_proj
