@@ -11,6 +11,7 @@ defaults:
 
 data:
   batch_size: 1
+  max_length: 128
   dataloader_num_workers: 4
   max_train_samples: 100
   max_val_samples: 50
