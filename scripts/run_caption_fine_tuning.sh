@@ -3,7 +3,7 @@
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=8GB
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=16
 #SBATCH --time=10:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
