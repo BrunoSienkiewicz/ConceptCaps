@@ -45,4 +45,4 @@ export PYTHONPATH="$PYTHONPATH:$(pwd)"
 export HF_HOME="$OUT_DIR/.cache/huggingface"
 
 mkdir -p "$OUT_DIR/.cache/huggingface"
-"$ENV_DIR/bin/python" src/scripts/run_tta_generation.py +preset="$PRESET"
+"$ENV_DIR/bin/python" src/scripts/tta/run_tta_generation.py +preset="$PRESET"
