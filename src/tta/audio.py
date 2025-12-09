@@ -28,7 +28,7 @@ def generate_audio_samples(
                 attention_mask=attention_mask,
                 max_new_tokens=max_new_tokens,
             )
-        sampling_rate = model.model.config.audio_encoder.sampling_rate
+        sampling_rate = model.config.audio_encoder.sampling_rate
         for item_idx, audio in enumerate(audio_values):
             global_idx = batch_idx * batch_size + item_idx
             sample_id = df.iloc[global_idx][id_column]
