@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from pathlib import Path
 
 import scipy.io
@@ -18,6 +20,7 @@ def generate_audio_samples(
     id_column: str = "id",
     filename_template: str = "{}.wav",
 ) -> None:
+    os.makedirs(audio_dir, exist_ok=True)
     for batch_idx, batch in enumerate(dataloader):
         input_ids, attention_mask = batch
         input_ids = input_ids.to(model.device)
