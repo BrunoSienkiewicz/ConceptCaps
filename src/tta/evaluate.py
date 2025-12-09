@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import torch
 from tqdm import tqdm
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoProcessor, AutoModel
 
 from src.utils import RankedLogger
 
@@ -31,7 +31,7 @@ class CLAPScore:
         log.info(f"Loading CLAP model: {model_name}")
         
         self.model = AutoModel.from_pretrained(model_name).to(self.device)
-        self.processor = AutoTokenizer.from_pretrained(model_name)
+        self.processor = AutoProcessor.from_pretrained(model_name)
         self.model.eval()
         
         log.info(f"CLAP model loaded on {self.device}")
