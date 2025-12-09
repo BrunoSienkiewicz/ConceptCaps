@@ -1,7 +1,7 @@
 dataset_name: "bsienkiewicz/musicgen-vae-tags-description-dataset"
 batch_size: 4 
 max_sequence_length: 255
-subset_size: 0.001
+subset_size: 0.01
 subset: "train"
 id_column: "id"
 caption_column: "caption"

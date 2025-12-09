@@ -86,6 +86,7 @@ class CLAPScore:
             "clap_score_std": float(similarities.std()),
             "clap_score_min": float(similarities.min()),
             "clap_score_max": float(similarities.max()),
+            "clap_scores": similarities.tolist(),
         }
 
 
@@ -180,10 +181,9 @@ class TTAEvaluator:
             log.info(f"Evaluation results saved to {results_path}")
             
             # Save per-sample CLAP scores if available
-            if "clap_scores" in results:
-                df_results = df.copy()
-                df_results["clap_score"] = results["clap_scores"]
-                df_results.to_csv(output_dir / "per_sample_scores.csv", index=False)
+            df_results = df.copy()
+            df_results["clap_score"] = results["clap_scores"]
+            df_results.to_csv(output_dir / "per_sample_scores.csv", index=False)
         
         log.info("TTA evaluation completed")
         return results
