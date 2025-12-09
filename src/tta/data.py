@@ -90,7 +90,7 @@ def prepare_dataloader(cfg: dict, processor: AutoProcessor) -> Tuple[DataLoader,
         DataLoader for the TTA dataset.
     """
     dataset, df = load_and_tokenize_dataset(
-        dataset_name=cfg["dataset_name"],
+        dataset_name=cfg.get("dataset_name", "your/default-dataset"),
         processor=processor,
         subset=cfg.get("subset", "train"),
         subset_size=cfg.get("subset_size", 0.1),
