@@ -32,7 +32,10 @@ def generate_caption(
             **inputs,
             max_new_tokens=max_new_tokens,
         )
-    return tokenizer.decode(outputs[0], skip_special_tokens=True)
+    # Extract only new tokens (skip input tokens)
+    input_length = inputs["input_ids"].shape[1]
+    new_tokens = outputs[0, input_length:]
+    return tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
 
 def generate_captions_batch(
@@ -83,10 +86,13 @@ def generate_captions_batch(
                 no_repeat_ngram_size=generate_cfg.no_repeat_ngram_size,
             )
             
-            # Decode batch
+            # Decode batch - extract only new tokens (skip input tokens)
+            input_length = inputs["input_ids"].shape[1]
+            new_tokens = outputs[:, input_length:]
             batch_captions = tokenizer.batch_decode(
-                outputs, skip_special_tokens=True
+                new_tokens, skip_special_tokens=True
             )
+            batch_captions = [caption.strip() for caption in batch_captions]
             captions.extend(batch_captions)
     
     return captions

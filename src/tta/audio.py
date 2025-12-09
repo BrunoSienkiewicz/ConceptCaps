@@ -6,11 +6,10 @@ import scipy.io
 import torch
 import pandas as pd
 from torch.utils.data import DataLoader
-from transformers import MusicGenModel
 
 
 def generate_audio_samples(
-    model: MusicGenModel,
+    model,
     dataloader: DataLoader,
     audio_dir: Path,
     max_new_tokens: int,
