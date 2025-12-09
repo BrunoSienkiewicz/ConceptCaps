@@ -4,8 +4,10 @@ defaults:
   - evaluation: tta/default
   - paths: default
   - logger: null
+  - callbacks: default
   - hydra: default
 
-task_name: tta
+run_id: ${now:%Y-%m-%d_%H-%M-%S}
+task_name: tta_generation
 device: cuda
 random_state: 42

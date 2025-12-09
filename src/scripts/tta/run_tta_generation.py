@@ -8,6 +8,7 @@ import torch
 import pytorch_lightning as pl
 
 from src.utils import (RankedLogger, instantiate_loggers,
+                        instantiate_callbacks,
                        print_config_tree)
 from src.tta.audio import generate_audio_samples
 from src.tta.config import TTAConfig
@@ -26,7 +27,19 @@ def main(cfg: TTAConfig):
     log.info("Setting random seed...")
     pl.seed_everything(cfg.random_state)
 
-    loggers = instantiate_loggers(cfg.get("logger"))
+    # Setup callbacks
+    callbacks = []
+    if cfg.get("callbacks"):
+        pl_callbacks = instantiate_callbacks(cfg.callbacks)
+        if pl_callbacks:
+            callbacks.extend(pl_callbacks if isinstance(pl_callbacks, list) else [pl_callbacks])
+
+    # Setup loggers
+    loggers = []
+    if cfg.get("logger"):
+        pl_loggers = instantiate_loggers(cfg.logger)
+        if pl_loggers:
+            loggers.extend(pl_loggers if isinstance(pl_loggers, list) else [pl_loggers])
 
     device = torch.device(cfg.device)
     log.info(f"Using device: {device}")
