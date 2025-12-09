@@ -8,8 +8,8 @@
 #SBATCH --time=01:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
-#SBATCH --output="output.out"
-#SBATCH --error="error.err"
+#SBATCH --output="logs/run_tta.out"
+#SBATCH --error="logs/run_tta.err"
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
@@ -45,4 +45,4 @@ export PYTHONPATH="$PYTHONPATH:$(pwd)"
 export HF_HOME="$OUT_DIR/.cache/huggingface"
 
 mkdir -p "$OUT_DIR/.cache/huggingface"
-srun "$ENV_DIR/bin/python" src/scripts/run_tta_generation.py +preset="$PRESET"
+"$ENV_DIR/bin/python" src/scripts/run_tta_generation.py +preset="$PRESET"
