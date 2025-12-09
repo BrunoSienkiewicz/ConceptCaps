@@ -49,7 +49,6 @@ def main(cfg: TTAConfig):
     log.info("Preparing data...")
     processor = prepare_tokenizer(cfg.model)
     dataloader, df = prepare_dataloader(cfg.data, processor)
-    dataloader.to(device)
 
     log.info("Loading model...")
     model = prepare_model(cfg.model)
