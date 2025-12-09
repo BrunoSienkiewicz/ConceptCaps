@@ -67,31 +67,17 @@ class CLAPScore:
                     audio, sr = librosa.load(audio_path, sr=48000, mono=True)
                     audios.append(audio)
                 
-                # Process inputs
-                audio_inputs = self.processor(
-                    audios=audios,
-                    return_tensors="pt",
-                    sampling_rate=48000,
-                    padding=True,
-                ).to(self.device)
-                
-                text_inputs = self.processor(
+                inputs = self.processor(
                     text=batch_texts,
+                    audio=audios,
                     return_tensors="pt",
                     padding=True,
                 ).to(self.device)
                 
-                # Get embeddings
-                audio_embeds = self.model.get_audio_features(**audio_inputs)
-                text_embeds = self.model.get_text_features(**text_inputs)
+                outputs = self.model(**inputs)
                 
-                # Normalize embeddings
-                audio_embeds = audio_embeds / audio_embeds.norm(dim=-1, keepdim=True)
-                text_embeds = text_embeds / text_embeds.norm(dim=-1, keepdim=True)
-                
-                # Compute cosine similarity
-                batch_similarities = (audio_embeds * text_embeds).sum(dim=-1)
-                similarities.extend(batch_similarities.cpu().numpy().tolist())
+                batch_similarities = outputs.logits_per_audio.softmax(dim=-1).cpu().numpy().diagonal()
+                similarities.extend(batch_similarities)
         
         similarities = np.array(similarities)
         
