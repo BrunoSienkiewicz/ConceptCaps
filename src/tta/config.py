@@ -56,4 +56,5 @@ class TTAConfig(DictConfig):
     logger: LoggerConfig
     paths: PathsConfig
     random_state: int
+    batch_size: int = 8
     device: str = "cuda:0"
