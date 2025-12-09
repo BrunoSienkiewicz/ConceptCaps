@@ -82,7 +82,7 @@ def main(cfg: TTAConfig):
         output_dir=data_dir / "evaluation_results",
         text_column=cfg.data.get("caption_column", "caption"),
         filename_column=cfg.data.get("filename_column", "filename"),
-        batch_size=cfg.evaluation.get("batch_size", 8),
+        batch_size=cfg.data.get("batch_size", 8),
     )
 
     if loggers:

@@ -44,15 +44,9 @@ class ModelConfig:
     tokenizer: ModelTokenizerConfig = field(default_factory=ModelTokenizerConfig)
 
 @dataclass
-class EvaluationMetric:
-    name: str
-    kwargs: Optional[DictConfig] = None
-
-@dataclass
 class EvaluationConfig:
-    enabled: bool
-    batch_size: int
-    metrics: list[EvaluationMetric]
+    clap_model: str = "laion/clap-htsat-unfused"
+    fad_model: str = "google/vggish"
 
 @dataclass
 class TTAConfig(DictConfig):
