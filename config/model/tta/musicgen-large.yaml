@@ -1,12 +1,9 @@
-_target_: "src.tta.config.ModelConfig"
-model:
-  _target_: "src.tcav.model.CustomMusicGen"
-  processor:
-    _target_: "transformers.AutoProcessor.from_pretrained"
-    pretrained_model_name_or_path: "facebook/musicgen-large"
-    device: ${device}
-  model:
-    _target_: "transformers.MusicgenForConditionalGeneration.from_pretrained"
-    pretrained_model_name_or_path: "facebook/musicgen-large"
+name: "facebook/musicgen-large"
+checkpoint_dir: ""
+device_map: auto
+trust_remote_code: true
+tokenizer:
+  use_fast: null
+  padding_side: "right"
+  pad_token_as_eos: true
   max_new_tokens: 256
-model_id: "musicgen-large"

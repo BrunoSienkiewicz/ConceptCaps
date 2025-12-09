@@ -9,6 +9,5 @@ data:
   batch_size: 8
   max_sequence_length: 512
 model:
-  model:
-    max_new_tokens: 1024
+  max_new_tokens: 1024
 device: cuda
