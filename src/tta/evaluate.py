@@ -9,8 +9,7 @@ import numpy as np
 import pandas as pd
 import torch
 from tqdm import tqdm
-from fadtk import FAD
-from transformers import ClapModel, ClapProcessor
+from transformers import AutoTokenizer, AutoModel
 
 from src.utils import RankedLogger
 
@@ -31,8 +30,8 @@ class CLAPScore:
         self.device = torch.device(device if torch.cuda.is_available() else "cpu")
         log.info(f"Loading CLAP model: {model_name}")
         
-        self.model = ClapModel.from_pretrained(model_name).to(self.device)
-        self.processor = ClapProcessor.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name).to(self.device)
+        self.processor = AutoTokenizer.from_pretrained(model_name)
         self.model.eval()
         
         log.info(f"CLAP model loaded on {self.device}")
