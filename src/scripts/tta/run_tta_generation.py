@@ -102,15 +102,7 @@ def main(cfg: TTAConfig):
             if hasattr(logger, "log_metrics"):
                 logger.log_metrics(results, step=0)
 
-    # Log results
-    log.info("=" * 50)
-    log.info("Evaluation Results:")
-    log.info("=" * 50)
-    for metric_name, metric_value in results.items():
-        log.info(f"{metric_name}: {metric_value:.4f}")
-    log.info("=" * 50)
-
-    log.info(f"Evaluation completed! Results saved to {data_dir / 'evaluation_results'}")
+    log.info(f"Results saved to {data_dir / 'evaluation_results'}")
 
 if __name__ == "__main__":
     main()
