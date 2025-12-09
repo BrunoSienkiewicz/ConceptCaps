@@ -133,13 +133,6 @@ def main(cfg: CaptionGenerationConfig) -> None:
         
         log.info(f"Saved {len(results_df)} predictions to: {predictions_path}")
         
-        # Log sample predictions
-        log.info("\nSample predictions:")
-        for i in range(min(3, len(records))):
-            log.info(f"\nExample {i+1}:")
-            log.info(f"  Aspects: {records[i]['aspect_list']}")
-            log.info(f"  Prediction: {records[i]['prediction'][:200]}...")
-        
         # Log to experiment tracker if available
         if loggers:
             for logger in loggers:

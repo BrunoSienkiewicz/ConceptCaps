@@ -12,6 +12,9 @@ defaults:
 data:
   batch_size: 32
   dataloader_num_workers: 4
+  max_train_samples: null
+  max_val_samples: null
+  max_test_samples: null
 
 callbacks:
   model_checkpoint:
