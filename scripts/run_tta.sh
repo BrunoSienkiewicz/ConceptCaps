@@ -37,12 +37,18 @@ done
 
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
-export OUT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
-export CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
-export ENV_DIR="$CONDA_DIR/envs/$(cat environment.yml | grep -E "name: " | cut -d " " -f 2)"
+ROOT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
+OUT_DIR="$ROOT_DIR/caption_fine_tuning"
+PLGRID_ARTIFACTS_DIR="$ROOT_DIR/artifacts"
+CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
+ENV_DIR="$CONDA_DIR/envs/$(grep -E '^name:' environment.yml | awk '{print $2}')"
+
 export HYDRA_FULL_ERROR=1
 export PYTHONPATH="$PYTHONPATH:$(pwd)"
-export HF_HOME="$OUT_DIR/.cache/huggingface"
+export HF_HOME="$ROOT_DIR/.cache/huggingface"
+export OUT_DIR="$OUT_DIR"
+export PLGRID_ARTIFACTS_DIR="$PLGRID_ARTIFACTS_DIR"
+export CONDA_DIR="$CONDA_DIR"
 
 mkdir -p "$OUT_DIR/.cache/huggingface"
 "$ENV_DIR/bin/python" src/scripts/tta/run_tta_generation.py +preset="$PRESET"
