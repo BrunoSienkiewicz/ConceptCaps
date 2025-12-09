@@ -1,6 +1,7 @@
 defaults:
   - model: tta/musicgen-small
   - data: tta/music_caps
+  - evaluation: tta/default
   - paths: default
   - logger: null
   - hydra: default
