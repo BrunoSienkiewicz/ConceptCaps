@@ -1,0 +1,12 @@
+dataset: "bsienkiewicz/musicgen-vae-tags-description-dataset"
+processor:
+  _target_: "transformers.AutoProcessor.from_pretrained"
+  pretrained_model_name_or_path: "facebook/musicgen-large"
+batch_size: 4 
+max_sequence_length: 255
+subset_size: 0.001
+subset: "train"
+id_column: "id"
+caption_column: "caption"
+device: ${device}
+

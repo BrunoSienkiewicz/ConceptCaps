@@ -17,6 +17,7 @@ class LoggerConfig:
 @dataclass
 class DatasetConfig:
     dataset_name: str = ""
+    id_column: str = "id"
     caption_column: str = "caption"
     remove_columns: Optional[List[str]] = None
 

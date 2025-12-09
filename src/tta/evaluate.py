@@ -104,73 +104,6 @@ class CLAPScore:
         }
 
 
-class FADScore:
-    """Fréchet Audio Distance (FAD) evaluator."""
-    
-    def __init__(self, model_name: str = "google/vggish", device: str = "cuda"):
-        """Initialize FAD evaluator.
-        
-        Args:
-            model_name: Model to use for feature extraction
-            device: Device to run the model on
-        """
-        try:
-            
-            self.device = device if torch.cuda.is_available() else "cpu"
-            log.info(f"Initializing FAD evaluator with {model_name}")
-            
-            # Initialize FAD with the specified model
-            self.fad = FAD(model_name=model_name, use_pca=False, use_activation=False)
-            
-            log.info(f"FAD evaluator initialized on {self.device}")
-        except ImportError:
-            raise ImportError(
-                "fadtk library is required for FAD computation. "
-                "Install with: pip install fadtk"
-            )
-    
-    def compute_score(
-        self,
-        generated_audio_dir: Path,
-        reference_audio_dir: Optional[Path] = None,
-        background_stats_path: Optional[Path] = None,
-    ) -> Dict[str, float]:
-        """Compute FAD score.
-        
-        Args:
-            generated_audio_dir: Directory containing generated audio files
-            reference_audio_dir: Directory containing reference audio files (optional)
-            background_stats_path: Path to precomputed background statistics (optional)
-            
-        Returns:
-            Dictionary with FAD score
-        """
-        log.info("Computing FAD score...")
-        
-        if background_stats_path is not None and background_stats_path.exists():
-            # Use precomputed background statistics
-            log.info(f"Using precomputed background stats from {background_stats_path}")
-            fad_score = self.fad.score(
-                str(generated_audio_dir),
-                background_stats=str(background_stats_path),
-            )
-        elif reference_audio_dir is not None:
-            # Compute FAD against reference directory
-            log.info(f"Computing FAD against reference: {reference_audio_dir}")
-            fad_score = self.fad.score(
-                str(generated_audio_dir),
-                str(reference_audio_dir),
-            )
-        else:
-            raise ValueError(
-                "Either reference_audio_dir or background_stats_path must be provided"
-            )
-        
-        return {
-            "fad_score": float(fad_score),
-        }
-
-
 class TTAEvaluator:
     """Comprehensive evaluator for Text-to-Audio generation."""
     
@@ -191,15 +124,12 @@ class TTAEvaluator:
         
         log.info("Initializing TTA evaluator...")
         self.clap_scorer = CLAPScore(model_name=clap_model, device=device)
-        self.fad_scorer = FADScore(model_name=fad_model, device=device)
         log.info("TTA evaluator initialized")
     
     def evaluate(
         self,
         generated_audio_dir: Path,
         metadata_path: Path,
-        reference_audio_dir: Optional[Path] = None,
-        background_stats_path: Optional[Path] = None,
         output_dir: Optional[Path] = None,
         text_column: str = "caption",
         filename_column: str = "filename",
@@ -253,22 +183,6 @@ class TTAEvaluator:
         )
         results.update(clap_results)
         log.info(f"CLAP Score (mean): {clap_results['clap_score_mean']:.4f}")
-        
-        # Compute FAD score
-        if reference_audio_dir is not None or background_stats_path is not None:
-            log.info("Computing FAD score...")
-            fad_results = self.fad_scorer.compute_score(
-                generated_audio_dir=generated_audio_dir,
-                reference_audio_dir=reference_audio_dir,
-                background_stats_path=background_stats_path,
-            )
-            results.update(fad_results)
-            log.info(f"FAD Score: {fad_results['fad_score']:.4f}")
-        else:
-            log.warning(
-                "Skipping FAD computation: neither reference_audio_dir "
-                "nor background_stats_path provided"
-            )
         
         # Save results
         if output_dir is not None:

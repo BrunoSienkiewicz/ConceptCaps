@@ -13,6 +13,7 @@ from src.tta.audio import generate_audio_samples
 from src.tta.config import TTAConfig
 from src.tta.data import prepare_dataloader, save_dataframe_metadata
 from src.tta.modelling import prepare_model, prepare_tokenizer
+from src.tta.evaluate import TTAEvaluator
 
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
@@ -64,13 +65,40 @@ def main(cfg: TTAConfig):
         filename_template=cfg.data.get("filename_template", "{}.wav"),
     )
 
+    # Initialize evaluator
+    log.info("Initializing TTA evaluator...")
+    evaluator = TTAEvaluator(
+        clap_model=cfg.evaluation.get("clap_model", "laion/clap-htsat-unfused"),
+        fad_model=cfg.evaluation.get("fad_model", "google/vggish"),
+        device=str(device),
+    )
+
     log.info("TTA generation completed and logged.")
 
-    if cfg.evaluation.enabled:
-        log.info("Starting evaluation...")
-        # Call evaluation script
-        from src.scripts.tta.run_evaluation import main as evaluation_main
-        evaluation_main()
+    log.info("Running TTA evaluation...")
+    results = evaluator.evaluate(
+        generated_audio_dir=data_dir / "audio_samples",
+        metadata_path=data_dir / "metadata.csv",
+        output_dir=data_dir / "evaluation_results",
+        text_column=cfg.data.get("caption_column", "caption"),
+        filename_column=cfg.data.get("filename_column", "filename"),
+        batch_size=cfg.evaluation.get("batch_size", 8),
+    )
+
+    if loggers:
+        for logger in loggers:
+            if hasattr(logger, "log_metrics"):
+                logger.log_metrics(results, step=0)
+
+    # Log results
+    log.info("=" * 50)
+    log.info("Evaluation Results:")
+    log.info("=" * 50)
+    for metric_name, metric_value in results.items():
+        log.info(f"{metric_name}: {metric_value:.4f}")
+    log.info("=" * 50)
+
+    log.info(f"Evaluation completed! Results saved to {data_dir / 'evaluation_results'}")
 
 if __name__ == "__main__":
     main()
