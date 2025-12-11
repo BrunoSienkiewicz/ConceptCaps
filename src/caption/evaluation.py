@@ -223,7 +223,7 @@ def generate_captions_batch(
             # Generate batch
             outputs = model.generate(
                 **inputs,
-                max_new_tokens=generate_cfg.max_new_tokens,
+                max_length=generate_cfg.max_length,
                 temperature=generate_cfg.temperature,
                 top_k=generate_cfg.top_k,
                 top_p=generate_cfg.top_p,
