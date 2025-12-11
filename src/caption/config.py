@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from omegaconf import DictConfig
 
@@ -105,6 +105,9 @@ class EvaluationMetricConfig:
 class EvaluationConfig:
     metrics: List[EvaluationMetricConfig] = field(default_factory=list)
     output_predictions: bool = True
+    compute_perplexity: bool = False
+    compute_llm_judge: bool = False
+    llm_judge_config: Optional[Dict[str, Any]] = None
 
 
 @dataclass

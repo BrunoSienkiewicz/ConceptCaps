@@ -38,28 +38,174 @@ def generate_caption(
     return tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
 
+def calculate_perplexity(
+    model: AutoModelForCausalLM,
+    tokenizer: AutoTokenizer,
+    text: str,
+    device: str = None,
+) -> float:
+    """
+    Calculate perplexity for a given text.
+    Based on: https://stackoverflow.com/questions/75886674/how-to-compute-sentence-level-perplexity-from-hugging-face-language-models
+    
+    Args:
+        model: Language model
+        tokenizer: Tokenizer
+        text: Text to calculate perplexity for
+        device: Device to use (defaults to model's device)
+        
+    Returns:
+        Perplexity score (lower is better)
+    """
+    if device is None:
+        device = model.device
+    
+    model.eval()
+    encodings = tokenizer(text, return_tensors="pt")
+    input_ids = encodings.input_ids.to(device)
+    
+    with torch.no_grad():
+        outputs = model(input_ids, labels=input_ids)
+        # Loss is calculated using CrossEntropyLoss which averages over valid labels
+        # N.B. the model only calculates loss over trg_len - 1 labels, because it internally shifts the labels
+        # to the left by 1.
+        neg_log_likelihood = outputs.loss
+    
+    ppl = torch.exp(neg_log_likelihood).item()
+    return ppl
+
+
+def evaluate_with_llm_judge(
+    captions: List[str],
+    prompts: List[str],
+    judge_model_name: str = "meta-llama/Llama-3.2-3B-Instruct",
+    batch_size: int = 4,
+    device: str = "cuda",
+) -> Dict[str, Any]:
+    """
+    Evaluate generated captions using an LLM as a judge.
+    Based on: https://huggingface.co/learn/cookbook/llm_judge
+    
+    Args:
+        captions: Generated captions to evaluate
+        prompts: Original prompts used for generation
+        judge_model_name: Name of the judge model to use
+        batch_size: Batch size for judge evaluation
+        device: Device to use
+        
+    Returns:
+        Dictionary with evaluation scores and reasoning
+    """
+    from transformers import pipeline
+    
+    # Initialize judge model
+    judge_pipeline = pipeline(
+        "text-generation",
+        model=judge_model_name,
+        device=device,
+        torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+    )
+    
+    judge_template = """You are an expert music critic evaluating AI-generated music descriptions.
+
+Given the following tags and the generated description, evaluate the description on a scale of 1-10 based on:
+- Accuracy: Does it correctly incorporate the tags?
+- Coherence: Is it well-written and coherent?
+- Completeness: Does it provide sufficient detail?
+- Musicality: Does it sound like a natural music description?
+
+Tags/Prompt: {prompt}
+Generated Description: {caption}
+
+Provide your evaluation in the following format:
+Score: [1-10]
+Reasoning: [Your explanation]
+"""
+    
+    scores = []
+    reasonings = []
+    
+    logger.info(f"Evaluating {len(captions)} captions with LLM judge...")
+    
+    for i in tqdm(range(0, len(captions), batch_size), desc="LLM Judge Evaluation"):
+        batch_captions = captions[i:i+batch_size]
+        batch_prompts = prompts[i:i+batch_size]
+        
+        for caption, prompt in zip(batch_captions, batch_prompts):
+            judge_prompt = judge_template.format(prompt=prompt, caption=caption)
+            
+            try:
+                response = judge_pipeline(
+                    judge_prompt,
+                    max_new_tokens=256,
+                    temperature=0.7,
+                    do_sample=True,
+                    pad_token_id=judge_pipeline.tokenizer.eos_token_id,
+                )
+                
+                judge_output = response[0]["generated_text"]
+                
+                # Extract score and reasoning
+                score = None
+                reasoning = ""
+                
+                for line in judge_output.split('\n'):
+                    if line.startswith("Score:"):
+                        try:
+                            score_text = line.replace("Score:", "").strip()
+                            score = float(score_text.split()[0])
+                        except:
+                            score = 5.0  # Default score if parsing fails
+                    elif line.startswith("Reasoning:"):
+                        reasoning = line.replace("Reasoning:", "").strip()
+                
+                scores.append(score if score is not None else 5.0)
+                reasonings.append(reasoning)
+                
+            except Exception as e:
+                logger.warning(f"Failed to evaluate caption with LLM judge: {e}")
+                scores.append(5.0)  # Default score on error
+                reasonings.append("Evaluation failed")
+    
+    return {
+        "llm_judge_mean_score": float(np.mean(scores)) if scores else 0.0,
+        "llm_judge_std_score": float(np.std(scores)) if scores else 0.0,
+        "llm_judge_min_score": float(np.min(scores)) if scores else 0.0,
+        "llm_judge_max_score": float(np.max(scores)) if scores else 0.0,
+        "llm_judge_scores": scores,
+        "llm_judge_reasonings": reasonings,
+    }
+
+
 def generate_captions_batch(
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
     prompts: List[str],
     generate_cfg: DictConfig,
     batch_size: int = 8,
-) -> List[str]:
+    compute_perplexity: bool = False,
+    compute_llm_judge: bool = False,
+    llm_judge_config: Optional[Dict[str, Any]] = None,
+) -> tuple[List[str], Optional[Dict[str, Any]]]:
     """
-    Generate captions for a batch of prompts efficiently.
+    Generate captions for a batch of prompts efficiently with optional quality metrics.
     
     Args:
         model: Language model for generation
         tokenizer: Tokenizer for encoding/decoding
         prompts: List of input prompts
-        max_new_tokens: Maximum tokens to generate per caption
+        generate_cfg: Generation configuration
         batch_size: Number of prompts to process per batch
+        compute_perplexity: Whether to compute perplexity for each generated caption
+        compute_llm_judge: Whether to evaluate with LLM-as-a-judge
+        llm_judge_config: Configuration for LLM judge (model_name, device, etc.)
         
     Returns:
-        List of generated captions
+        Tuple of (generated captions, quality metrics dict or None)
     """
     model.eval()
     captions = []
+    perplexities = []
     
     with torch.no_grad():
         for i in tqdm(range(0, len(prompts), batch_size), desc="Generating captions"):
@@ -94,8 +240,55 @@ def generate_captions_batch(
             )
             batch_captions = [caption.strip() for caption in batch_captions]
             captions.extend(batch_captions)
+            
+            # Calculate perplexity if requested
+            if compute_perplexity:
+                for caption in batch_captions:
+                    try:
+                        ppl = calculate_perplexity(model, tokenizer, caption, device=model.device)
+                        perplexities.append(ppl)
+                    except Exception as e:
+                        logger.warning(f"Failed to calculate perplexity: {e}")
+                        perplexities.append(float('inf'))
     
-    return captions
+    # Compile quality metrics
+    quality_metrics = None
+    if compute_perplexity or compute_llm_judge:
+        quality_metrics = {}
+        
+        if compute_perplexity and perplexities:
+            # Filter out infinite values for statistics
+            valid_perplexities = [p for p in perplexities if p != float('inf')]
+            if valid_perplexities:
+                quality_metrics['perplexity'] = {
+                    'mean': float(np.mean(valid_perplexities)),
+                    'std': float(np.std(valid_perplexities)),
+                    'min': float(np.min(valid_perplexities)),
+                    'max': float(np.max(valid_perplexities)),
+                    'median': float(np.median(valid_perplexities)),
+                    'all_scores': perplexities,
+                }
+                logger.info(f"Perplexity - Mean: {quality_metrics['perplexity']['mean']:.2f}, "
+                           f"Std: {quality_metrics['perplexity']['std']:.2f}")
+        
+        if compute_llm_judge:
+            if llm_judge_config is None:
+                llm_judge_config = {
+                    'judge_model_name': 'meta-llama/Llama-3.2-3B-Instruct',
+                    'batch_size': 4,
+                    'device': str(model.device),
+                }
+            
+            llm_judge_results = evaluate_with_llm_judge(
+                captions=captions,
+                prompts=prompts,
+                **llm_judge_config,
+            )
+            quality_metrics['llm_judge'] = llm_judge_results
+            logger.info(f"LLM Judge - Mean Score: {llm_judge_results['llm_judge_mean_score']:.2f}, "
+                       f"Std: {llm_judge_results['llm_judge_std_score']:.2f}")
+    
+    return captions, quality_metrics
 
 
 class MetricComputer:

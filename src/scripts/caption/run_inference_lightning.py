@@ -105,13 +105,19 @@ def main(cfg: CaptionGenerationConfig) -> None:
         
         log.info(f"Generating captions for {len(prompts)} examples...")
         
-        # Generate captions in batches
-        predictions = generate_captions_batch(
+        # Generate captions in batches with optional quality metrics
+        compute_perplexity = cfg.evaluation.get("compute_perplexity", False)
+        compute_llm_judge = cfg.evaluation.get("compute_llm_judge", False)
+        
+        predictions, quality_metrics = generate_captions_batch(
             model,
             tokenizer,
             prompts,
             generate_cfg=cfg.generation,
             batch_size=cfg.data.batch_size,
+            compute_perplexity=compute_perplexity,
+            compute_llm_judge=compute_llm_judge,
+            llm_judge_config=cfg.evaluation.get("llm_judge_config", None),
         )
         
         # Prepare output records
@@ -124,12 +130,48 @@ def main(cfg: CaptionGenerationConfig) -> None:
             for id_, aspect, prediction in zip(ids, aspects, predictions)
         ]
         
+        # Add perplexity scores if computed
+        if quality_metrics and 'perplexity' in quality_metrics:
+            perplexity_scores = quality_metrics['perplexity'].get('all_scores', [])
+            if len(perplexity_scores) == len(records):
+                for i, record in enumerate(records):
+                    record['perplexity'] = perplexity_scores[i]
+        
+        # Add LLM judge scores if computed
+        if quality_metrics and 'llm_judge' in quality_metrics:
+            llm_scores = quality_metrics['llm_judge'].get('llm_judge_scores', [])
+            llm_reasonings = quality_metrics['llm_judge'].get('llm_judge_reasonings', [])
+            if len(llm_scores) == len(records):
+                for i, record in enumerate(records):
+                    record['llm_judge_score'] = llm_scores[i]
+                    record['llm_judge_reasoning'] = llm_reasonings[i] if i < len(llm_reasonings) else ""
+        
         # Save results
         predictions_path = output_dir / f"{split}_predictions.csv"
         results_df = pd.DataFrame(records)
         results_df.to_csv(predictions_path, index=False)
         
         log.info(f"Saved {len(results_df)} predictions to: {predictions_path}")
+        
+        # Save quality metrics if computed
+        if quality_metrics:
+            metrics_path = output_dir / f"{split}_quality_metrics.json"
+            # Remove large lists from metrics for cleaner JSON
+            import json
+            metrics_to_save = {}
+            for key, value in quality_metrics.items():
+                if isinstance(value, dict):
+                    metrics_to_save[key] = {
+                        k: v for k, v in value.items() 
+                        if k not in ['all_scores', 'llm_judge_scores', 'llm_judge_reasonings']
+                    }
+                else:
+                    metrics_to_save[key] = value
+            
+            with open(metrics_path, 'w') as f:
+                json.dump(metrics_to_save, f, indent=2)
+            
+            log.info(f"Quality metrics saved to {metrics_path}")
         
     log.info(f"Inference completed! All results saved to: {output_dir}")
 

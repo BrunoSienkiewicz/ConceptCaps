@@ -2,7 +2,7 @@
 defaults:
   - override /prompt: llama
   - override /model: caption/llama_3.1_8b_instruct
-  - override /trainer: caption_lightning/stable
+  - override /trainer: caption_lightning/more_epochs
   - override /lora: caption/medium_rank
   - override /evaluation: caption/larger_size
   - override /generation: regularization
