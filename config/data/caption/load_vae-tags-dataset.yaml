@@ -1,5 +1,5 @@
 batch_size: 8
-dataset_name: bsienkiewicz/mtg_causal_tags_dataset
+dataset_name: bsienkiewicz/vae-tags-dataset
 aspect_column: aspect_list
 caption_column: caption
 text_column: text

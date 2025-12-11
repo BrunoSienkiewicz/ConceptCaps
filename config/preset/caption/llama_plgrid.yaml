@@ -2,19 +2,19 @@
 defaults:
   - override /prompt: llama
   - override /model: caption/llama_3.1_8b_instruct
-  - override /trainer: caption_lightning/learn
-  - override /lora: caption/default
+  - override /trainer: caption_lightning/stable
+  - override /lora: caption/high_rank
   - override /evaluation: caption/larger_size
   - override /generation: regularization
   - override /paths: plgrid
   - override /logger: wandb
 
 data:
-  batch_size: 1
+  batch_size: 8
   dataloader_num_workers: 4
-  max_train_samples: 100
-  max_val_samples: 50
-  max_test_samples: 50
+  max_train_samples: 1000
+  max_val_samples: 100
+  max_test_samples: 100
 
 callbacks:
   model_checkpoint:
