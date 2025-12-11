@@ -1,5 +1,5 @@
 defaults:
-  - data: caption/load_vae_dataset
+  - data: caption/load_vae-tags-dataset
   - model: caption/llama_3.1_8b_instruct
   - prompt: default
   - lora: caption/default
