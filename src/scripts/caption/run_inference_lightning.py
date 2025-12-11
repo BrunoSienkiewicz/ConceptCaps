@@ -24,6 +24,13 @@ log = RankedLogger(__name__, rank_zero_only=True)
 @hydra.main(version_base=None, config_path="../../../config", config_name="caption_inference")
 def main(cfg: CaptionGenerationConfig) -> None:
     """Main inference function using PyTorch Lightning."""
+
+    # Setup loggers
+    loggers = []
+    if cfg.get("logger"):
+        pl_loggers = instantiate_loggers(cfg.logger)
+        if pl_loggers:
+            loggers.extend(pl_loggers if isinstance(pl_loggers, list) else [pl_loggers])
     
     # Set random seed for reproducibility
     log.info(f"Setting random seed to {cfg.random_state}...")
@@ -42,7 +49,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Load and prepare datasets
-    log.info("Loading datasets...")
+    log.info(f"Loading dataset {cfg.data.dataset_name}...")
     dataset = load_dataset(cfg.data.dataset_name)
     log.info("Preparing datasets for inference...")
     dataset = prepare_inference_datasets(cfg.data, cfg.prompt, dataset)
@@ -76,18 +83,9 @@ def main(cfg: CaptionGenerationConfig) -> None:
     model.to(device)
     log.info("Model loaded successfully.")
 
-    # Setup loggers
-    loggers = []
-    if cfg.get("logger"):
-        pl_loggers = instantiate_loggers(cfg.logger)
-        if pl_loggers:
-            loggers.extend(pl_loggers if isinstance(pl_loggers, list) else [pl_loggers])
-
     # Run inference for each split
     for split in dataset.keys():
-        log.info(f"\n{'='*60}")
         log.info(f"Running inference on '{split}' split...")
-        log.info(f"{'='*60}")
         
         examples = dataset[split]
         if cfg.data.max_test_samples and split == "test":
@@ -133,18 +131,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
         
         log.info(f"Saved {len(results_df)} predictions to: {predictions_path}")
         
-        # Log to experiment tracker if available
-        if loggers:
-            for logger in loggers:
-                if hasattr(logger, "log_table"):
-                    logger.log_table(
-                        key=f"{split}_predictions",
-                        dataframe=results_df.head(100),  # Log first 100 rows
-                    )
-    
-    log.info(f"\n{'='*60}")
     log.info(f"Inference completed! All results saved to: {output_dir}")
-    log.info(f"{'='*60}")
 
 
 if __name__ == "__main__":
