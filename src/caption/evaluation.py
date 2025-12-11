@@ -171,23 +171,12 @@ class MetricComputer:
                 references, skip_special_tokens=True
             )
             results = self._calculate_metrics(decoded_preds, decoded_labels)
+
+        self.metrics_results = results
+        self.predictions = decoded_preds
+        self.references = decoded_labels
             
         return results
-
-    def compute_test_metrics(
-        self,
-        predictions: List[str],
-        references: List[str],
-    ) -> Dict[str, Any]:
-        """Compute metrics from lists of predictions and references."""
-        results = self._calculate_metrics(predictions, references)
-
-        self.predictions = self.predictions + predictions
-        self.references = self.references + references
-        self.metrics_results = results
-
-        return results
-
 
     def save_predictions(
         self,
