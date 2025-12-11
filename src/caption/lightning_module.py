@@ -64,6 +64,16 @@ class CaptionFineTuningModule(pl.LightningModule):
             trust_remote_code=self.model_cfg.trust_remote_code,
         )
         
+        if self.model_cfg.checkpoint_dir is not None:
+            log.info(f"Loading model weights from checkpoint: {self.model_cfg.checkpoint_dir}...")
+            model = PeftModel.from_pretrained(
+                model,
+                self.model_cfg.checkpoint_dir,
+                device_map=self.model_cfg.device_map,
+                low_cpu_mem_usage=True,
+            )
+            return model
+        
         if quantization_config is not None:
             model = prepare_model_for_kbit_training(model)
         
@@ -77,28 +87,6 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         log.info("Model prepared with LoRA:")
         model.print_trainable_parameters()
-        
-        return model
-
-    @staticmethod
-    def load_pretrained_model(model_cfg: DictConfig) -> AutoModelForCausalLM:
-        """Load a pre-trained model from checkpoint for inference."""
-        quantization_config = build_quantization_config(model_cfg)
-        
-        model = AutoModelForCausalLM.from_pretrained(
-            model_cfg.name,
-            quantization_config=quantization_config,
-            device_map=model_cfg.device_map,
-            trust_remote_code=model_cfg.trust_remote_code,
-        )
-        
-        log.info(f"Loading model weights from checkpoint: {model_cfg.checkpoint_dir}...")
-        model = PeftModel.from_pretrained(
-            model,
-            model_cfg.checkpoint_dir,
-            device_map=model_cfg.device_map,
-            low_cpu_mem_usage=True,
-        )
         
         return model
 

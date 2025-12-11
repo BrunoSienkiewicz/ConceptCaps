@@ -63,20 +63,15 @@ def main(cfg: CaptionGenerationConfig) -> None:
     log.info(f"Loading model from checkpoint: {cfg.model.checkpoint_dir}...")
     
     # Init Lightning Module
-    log.info("Loading pretrained model for inference...")
-    if cfg.model.checkpoint_dir:
-        model = CaptionFineTuningModule.load_pretrained_model(
-            model_cfg=cfg.model,
-        )
-    else:
-        model = CaptionFineTuningModule(
-            model_cfg=cfg.model,
-            generation_cfg=cfg.generation,
-            lora_cfg=cfg.lora,
-            optimizer_cfg=cfg.trainer.optimizer,
-            lr_scheduler_cfg=cfg.trainer.lr_scheduler,
-            tokenizer=tokenizer,
-        )
+    log.info("Loading model for inference...")
+    model = CaptionFineTuningModule(
+        model_cfg=cfg.model,
+        generation_cfg=cfg.generation,
+        lora_cfg=cfg.lora,
+        optimizer_cfg=cfg.trainer.optimizer,
+        lr_scheduler_cfg=cfg.trainer.lr_scheduler,
+        tokenizer=tokenizer,
+    )
 
     
     model.eval()
