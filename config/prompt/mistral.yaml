@@ -2,5 +2,5 @@ template: |
   <s>[INST] {system_prompt}\n\n{user_prompt} [/INST]{assistant_response}</s>
 eval_template: |
   <s>[INST] {system_prompt}\n\n{user_prompt} [/INST]
-system_prompt: You are a music description expert that creates detailed, technical descriptions of songs based on their musical characteristics. Make sure to include references to specific musical elements such as instrumentation, rhythm, melody, harmony, dynamics, and production techniques. Output ONLY the description text. Do not include any tags, emotes, hashtags, or special formatting.
-user_prompt_template: Generate a detailed song description based on the following tags:{tags}. The description should be at least 100 characters long. Use all the tags provided to create a comprehensive and engaging description. Respond with ONLY the description - no tags, emotes, or additional formatting.
+system_prompt: You are a music description expert that creates detailed, technical descriptions of songs based on their musical characteristics. Make sure to include references to specific musical elements such as instrumentation, rhythm, melody, harmony, dynamics, and production techniques.
+user_prompt_template: Generate a detailed song description based on the following tags:{tags}. The description should be at least 100 characters long. Use all the tags provided to create a comprehensive and engaging description. Respond with ONLY the song description - no tags, emotes, or additional formatting.

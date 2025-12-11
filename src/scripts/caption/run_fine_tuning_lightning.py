@@ -24,6 +24,21 @@ log = RankedLogger(__name__, rank_zero_only=True)
 @hydra.main(version_base=None, config_path="../../../config", config_name="caption_fine_tuning")
 def main(cfg: CaptionGenerationConfig) -> None:
     """Main training function using PyTorch Lightning."""
+
+    # Setup callbacks
+    callbacks = []
+    if cfg.get("callbacks"):
+        pl_callbacks = instantiate_callbacks(cfg.callbacks)
+        if pl_callbacks:
+            callbacks.extend(pl_callbacks if isinstance(pl_callbacks, list) else [pl_callbacks])
+
+    # Setup loggers
+    loggers = []
+    if cfg.get("logger"):
+        pl_loggers = instantiate_loggers(cfg.logger)
+        if pl_loggers:
+            loggers.extend(pl_loggers if isinstance(pl_loggers, list) else [pl_loggers])
+
     
     # Set random seed for reproducibility
     log.info(f"Setting random seed to {cfg.random_state}...")
@@ -83,20 +98,6 @@ def main(cfg: CaptionGenerationConfig) -> None:
         metric_computer=metric_computer,
     )
 
-    # Setup callbacks
-    callbacks = []
-    if cfg.get("callbacks"):
-        pl_callbacks = instantiate_callbacks(cfg.callbacks)
-        if pl_callbacks:
-            callbacks.extend(pl_callbacks if isinstance(pl_callbacks, list) else [pl_callbacks])
-
-    # Setup loggers
-    loggers = []
-    if cfg.get("logger"):
-        pl_loggers = instantiate_loggers(cfg.logger)
-        if pl_loggers:
-            loggers.extend(pl_loggers if isinstance(pl_loggers, list) else [pl_loggers])
-
     # Create Trainer
     log.info("Creating Lightning Trainer...")
     trainer = pl.Trainer(
@@ -141,6 +142,12 @@ def main(cfg: CaptionGenerationConfig) -> None:
         model=model,
         datamodule=datamodule,
     )
+
+    if cfg.evaluation.output_predictions:
+        log.info("Saving evaluation predictions...")
+        model.metric_computer.save_predictions(
+            output_dir=checkpoint_dir,
+        )
 
     # Save the adapter weights separately (for LoRA)
     if hasattr(model.model, "save_pretrained"):

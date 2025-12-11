@@ -15,7 +15,7 @@ from tqdm import tqdm
 from src.utils import RankedLogger
 
 
-log = RankedLogger(__name__, rank_zero_only=True)
+logger = RankedLogger(__name__, rank_zero_only=True)
 
 def generate_caption(
     model: AutoModelForCausalLM,
@@ -113,6 +113,10 @@ class MetricComputer:
             self.metrics.append((metric, metric_cfg))
         self.tokenizer = tokenizer
 
+        self.metrics_results: Dict[str, Any] = {}
+        self.predictions: List[str] = []
+        self.references: List[str] = []
+
     def _calculate_metrics(
         self, predictions: List[str], references: List[str]
     ) -> Dict[str, Any]:
@@ -177,76 +181,44 @@ class MetricComputer:
     ) -> Dict[str, Any]:
         """Compute metrics from lists of predictions and references."""
         results = self._calculate_metrics(predictions, references)
+
+        self.predictions = self.predictions + predictions
+        self.references = self.references + references
+        self.metrics_results = results
+
         return results
 
 
-def run_test_evaluation(
-    cfg: DictConfig,
-    computer: MetricComputer,
-    model: AutoModelForCausalLM,
-    tokenizer: AutoTokenizer,
-    eval_examples: List[dict],
-    output_dir: Path
-) -> Dict[str, Any]:
-    """
-    Run evaluation on test set using batch processing.
-    
-    Args:
-        cfg: Configuration
-        computer: MetricComputer instance
-        model: Language model
-        tokenizer: Tokenizer
-        eval_examples: List of evaluation examples
-        output_dir: Directory to save results
-        batch_size: Batch size for generation
+    def save_predictions(
+        self,
+        output_dir: Path
+    ) -> Dict[str, Any]:
+        """
+        Save predictions and references to CSV file.
+
+        Args:
+            output_dir: Directory to save predictions file
+
+        Returns:
+            Dictionary with evaluation metrics
+        """
         
-    Returns:
-        Dictionary of computed metrics
-    """
-    # Extract prompts and references from examples
-    prompts = [example[cfg.data.text_column] for example in eval_examples]
-    references = [example[cfg.data.caption_column] for example in eval_examples]
-    aspects = [example.get(cfg.data.aspect_column, "") for example in eval_examples]
+        # Save metrics
+        metrics_path = output_dir / "evaluation_metrics.json"
+        metrics_path.write_text(json.dumps(self.metrics_results, indent=2))
+        logger.info(f"Metrics saved to {metrics_path}")
 
-    # Generate captions in batches
-    if log:
-        log.info(f"Generating captions for {len(prompts)} examples with batch size {cfg.evaluation.batch_size}...")
-    predictions = generate_captions_batch(
-        model,
-        tokenizer,
-        prompts,
-    )
-
-    # Compute metrics
-    if log:
-        log.info("Computing evaluation metrics...")
-    metrics = computer.compute_test_metrics(predictions, references)
-
-    # Save results
-    output_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Save metrics
-    metrics_path = output_dir / "evaluation_metrics.json"
-    metrics_path.write_text(json.dumps(metrics, indent=2))
-    if log:
-        log.info(f"Metrics saved to {metrics_path}")
-
-    # Save predictions
-    if cfg.evaluation.output_predictions:
+        # Save predictions
         records = [
             {
-                "aspect_list": aspect,
                 "reference": reference,
                 "prediction": prediction,
             }
-            for aspect, reference, prediction in zip(aspects, references, predictions)
+            for reference, prediction in zip(self.references, self.predictions)
         ]
-        predictions_path = output_dir / cfg.evaluation.predictions_file
+        predictions_path = output_dir / "predictions.csv"
         pd.DataFrame(records).to_csv(predictions_path, index=False)
-        if log:
-            log.info(f"Predictions saved to {predictions_path}")
+        logger.info(f"Predictions saved to {predictions_path}")
 
-    if log:
-        log.info(f"Evaluation metrics: {metrics}")
-
-    return metrics
+        logger.info(f"Evaluation metrics: {self.metrics_results}")
+        return self.metrics_results

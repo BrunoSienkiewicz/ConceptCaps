@@ -105,7 +105,6 @@ class EvaluationMetricConfig:
 class EvaluationConfig:
     metrics: List[EvaluationMetricConfig] = field(default_factory=list)
     output_predictions: bool = True
-    predictions_file: str = "predictions.csv"
 
 
 @dataclass
