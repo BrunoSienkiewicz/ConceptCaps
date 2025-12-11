@@ -64,7 +64,7 @@ class CaptionFineTuningModule(pl.LightningModule):
             trust_remote_code=self.model_cfg.trust_remote_code,
         )
         
-        if self.model_cfg.checkpoint_dir is not None:
+        if self.model_cfg.checkpoint_dir:
             log.info(f"Loading model weights from checkpoint: {self.model_cfg.checkpoint_dir}...")
             model = PeftModel.from_pretrained(
                 model,
