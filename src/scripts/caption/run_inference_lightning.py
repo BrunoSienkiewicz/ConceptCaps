@@ -172,6 +172,10 @@ def main(cfg: CaptionGenerationConfig) -> None:
                 json.dump(metrics_to_save, f, indent=2)
             
             log.info(f"Quality metrics saved to {metrics_path}")
+
+            for logger in loggers:
+                if hasattr(logger, 'log_metrics'):
+                    logger.log_metrics(quality_metrics, step=None)
         
     log.info(f"Inference completed! All results saved to: {output_dir}")
 
