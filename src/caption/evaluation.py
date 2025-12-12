@@ -10,6 +10,7 @@ import pandas as pd
 import torch
 from omegaconf import DictConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer, EvalPrediction
+from transformers import pipeline
 from tqdm import tqdm
 
 from src.utils import RankedLogger
@@ -46,7 +47,6 @@ def calculate_perplexity(
 ) -> float:
     """
     Calculate perplexity for a given text.
-    Based on: https://stackoverflow.com/questions/75886674/how-to-compute-sentence-level-perplexity-from-hugging-face-language-models
     
     Args:
         model: Language model
@@ -65,7 +65,8 @@ def calculate_perplexity(
     input_ids = encodings.input_ids.to(device)
     
     with torch.no_grad():
-        outputs = model(input_ids, labels=input_ids)
+        attention_mask = torch.ones_like(input_ids).to(device)
+        outputs = model(input_ids, attention_mask=attention_mask)
         # Loss is calculated using CrossEntropyLoss which averages over valid labels
         # N.B. the model only calculates loss over trg_len - 1 labels, because it internally shifts the labels
         # to the left by 1.
@@ -96,7 +97,6 @@ def evaluate_with_llm_judge(
     Returns:
         Dictionary with evaluation scores and reasoning
     """
-    from transformers import pipeline
     
     # Initialize judge model
     judge_pipeline = pipeline(
@@ -233,8 +233,7 @@ def generate_captions_batch(
             )
             batch_captions = [caption.strip() for caption in batch_captions]
             captions.extend(batch_captions)
-            
-            # Calculate perplexity if requested
+
             if compute_perplexity:
                 for caption in batch_captions:
                     try:
@@ -243,43 +242,42 @@ def generate_captions_batch(
                     except Exception as e:
                         logger.warning(f"Failed to calculate perplexity: {e}")
                         perplexities.append(float('inf'))
+            
     
     # Compile quality metrics
-    quality_metrics = None
-    if compute_perplexity or compute_llm_judge:
-        quality_metrics = {}
+    quality_metrics = {}
+    
+    if compute_perplexity:
+        # Filter out infinite values for statistics
+        valid_perplexities = [p for p in perplexities if p != float('inf')]
+        if valid_perplexities:
+            quality_metrics['perplexity'] = {
+                'mean': float(np.mean(valid_perplexities)),
+                'std': float(np.std(valid_perplexities)),
+                'min': float(np.min(valid_perplexities)),
+                'max': float(np.max(valid_perplexities)),
+                'median': float(np.median(valid_perplexities)),
+                'all_scores': perplexities,
+            }
+            logger.info(f"Perplexity - Mean: {quality_metrics['perplexity']['mean']:.2f}, "
+                        f"Std: {quality_metrics['perplexity']['std']:.2f}")
+    
+    if compute_llm_judge:
+        if llm_judge_config is None:
+            llm_judge_config = {
+                'judge_model_name': 'meta-llama/Llama-3.2-3B-Instruct',
+                'batch_size': 4,
+                'device': str(model.device),
+            }
         
-        if compute_perplexity and perplexities:
-            # Filter out infinite values for statistics
-            valid_perplexities = [p for p in perplexities if p != float('inf')]
-            if valid_perplexities:
-                quality_metrics['perplexity'] = {
-                    'mean': float(np.mean(valid_perplexities)),
-                    'std': float(np.std(valid_perplexities)),
-                    'min': float(np.min(valid_perplexities)),
-                    'max': float(np.max(valid_perplexities)),
-                    'median': float(np.median(valid_perplexities)),
-                    'all_scores': perplexities,
-                }
-                logger.info(f"Perplexity - Mean: {quality_metrics['perplexity']['mean']:.2f}, "
-                           f"Std: {quality_metrics['perplexity']['std']:.2f}")
-        
-        if compute_llm_judge:
-            if llm_judge_config is None:
-                llm_judge_config = {
-                    'judge_model_name': 'meta-llama/Llama-3.2-3B-Instruct',
-                    'batch_size': 4,
-                    'device': str(model.device),
-                }
-            
-            llm_judge_results = evaluate_with_llm_judge(
-                captions=captions,
-                prompts=prompts,
-                **llm_judge_config,
-            )
-            quality_metrics['llm_judge'] = llm_judge_results
-            logger.info(f"LLM Judge - Mean Score: {llm_judge_results['llm_judge_mean_score']:.2f}, "
-                       f"Std: {llm_judge_results['llm_judge_std_score']:.2f}")
+        llm_judge_results = evaluate_with_llm_judge(
+            captions=captions,
+            prompts=prompts,
+            **llm_judge_config,
+        )
+        quality_metrics['llm_judge'] = llm_judge_results
+        logger.info(f"LLM Judge - Mean Score: {llm_judge_results['llm_judge_mean_score']:.2f}, "
+                    f"Std: {llm_judge_results['llm_judge_std_score']:.2f}")
     
     return captions, quality_metrics
 

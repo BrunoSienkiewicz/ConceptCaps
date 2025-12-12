@@ -10,9 +10,6 @@ metrics:
         lang: en
   - name: meteor
     kwargs: {}
-  - name: perplexity
-    kwargs: 
-      model_id: "gpt2"
   - name: mauve
     kwargs:
       device_id: 1
@@ -20,7 +17,7 @@ metrics:
 compute_perplexity: true
 compute_llm_judge: true
 llm_judge_config:
-  judge_model_name: "Qwen/Qwen2.5-0.5B-Instruct"
+  judge_model_name: "meta-llama/Llama-3.2-3B-Instruct"
   batch_size: 4
   device: ${device}
 output_predictions: true

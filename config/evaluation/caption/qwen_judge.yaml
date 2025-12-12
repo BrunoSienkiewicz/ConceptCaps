@@ -1,0 +1,24 @@
+max_new_tokens: 512
+batch_size: 8
+metrics:
+  - name: bleu
+    kwargs: {}
+  - name: rouge
+    kwargs: {}
+  - name: bertscore
+    kwargs:
+        lang: en
+  - name: meteor
+    kwargs: {}
+  - name: mauve
+    kwargs:
+      device_id: 1
+      featurize_model_name: "gpt2"
+compute_perplexity: true
+compute_llm_judge: true
+llm_judge_config:
+  judge_model_name: "Qwen/Qwen2.5-0.5B-Instruct"
+  batch_size: 4
+  device: ${device}
+output_predictions: true
+predictions_file: predictions.csv

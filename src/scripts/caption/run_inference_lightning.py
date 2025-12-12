@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import torch
 import hydra
 import rootutils
@@ -152,16 +153,15 @@ def main(cfg: CaptionGenerationConfig) -> None:
         if quality_metrics:
             metrics_path = output_dir / f"{split}_quality_metrics.json"
             # Remove large lists from metrics for cleaner JSON
-            import json
             metrics_to_save = {}
             for key, value in quality_metrics.items():
                 if isinstance(value, dict):
-                    metrics_to_save[key] = {
+                    metrics_to_save[split + "/" + key] = {
                         k: v for k, v in value.items() 
                         if k not in ['all_scores', 'llm_judge_scores', 'llm_judge_reasonings']
                     }
                 else:
-                    metrics_to_save[key] = value
+                    metrics_to_save[split + "/" + key] = value
             
             with open(metrics_path, 'w') as f:
                 json.dump(metrics_to_save, f, indent=2)
