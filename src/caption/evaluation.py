@@ -63,16 +63,29 @@ def calculate_perplexity(
     model.eval()
     encodings = tokenizer(text, return_tensors="pt")
     input_ids = encodings.input_ids.to(device)
+    seq_len = input_ids.size(1)
     
     with torch.no_grad():
         attention_mask = torch.ones_like(input_ids).to(device)
         outputs = model(input_ids, attention_mask=attention_mask)
-        # Loss is calculated using CrossEntropyLoss which averages over valid labels
-        # N.B. the model only calculates loss over trg_len - 1 labels, because it internally shifts the labels
-        # to the left by 1.
-        neg_log_likelihood = outputs.loss
+        logits = outputs.logits
+
+        # Shift logits and labels for next-token prediction
+        # logits: [batch_size, seq_len, vocab_size]
+        # We predict token i+1 from tokens 0...i
+        shift_logits = logits[:, :-1, :].contiguous()  # Remove last prediction
+        shift_labels = input_ids[:, 1:].contiguous()    # Remove first token
+        
+        # Flatten for loss calculation
+        # shift_logits: [batch_size * (seq_len - 1), vocab_size]
+        # shift_labels: [batch_size * (seq_len - 1)]
+        loss_fct = torch.nn.CrossEntropyLoss(reduction='mean')
+        loss = loss_fct(
+            shift_logits.view(-1, shift_logits.size(-1)),
+            shift_labels.view(-1)
+        )
     
-    ppl = torch.exp(neg_log_likelihood).item()
+    ppl = torch.exp(loss).item()
     return ppl
 
 
@@ -375,10 +388,21 @@ class MetricComputer:
         Returns:
             Dictionary with evaluation metrics
         """
+
+        logger.info(f"Evaluation metrics: {self.metrics_results}")
         
+        results = {}
+        for key, value in self.metrics_results.items():
+            if isinstance(value, dict):
+                for k, v in value.items():
+                    if isinstance(v, (int, float, np.floating)):
+                        results[key + "_" + k] = v
+            elif isinstance(value, (int, float, np.floating)):
+                results[key] = value
+
         # Save metrics
         metrics_path = output_dir / "evaluation_metrics.json"
-        metrics_path.write_text(json.dumps(self.metrics_results, indent=2))
+        metrics_path.write_text(json.dumps(results, indent=4))
         logger.info(f"Metrics saved to {metrics_path}")
 
         # Save predictions
@@ -389,9 +413,8 @@ class MetricComputer:
             }
             for reference, prediction in zip(self.references, self.predictions)
         ]
-        predictions_path = output_dir / "predictions.csv"
+        predictions_path = output_dir / "test_predictions.csv"
         pd.DataFrame(records).to_csv(predictions_path, index=False)
         logger.info(f"Predictions saved to {predictions_path}")
 
-        logger.info(f"Evaluation metrics: {self.metrics_results}")
         return self.metrics_results
