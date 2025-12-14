@@ -372,6 +372,13 @@ class MetricComputer:
         self.metrics_results = results
         self.predictions = decoded_preds
         self.references = decoded_labels
+
+        logger.info(f"Evaluation metrics: {results}")
+        logger.info(
+            f"Sample prediction:\n"
+            f"  Prompt: {decoded_labels[0]}\n"
+            f"  Prediction: {decoded_preds[0]}"
+        )
             
         return results
 

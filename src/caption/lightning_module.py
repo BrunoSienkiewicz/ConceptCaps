@@ -103,8 +103,7 @@ class CaptionFineTuningModule(pl.LightningModule):
         outputs = self.model(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
-            labels=batch["labels"],
-            **self.generation_cfg
+            labels=batch["labels"]
         )
         
         loss = outputs.loss
@@ -119,8 +118,7 @@ class CaptionFineTuningModule(pl.LightningModule):
         outputs = self.model(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
-            labels=batch["labels"],
-            **self.generation_cfg
+            labels=batch["labels"]
         )
         
         loss = outputs.loss
@@ -143,8 +141,7 @@ class CaptionFineTuningModule(pl.LightningModule):
         outputs = self.model(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
-            labels=batch["labels"],
-            **self.generation_cfg
+            labels=batch["labels"]
         )
         
         loss = outputs.loss
