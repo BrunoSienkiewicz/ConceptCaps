@@ -16,6 +16,9 @@ data:
   max_val_samples: 100
   max_test_samples: 100
 
+trainer:
+  accumulate_grad_batches: 2
+
 callbacks:
   model_checkpoint:
     monitor: val/bertscore_f1

@@ -10,11 +10,14 @@ defaults:
   - override /logger: wandb
 
 data:
-  batch_size: 8
+  batch_size: 4
   dataloader_num_workers: 4
   max_train_samples: 1000
   max_val_samples: 100
   max_test_samples: 100
+
+trainer:
+  accumulate_grad_batches: 8
 
 callbacks:
   model_checkpoint:
