@@ -400,38 +400,17 @@ class MetricComputer:
 
     def compute_metrics(
         self,
-        input_ids: List[torch.Tensor],
-        attention_mask: List[torch.Tensor],
-        labels: List[torch.Tensor],
+        predictions: List[str],
+        references: List[str],
     ) -> Dict[str, Any]:
         """Compute metrics given model outputs and references."""
-        predictions = []
-        decoded_references = []
-
-        for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
-            input_ids, attention_mask, labels
-        ):
-            batch_preds = generate_batch_caption_tokenized(
-                model=self.model,
-                tokenizer=self.tokenizer,
-                input_ids=batch_input_ids,
-                attention_mask=batch_attention_mask,
-                max_new_tokens=self.generation_cfg.max_new_tokens,
-            )
-            predictions.extend(batch_preds)
-
-            batch_refs = self.tokenizer.batch_decode(
-                batch_label_ids, skip_special_tokens=True
-            )
-            batch_refs = [ref.strip() for ref in batch_refs]
-            decoded_references.extend(batch_refs)
 
         self.predictions.extend(predictions)
-        self.references.extend(decoded_references)
+        self.references.extend(references)
 
         self.metrics_results = self._compute_metrics(
             predictions=predictions,
-            references=decoded_references,
+            references=references,
         )
         return self.metrics_results
 

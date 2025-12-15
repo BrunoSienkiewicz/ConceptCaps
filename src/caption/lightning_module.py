@@ -14,7 +14,7 @@ from peft import PeftModel
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
-from src.caption.evaluation import MetricComputer, generate_caption_tokenized
+from src.caption.evaluation import MetricComputer, generate_batch_caption_tokenized, generate_caption_tokenized
 from src.caption.modeling import build_quantization_config, prepare_tokenizer
 from src.utils import RankedLogger
 
@@ -161,11 +161,30 @@ class CaptionFineTuningModule(pl.LightningModule):
 
     def on_validation_epoch_end(self):
         """Compute metrics at the end of validation epoch."""
+        predictions = []
+        decoded_references = []
+
+        for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
+            self.validation_inputs, self.validation_attention_mask, self.validation_labels
+        ):
+            batch_preds = generate_batch_caption_tokenized(
+                model=self.model,
+                tokenizer=self.tokenizer,
+                input_ids=batch_input_ids,
+                attention_mask=batch_attention_mask,
+                max_new_tokens=self.generation_cfg.max_new_tokens,
+            )
+            predictions.extend(batch_preds)
+
+            batch_refs = self.tokenizer.batch_decode(
+                batch_label_ids, skip_special_tokens=True
+            )
+            batch_refs = [ref.strip() for ref in batch_refs]
+            decoded_references.extend(batch_refs)
             
         metrics = self.metric_computer.compute_metrics(
-            input_ids=self.validation_inputs,
-            attention_mask=self.validation_attention_mask,
-            labels=self.validation_labels
+            predictions=predictions,
+            references=decoded_references
         )
 
         exclude_types = (dict, list, str, tuple, set)
@@ -191,10 +210,29 @@ class CaptionFineTuningModule(pl.LightningModule):
     def on_test_epoch_end(self):
         """Compute metrics at the end of test epoch."""
 
+        predictions = []
+        decoded_references = []
+        for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
+            self.test_inputs, self.test_attention_mask, self.test_labels
+        ):
+            batch_preds = generate_batch_caption_tokenized(
+                model=self.model,
+                tokenizer=self.tokenizer,
+                input_ids=batch_input_ids,
+                attention_mask=batch_attention_mask,
+                max_new_tokens=self.generation_cfg.max_new_tokens,
+            )
+            predictions.extend(batch_preds)
+
+            batch_refs = self.tokenizer.batch_decode(
+                batch_label_ids, skip_special_tokens=True
+            )
+            batch_refs = [ref.strip() for ref in batch_refs]
+            decoded_references.extend(batch_refs)
+
         metrics = self.metric_computer.compute_metrics(
-            input_ids=self.test_inputs,
-            attention_mask=self.test_attention_mask,
-            labels=self.test_labels
+            predictions=predictions,
+            references=decoded_references
         )
 
         exclude_types = (dict, list, str, tuple, set)
