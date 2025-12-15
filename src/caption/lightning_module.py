@@ -127,12 +127,22 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.log("val/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("val/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
-        # Store outputs for metric computation
-        self.validation_step_outputs.append({
-            "predictions": outputs.logits.argmax(dim=-1),
-            "labels": batch["labels"]
-        })
+        # Get predictions (shift logits to align with labels)
+        shift_logits = outputs.logits[..., :-1, :].contiguous()
+        shift_labels = batch["labels"][..., 1:].contiguous()
         
+        # Get predicted token IDs
+        predictions = shift_logits.argmax(dim=-1)
+        
+        # Only keep positions where labels are not -100 (padding/ignore index)
+        mask = shift_labels != -100
+
+        # Store outputs for metric computation
+        self.test_step_outputs.append({
+            "predictions": predictions[mask],
+            "labels": shift_labels[mask]
+        })
+
         return loss
 
     def test_step(self, batch, batch_idx):
@@ -149,10 +159,20 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.log("test/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("test/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
+        # Get predictions (shift logits to align with labels)
+        shift_logits = outputs.logits[..., :-1, :].contiguous()
+        shift_labels = batch["labels"][..., 1:].contiguous()
+        
+        # Get predicted token IDs
+        predictions = shift_logits.argmax(dim=-1)
+        
+        # Only keep positions where labels are not -100 (padding/ignore index)
+        mask = shift_labels != -100
+
         # Store outputs for metric computation
         self.test_step_outputs.append({
-            "predictions": outputs.logits.argmax(dim=-1),
-            "labels": batch["labels"]
+            "predictions": predictions[mask],
+            "labels": shift_labels[mask]
         })
 
         return loss
