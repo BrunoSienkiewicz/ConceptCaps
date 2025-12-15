@@ -145,6 +145,15 @@ class CaptionFineTuningModule(pl.LightningModule):
         log.info(f"Sample predictions: {predictions[0][:20]}")
         log.info(f"Sample labels: {shift_labels[0][:20]}")
 
+        decoded_preds = self.tokenizer.batch_decode(
+            predictions[mask].unsqueeze(0), skip_special_tokens=False
+        )
+        decoded_labels = self.tokenizer.batch_decode(
+            shift_labels[mask].unsqueeze(0), skip_special_tokens=False
+        )
+        log.info(f"Decoded sample prediction: {decoded_preds[0]}")
+        log.info(f"Decoded sample label: {decoded_labels[0]}")
+
         # Store outputs for metric computation
         self.validation_step_outputs.append({
             "predictions": predictions[mask],
