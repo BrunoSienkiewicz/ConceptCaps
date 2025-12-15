@@ -138,7 +138,7 @@ class CaptionFineTuningModule(pl.LightningModule):
         mask = shift_labels != -100
 
         # Store outputs for metric computation
-        self.test_step_outputs.append({
+        self.validation_step_outputs.append({
             "predictions": predictions[mask],
             "labels": shift_labels[mask]
         })
