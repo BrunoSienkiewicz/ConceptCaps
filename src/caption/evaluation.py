@@ -33,10 +33,55 @@ def generate_caption(
             **inputs,
             max_new_tokens=max_new_tokens,
         )
-    # Extract only new tokens (skip input tokens)
-    input_length = inputs["input_ids"].shape[1]
-    new_tokens = outputs[0, input_length:]
-    return tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+
+    return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+
+
+def generate_caption_tokenized(
+    model: AutoModelForCausalLM,
+    tokenizer: AutoTokenizer,
+    input_ids: torch.Tensor,
+    attention_mask: torch.Tensor,
+    max_new_tokens: int,
+) -> tuple[str, str]:
+    """Generate a single caption from tokenized inputs."""
+    model.eval()
+
+    with torch.no_grad():
+        outputs = model.generate(
+            input_ids=input_ids.to(model.device),
+            attention_mask=attention_mask.to(model.device),
+            max_new_tokens=max_new_tokens,
+        )
+
+    input_caption = tokenizer.decode(input_ids[0], skip_special_tokens=True).strip()
+    output_caption = tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+
+    return input_caption, output_caption
+
+
+def generate_batch_caption_tokenized(
+    model: AutoModelForCausalLM,
+    tokenizer: AutoTokenizer,
+    input_ids: torch.Tensor,
+    attention_mask: torch.Tensor,
+    max_new_tokens: int,
+) -> List[str]:
+    """Generate captions for a batch of tokenized inputs."""
+    model.eval()
+
+    with torch.no_grad():
+        outputs = model.generate(
+            input_ids=input_ids.to(model.device),
+            attention_mask=attention_mask.to(model.device),
+            max_new_tokens=max_new_tokens,
+        )
+
+    batch_captions = tokenizer.batch_decode(
+        outputs, skip_special_tokens=True
+    )
+    batch_captions = [caption.strip() for caption in batch_captions]
+    return batch_captions
 
 
 def calculate_perplexity(
@@ -317,7 +362,7 @@ class MetricComputer:
         self.predictions: List[str] = []
         self.references: List[str] = []
 
-    def _calculate_metrics(
+    def _compute_metrics(
         self, predictions: List[str], references: List[str]
     ) -> Dict[str, Any]:
         """Calculate metrics comparing predictions to references."""
@@ -348,35 +393,47 @@ class MetricComputer:
                 results[metric_cfg.name] = value
 
             results[metric_cfg.name] = value
-        return results
-
-    def compute_metrics(self, eval_pred: EvalPrediction):
-        """Compute metrics from model evaluation predictions."""
-        predictions = eval_pred.predictions
-        references = eval_pred.label_ids
-
-        results: Dict[str, Any] = {}
-        if self.tokenizer is not None:
-            decoded_preds = self.tokenizer.batch_decode(
-                predictions, skip_special_tokens=True
-            )
-            decoded_labels = self.tokenizer.batch_decode(
-                references, skip_special_tokens=True
-            )
-            results = self._calculate_metrics(decoded_preds, decoded_labels)
-
-        self.metrics_results = results
-        self.predictions = decoded_preds
-        self.references = decoded_labels
 
         logger.info(f"Evaluation metrics: {results}")
-        logger.info(
-            f"Sample prediction:\n"
-            f"  Prompt: {decoded_labels[0]}\n"
-            f"  Prediction: {decoded_preds[0]}"
-        )
-            
+
         return results
+
+    def compute_metrics(
+        self,
+        input_ids: List[torch.Tensor],
+        attention_mask: List[torch.Tensor],
+        labels: List[torch.Tensor],
+    ) -> Dict[str, Any]:
+        """Compute metrics given model outputs and references."""
+        predictions = []
+        decoded_references = []
+
+        for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
+            input_ids, attention_mask, labels
+        ):
+            batch_preds = generate_batch_caption_tokenized(
+                model=self.model,
+                tokenizer=self.tokenizer,
+                input_ids=batch_input_ids,
+                attention_mask=batch_attention_mask,
+                max_new_tokens=self.generation_cfg.max_new_tokens,
+            )
+            predictions.extend(batch_preds)
+
+            batch_refs = self.tokenizer.batch_decode(
+                batch_label_ids, skip_special_tokens=True
+            )
+            batch_refs = [ref.strip() for ref in batch_refs]
+            decoded_references.extend(batch_refs)
+
+        self.predictions.extend(predictions)
+        self.references.extend(decoded_references)
+
+        self.metrics_results = self._compute_metrics(
+            predictions=predictions,
+            references=decoded_references,
+        )
+        return self.metrics_results
 
     def save_predictions(
         self,

@@ -14,7 +14,7 @@ from peft import PeftModel
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
-from src.caption.evaluation import MetricComputer
+from src.caption.evaluation import MetricComputer, generate_caption_tokenized
 from src.caption.modeling import build_quantization_config, prepare_tokenizer
 from src.utils import RankedLogger
 
@@ -48,10 +48,13 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         # Initialize model
         self.model = self._setup_model()
-        
-        # For validation metrics accumulation
-        self.validation_step_outputs = []
-        self.test_step_outputs = []
+
+        self.validation_inputs = []
+        self.validation_attention_mask = []
+        self.validation_labels = []
+        self.test_inputs = []
+        self.test_attention_mask = []
+        self.test_labels = []
 
     def _setup_model(self) -> AutoModelForCausalLM:
         """Initialize and prepare the model with LoRA."""
@@ -110,6 +113,7 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         # Log metrics
         self.log("train/loss", loss, on_step=True, on_epoch=True, prog_bar=True, sync_dist=True)
+        self.log("train/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
         
         return loss
 
@@ -127,38 +131,10 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.log("val/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("val/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
-        # debugging
-        log.debug(f"Validation batch {batch_idx} - loss: {loss.item()}")
-        log.info(f"Outputs {outputs}")
-
-        # Get predictions (shift logits to align with labels)
-        shift_logits = outputs.logits[..., :-1, :].contiguous()
-        shift_labels = batch["labels"][..., 1:].contiguous()
-        
-        # Get predicted token IDs
-        predictions = shift_logits.argmax(dim=-1)
-        
-        # Only keep positions where labels are not -100 (padding/ignore index)
-        mask = shift_labels != -100
-
-        log.info(f"Predictions shape: {predictions.shape}, Labels shape: {shift_labels.shape}, Mask shape: {mask.shape}")
-        log.info(f"Sample predictions: {predictions[0][:20]}")
-        log.info(f"Sample labels: {shift_labels[0][:20]}")
-
-        decoded_preds = self.tokenizer.batch_decode(
-            predictions[mask].unsqueeze(0), skip_special_tokens=False
-        )
-        decoded_labels = self.tokenizer.batch_decode(
-            shift_labels[mask].unsqueeze(0), skip_special_tokens=False
-        )
-        log.info(f"Decoded sample prediction: {decoded_preds[0]}")
-        log.info(f"Decoded sample label: {decoded_labels[0]}")
-
-        # Store outputs for metric computation
-        self.validation_step_outputs.append({
-            "predictions": predictions[mask],
-            "labels": shift_labels[mask]
-        })
+        # Store inputs and references for metric computation
+        self.validation_inputs.extend(batch["input_ids"].cpu().numpy())
+        self.validation_attention_mask.extend(batch["attention_mask"].cpu().numpy())
+        self.validation_labels.extend(batch["labels"].cpu().numpy())
 
         return loss
 
@@ -176,87 +152,70 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.log("test/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("test/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
-        # Get predictions (shift logits to align with labels)
-        shift_logits = outputs.logits[..., :-1, :].contiguous()
-        shift_labels = batch["labels"][..., 1:].contiguous()
-        
-        # Get predicted token IDs
-        predictions = shift_logits.argmax(dim=-1)
-        
-        # Only keep positions where labels are not -100 (padding/ignore index)
-        mask = shift_labels != -100
-
-        # Store outputs for metric computation
-        self.test_step_outputs.append({
-            "predictions": predictions[mask],
-            "labels": shift_labels[mask]
-        })
+        # Store inputs and references for metric computation
+        self.test_inputs.extend(batch["input_ids"].cpu().numpy())
+        self.test_attention_mask.extend(batch["attention_mask"].cpu().numpy())
+        self.test_labels.extend(batch["labels"].cpu().numpy())
 
         return loss
 
     def on_validation_epoch_end(self):
         """Compute metrics at the end of validation epoch."""
-        if self.metric_computer is not None and len(self.validation_step_outputs) > 0:
-            # Gather all predictions and labels
-            all_predictions = torch.cat([x["predictions"] for x in self.validation_step_outputs])
-            all_labels = torch.cat([x["labels"] for x in self.validation_step_outputs])
             
-            # Compute metrics
-            eval_pred = EvalPrediction(
-                predictions=all_predictions.cpu().numpy(),
-                label_ids=all_labels.cpu().numpy(),
-            )
-            
-            metrics = self.metric_computer.compute_metrics(eval_pred)
-            exclude_types = (dict, list, str, tuple, set)
-            
-            # Log metrics
-            for key, value in metrics.items():
-                if isinstance(value, dict):
-                    for sub_key, sub_value in value.items():
-                        if not isinstance(sub_value, exclude_types):
-                            self.log(f"val/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
-                    continue
-                if key == "mauve":
-                    self.log(f"val/{key}", value.mauve, on_epoch=True, sync_dist=True)
-                    continue
-                if not isinstance(value, exclude_types):
-                    self.log(f"val/{key}", value, on_epoch=True, sync_dist=True)
+        metrics = self.metric_computer.compute_metrics(
+            input_ids=self.validation_inputs,
+            attention_mask=self.validation_attention_mask,
+            labels=self.validation_labels
+        )
+
+        exclude_types = (dict, list, str, tuple, set)
         
-        # Clear outputs
-        self.validation_step_outputs.clear()
+        # Log metrics
+        for key, value in metrics.items():
+            if isinstance(value, dict):
+                for sub_key, sub_value in value.items():
+                    if not isinstance(sub_value, exclude_types):
+                        self.log(f"val/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
+                continue
+            if key == "mauve":
+                self.log(f"val/{key}", value.mauve, on_epoch=True, sync_dist=True)
+                continue
+            if not isinstance(value, exclude_types):
+                self.log(f"val/{key}", value, on_epoch=True, sync_dist=True)
+
+        # Clear stored inputs and references
+        self.validation_inputs = []
+        self.validation_attention_mask = []
+        self.validation_references = []
 
     def on_test_epoch_end(self):
         """Compute metrics at the end of test epoch."""
-        if self.metric_computer is not None and len(self.test_step_outputs) > 0:
-            # Gather all predictions and labels
-            all_predictions = torch.cat([x["predictions"] for x in self.test_step_outputs])
-            all_labels = torch.cat([x["labels"] for x in self.test_step_outputs])
-            
-            # Compute metrics
-            eval_pred = EvalPrediction(
-                predictions=all_predictions.cpu().numpy(),
-                label_ids=all_labels.cpu().numpy(),
-            )
-            
-            metrics = self.metric_computer.compute_metrics(eval_pred)
-            exclude_types = (dict, list, str, tuple, set)
-            
-            # Log metrics
-            for key, value in metrics.items():
-                if isinstance(value, dict):
-                    for sub_key, sub_value in value.items():
-                        if not isinstance(sub_value, exclude_types):
-                            self.log(f"test/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
-                    continue
-                if key == "mauve":
-                    self.log(f"test/{key}", value.mauve, on_epoch=True, sync_dist=True)
-                    continue
-                if not isinstance(value, exclude_types):
-                    self.log(f"test/{key}", value, on_epoch=True, sync_dist=True)
+
+        metrics = self.metric_computer.compute_metrics(
+            input_ids=self.test_inputs,
+            attention_mask=self.test_attention_mask,
+            labels=self.test_labels
+        )
+
+        exclude_types = (dict, list, str, tuple, set)
         
-        # Clear outputs
-        self.test_step_outputs.clear()
+        # Log metrics
+        for key, value in metrics.items():
+            if isinstance(value, dict):
+                for sub_key, sub_value in value.items():
+                    if not isinstance(sub_value, exclude_types):
+                        self.log(f"test/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
+                continue
+            if key == "mauve":
+                self.log(f"test/{key}", value.mauve, on_epoch=True, sync_dist=True)
+                continue
+            if not isinstance(value, exclude_types):
+                self.log(f"test/{key}", value, on_epoch=True, sync_dist=True)
+
+        # Clear stored inputs and references
+        self.test_inputs = []
+        self.test_attention_mask = []
+        self.test_references = []
 
     def configure_optimizers(self):
         """Configure optimizer and learning rate scheduler."""
