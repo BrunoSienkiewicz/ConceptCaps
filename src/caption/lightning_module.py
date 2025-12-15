@@ -127,6 +127,10 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.log("val/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("val/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
+        # debugging
+        log.debug(f"Validation batch {batch_idx} - loss: {loss.item()}")
+        log.info(f"Outputs {outputs}")
+
         # Get predictions (shift logits to align with labels)
         shift_logits = outputs.logits[..., :-1, :].contiguous()
         shift_labels = batch["labels"][..., 1:].contiguous()
@@ -136,6 +140,10 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         # Only keep positions where labels are not -100 (padding/ignore index)
         mask = shift_labels != -100
+
+        log.info(f"Predictions shape: {predictions.shape}, Labels shape: {shift_labels.shape}, Mask shape: {mask.shape}")
+        log.info(f"Sample predictions: {predictions[0][:20]}")
+        log.info(f"Sample labels: {shift_labels[0][:20]}")
 
         # Store outputs for metric computation
         self.validation_step_outputs.append({
