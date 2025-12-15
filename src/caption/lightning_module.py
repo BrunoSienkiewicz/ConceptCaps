@@ -172,11 +172,6 @@ class CaptionFineTuningModule(pl.LightningModule):
             batch_attention_mask = torch.tensor(batch_attention_mask).to(self.model.device)
             batch_label_ids = torch.tensor(batch_label_ids).to(self.model.device)
 
-            log.info(f"Label IDs shape: {batch_label_ids.shape}")
-            log.info(f"Label IDs: {batch_label_ids}")
-            log.info(f"Input IDs shape: {batch_input_ids.shape}")
-            log.info(f"Input IDs: {batch_input_ids}")
-
             batch_preds = generate_batch_caption_tokenized(
                 model=self.model,
                 tokenizer=self.tokenizer,
