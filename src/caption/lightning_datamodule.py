@@ -83,7 +83,7 @@ class CaptionDataModule(pl.LightningDataModule):
                 max_length=self.max_length,
                 padding=True,
             )
-        tokenized["labels"] = labels["input_ids"]
+            tokenized["labels"] = labels["input_ids"].copy()
         
         return tokenized
 

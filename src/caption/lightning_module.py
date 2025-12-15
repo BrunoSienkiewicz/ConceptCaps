@@ -125,14 +125,13 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         # Log metrics
         self.log("val/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
-        
-        # Store predictions for metric computation
-        if self.metric_computer is not None:
-            predictions = outputs.logits.argmax(dim=-1)
-            self.validation_step_outputs.append({
-                "predictions": predictions.detach(),
-                "labels": batch["labels"].detach(),
-            })
+        self.log("val/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
+
+        # Store outputs for metric computation
+        self.validation_step_outputs.append({
+            "predictions": outputs,
+            "labels": batch["labels"]
+        })
         
         return loss
 
@@ -150,14 +149,12 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.log("test/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("test/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
-        # Store predictions for metric computation
-        if self.metric_computer is not None:
-            predictions = outputs.logits.argmax(dim=-1)
-            self.test_step_outputs.append({
-                "predictions": predictions.detach(),
-                "labels": batch["labels"].detach(),
-            })
-        
+        # Store outputs for metric computation
+        self.test_step_outputs.append({
+            "predictions": outputs,
+            "labels": batch["labels"]
+        })
+
         return loss
 
     def on_validation_epoch_end(self):
