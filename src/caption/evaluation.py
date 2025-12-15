@@ -410,7 +410,7 @@ class MetricComputer:
 
         self.metrics_results = self._compute_metrics(
             predictions=predictions,
-            references=references,
+            references=decoded_references,
         )
         return self.metrics_results
 

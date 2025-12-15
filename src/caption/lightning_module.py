@@ -167,6 +167,11 @@ class CaptionFineTuningModule(pl.LightningModule):
         for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
             self.validation_inputs, self.validation_attention_mask, self.validation_labels
         ):
+            # Convert from numpy to torch tensors
+            batch_input_ids = torch.tensor(batch_input_ids).to(self.model.device)
+            batch_attention_mask = torch.tensor(batch_attention_mask).to(self.model.device)
+            batch_label_ids = torch.tensor(batch_label_ids).to(self.model.device)
+
             batch_preds = generate_batch_caption_tokenized(
                 model=self.model,
                 tokenizer=self.tokenizer,
@@ -215,6 +220,11 @@ class CaptionFineTuningModule(pl.LightningModule):
         for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
             self.test_inputs, self.test_attention_mask, self.test_labels
         ):
+            # Convert from numpy to torch tensors
+            batch_input_ids = torch.tensor(batch_input_ids).to(self.model.device)
+            batch_attention_mask = torch.tensor(batch_attention_mask).to(self.model.device)
+            batch_label_ids = torch.tensor(batch_label_ids).to(self.model.device)
+
             batch_preds = generate_batch_caption_tokenized(
                 model=self.model,
                 tokenizer=self.tokenizer,
