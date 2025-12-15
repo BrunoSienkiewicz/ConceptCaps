@@ -132,9 +132,9 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.log("val/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
         # Store inputs and references for metric computation
-        self.validation_inputs.extend(batch["input_ids"].cpu().numpy())
-        self.validation_attention_mask.extend(batch["attention_mask"].cpu().numpy())
-        self.validation_labels.extend(batch["labels"].cpu().numpy())
+        self.validation_inputs.append(batch["input_ids"].cpu().numpy())
+        self.validation_attention_mask.append(batch["attention_mask"].cpu().numpy())
+        self.validation_labels.append(batch["labels"].cpu().numpy())
 
         return loss
 
@@ -153,9 +153,9 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.log("test/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
         # Store inputs and references for metric computation
-        self.test_inputs.extend(batch["input_ids"].cpu().numpy())
-        self.test_attention_mask.extend(batch["attention_mask"].cpu().numpy())
-        self.test_labels.extend(batch["labels"].cpu().numpy())
+        self.test_inputs.append(batch["input_ids"].cpu().numpy())
+        self.test_attention_mask.append(batch["attention_mask"].cpu().numpy())
+        self.test_labels.append(batch["labels"].cpu().numpy())
 
         return loss
 
