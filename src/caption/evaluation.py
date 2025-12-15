@@ -93,6 +93,7 @@ def evaluate_with_llm_judge(
     captions: List[str],
     prompts: List[str],
     judge_model_name: str = "meta-llama/Llama-3.2-3B-Instruct",
+    judge_template: Optional[str] = None,
     batch_size: int = 4,
     device: str = "cuda",
 ) -> Dict[str, Any]:
@@ -119,21 +120,22 @@ def evaluate_with_llm_judge(
         torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
     )
     
-    judge_template = """You are an expert music critic evaluating AI-generated music descriptions.
+    if judge_template is None:
+        judge_template = """You are an expert music critic evaluating AI-generated music descriptions.
 
-Given the following tags and the generated description, evaluate the description on a scale of 1-10 based on:
-- Accuracy: Does it correctly incorporate the tags?
-- Coherence: Is it well-written and coherent?
-- Completeness: Does it provide sufficient detail?
-- Musicality: Does it sound like a natural music description?
+    Given the following tags and the generated description, evaluate the description on a scale of 1-10 based on:
+    - Accuracy: Does it correctly incorporate the tags?
+    - Coherence: Is it well-written and coherent?
+    - Completeness: Does it provide sufficient detail?
+    - Musicality: Does it sound like a natural music description?
 
-Tags/Prompt: {prompt}
-Generated Description: {caption}
+    Tags/Prompt: {prompt}
+    Generated Description: {caption}
 
-Provide your evaluation in the following format:
-Score: [1-10]
-Reasoning: [Your explanation]
-"""
+    Provide your evaluation in the following format:
+    Score: [1-10]
+    Reasoning: [Your explanation]
+    """
     
     scores = []
     reasonings = []

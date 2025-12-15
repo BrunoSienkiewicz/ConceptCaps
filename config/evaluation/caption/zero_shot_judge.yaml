@@ -1,0 +1,38 @@
+max_new_tokens: 512
+batch_size: 8
+metrics:
+  - name: bleu
+    kwargs: {}
+  - name: rouge
+    kwargs: {}
+  - name: bertscore
+    kwargs:
+        lang: en
+  - name: meteor
+    kwargs: {}
+  - name: mauve
+    kwargs:
+      device_id: 1
+      featurize_model_name: "gpt2"
+compute_perplexity: true
+compute_llm_judge: true
+llm_judge_config:
+  judge_model_name: "Qwen/Qwen2.5-0.5B-Instruct"
+  judge_template: |
+    You are an expert music critic evaluating AI-generated music descriptions.
+
+    Given the following generated description, evaluate the description on a scale of 1-10 based on:
+    - Coherence: Is it well-written and coherent?
+    - Completeness: Does it provide sufficient detail?
+    - Musicality: Does it sound like a natural music description?
+
+    Tags/Prompt: {prompt}
+    Generated Description: {caption}
+
+    Provide your evaluation in the following format:
+    Score: [1-10]
+    Reasoning: [Your explanation]
+  batch_size: 4
+  device: ${device}
+output_predictions: true
+predictions_file: predictions.csv
