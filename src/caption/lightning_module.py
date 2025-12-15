@@ -186,6 +186,8 @@ class CaptionFineTuningModule(pl.LightningModule):
             )
             predictions.extend(batch_preds)
 
+            # remove masked tokens (-100) for decoding
+            batch_label_ids[batch_label_ids == -100] = self.tokenizer.pad_token_id
             batch_refs = self.tokenizer.batch_decode(
                 batch_label_ids, skip_special_tokens=True
             )
@@ -239,6 +241,8 @@ class CaptionFineTuningModule(pl.LightningModule):
             )
             predictions.extend(batch_preds)
 
+            # remove masked tokens (-100) for decoding
+            batch_label_ids[batch_label_ids == -100] = self.tokenizer.pad_token_id
             batch_refs = self.tokenizer.batch_decode(
                 batch_label_ids, skip_special_tokens=True
             )
