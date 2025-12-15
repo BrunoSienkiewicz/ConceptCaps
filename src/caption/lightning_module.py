@@ -129,7 +129,7 @@ class CaptionFineTuningModule(pl.LightningModule):
 
         # Store outputs for metric computation
         self.validation_step_outputs.append({
-            "predictions": outputs,
+            "predictions": outputs.logits.argmax(dim=-1),
             "labels": batch["labels"]
         })
         
@@ -151,7 +151,7 @@ class CaptionFineTuningModule(pl.LightningModule):
 
         # Store outputs for metric computation
         self.test_step_outputs.append({
-            "predictions": outputs,
+            "predictions": outputs.logits.argmax(dim=-1),
             "labels": batch["labels"]
         })
 
