@@ -22,6 +22,7 @@ class CaptionDataModule(pl.LightningDataModule):
         dataset: DatasetDict,
         tokenizer: AutoTokenizer,
         data_cfg: DictConfig,
+        prompt_cfg: DictConfig,
         batch_size: int = 8,
         num_workers: int = 4,
         max_length: int = 512,
@@ -30,6 +31,7 @@ class CaptionDataModule(pl.LightningDataModule):
         self.dataset = dataset
         self.tokenizer = tokenizer
         self.data_cfg = data_cfg
+        self.prompt_cfg = prompt_cfg
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.max_length = max_length
@@ -57,9 +59,31 @@ class CaptionDataModule(pl.LightningDataModule):
             padding="max_length",
         )
         
-        # For training, labels are the same as input_ids
-        tokenized["labels"] = tokenized["input_ids"].copy()
+        # Mask prompt tokens (set labels to -100 so they don't contribute to loss)
+        labels = tokenized["input_ids"].copy()
+        prompt_delimiter = self.prompt_cfg.prompt_delimiter.strip()
+        delimiter_token_ids = self.tokenizer.encode(prompt_delimiter, add_special_tokens=False)
         
+        for i, token_ids in enumerate(tokenized["input_ids"]):
+            token_list = token_ids.tolist() if hasattr(token_ids, 'tolist') else token_ids
+            
+            # Search for delimiter in token sequence
+            marker_found = False
+            for j in range(len(token_list) - len(delimiter_token_ids) + 1):
+                if token_list[j:j+len(delimiter_token_ids)] == delimiter_token_ids:
+                    # Mask all tokens up to and including the delimiter
+                    mask_until = j + len(delimiter_token_ids)
+                    labels[i][:mask_until] = -100
+                    marker_found = True
+                    break
+            
+            # If delimiter not found, mask entire sequence
+            if not marker_found:
+                labels[i][:] = -100
+                log.warning(f"Prompt delimiter not found in example {i}")
+
+        tokenized["labels"] = labels
+            
         return tokenized
 
     def setup(self, stage: Optional[str] = None):

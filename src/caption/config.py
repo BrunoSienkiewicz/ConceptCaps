@@ -33,9 +33,9 @@ class ModelConfig:
 @dataclass
 class PromptConfig:
     template: str
+    prompt_delimiter: str
     system_prompt: str
     user_prompt_template: str
-    pad_token: Optional[str] = None
 
 @dataclass
 class DatasetConfig:

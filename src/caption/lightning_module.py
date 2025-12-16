@@ -32,6 +32,7 @@ class CaptionFineTuningModule(pl.LightningModule):
         lora_cfg: DictConfig,
         optimizer_cfg: DictConfig,
         lr_scheduler_cfg: DictConfig,
+        prompt_cfg: DictConfig,
         tokenizer: AutoTokenizer,
         metric_computer: Optional[MetricComputer] = None,
     ):
@@ -43,6 +44,7 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.lora_cfg = lora_cfg
         self.optimizer_cfg = optimizer_cfg
         self.lr_scheduler_cfg = lr_scheduler_cfg
+        self.prompt_cfg = prompt_cfg
         self.tokenizer = tokenizer
         self.metric_computer = metric_computer
         
@@ -92,6 +94,28 @@ class CaptionFineTuningModule(pl.LightningModule):
         model.print_trainable_parameters()
         
         return model
+
+    def _extract_prompt_from_batch(self, batch_input_ids, batch_attention_mask):
+        """Extract only prompt tokens (up to delimiter) from full sequence."""
+        prompt_delimiter = self.prompt_cfg.prompt_delimiter.strip()
+        delimiter_token_ids = self.tokenizer.encode(prompt_delimiter, add_special_tokens=False)
+        
+        prompt_ids = []
+        prompt_masks = []
+        
+        for input_ids, attention_mask in zip(batch_input_ids, batch_attention_mask):
+            token_list = input_ids.tolist() if hasattr(input_ids, 'tolist') else input_ids
+            
+            # Find delimiter position
+            for j in range(len(token_list) - len(delimiter_token_ids) + 1):
+                if token_list[j:j+len(delimiter_token_ids)] == delimiter_token_ids:
+                    # Keep tokens up to and including delimiter
+                    prompt_end = j + len(delimiter_token_ids)
+                    prompt_ids.append(input_ids[:prompt_end])
+                    prompt_masks.append(attention_mask[:prompt_end])
+                    break
+        
+        return torch.stack(prompt_ids), torch.stack(prompt_masks)
 
     def forward(self, input_ids, attention_mask, labels=None):
         """Forward pass through the model."""
@@ -176,11 +200,13 @@ class CaptionFineTuningModule(pl.LightningModule):
             batch_attention_mask = torch.tensor(batch_attention_mask).to(self.model.device)
             batch_label_ids = torch.tensor(batch_label_ids).to(self.model.device)
 
+            prompt_ids, prompt_masks = self._extract_prompt_from_batch(batch_input_ids, batch_attention_mask)
+
             batch_preds = generate_batch_caption_tokenized(
                 model=self.model,
                 tokenizer=self.tokenizer,
-                input_ids=batch_input_ids,
-                attention_mask=batch_attention_mask,
+                input_ids=prompt_ids,
+                attention_mask=prompt_masks,
                 max_new_tokens=self.generation_cfg.max_new_tokens,
             )
             predictions.extend(batch_preds)
@@ -193,14 +219,16 @@ class CaptionFineTuningModule(pl.LightningModule):
             batch_refs = [ref.strip() for ref in batch_refs]
             decoded_references.extend(batch_refs)
 
-        log.info(f"Predicions: {predictions}")
+        log.info(f"Predictions: {predictions}")
         log.info(f"References: {decoded_references}")
 
         log.info(f"Using {len(decoded_references)} references for validation metrics.")
         log.info(f"Computing validation metrics on {len(predictions)} samples...")
         log.info(f"Sample Prediction: {predictions[0]}")
         log.info(f"Sample Reference: {decoded_references[0]}")
-            
+        log.info(f"Sample Prediction: {predictions[-1]}")
+        log.info(f"Sample Reference: {decoded_references[len(predictions)-1]}")
+
         metrics = self.metric_computer.compute_metrics(
             predictions=predictions,
             references=decoded_references

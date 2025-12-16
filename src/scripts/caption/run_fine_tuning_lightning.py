@@ -81,6 +81,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
         dataset=dataset,
         tokenizer=tokenizer,
         data_cfg=cfg.data,
+        prompt_cfg=cfg.prompt,
         batch_size=cfg.data.batch_size,
         num_workers=cfg.data.dataloader_num_workers,
         max_length=cfg.generation.max_length 
@@ -94,6 +95,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
         lora_cfg=cfg.lora,
         optimizer_cfg=cfg.trainer.optimizer,
         lr_scheduler_cfg=cfg.trainer.lr_scheduler,
+        prompt_cfg=cfg.prompt,
         tokenizer=tokenizer,
         metric_computer=metric_computer,
     )
