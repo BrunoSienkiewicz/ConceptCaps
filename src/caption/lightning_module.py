@@ -164,9 +164,9 @@ class CaptionFineTuningModule(pl.LightningModule):
         predictions = []
         decoded_references = []
 
-        log.info(f"inputs: {self.validation_inputs}\n len: {len(self.validation_inputs)}")
-        log.info(f"attention_mask: {self.validation_attention_mask}\n len: {len(self.validation_attention_mask)}")
-        log.info(f"labels: {self.validation_labels}\n len: {len(self.validation_labels)}")
+        log.info(f"inputs len: {len(self.validation_inputs)}")
+        log.info(f"attention_mask len: {len(self.validation_attention_mask)}")
+        log.info(f"labels len: {len(self.validation_labels)}")
 
         for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
             self.validation_inputs, self.validation_attention_mask, self.validation_labels
