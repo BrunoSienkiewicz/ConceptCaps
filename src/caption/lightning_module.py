@@ -164,6 +164,10 @@ class CaptionFineTuningModule(pl.LightningModule):
         predictions = []
         decoded_references = []
 
+        log.info(f"inputs: {self.validation_inputs}\n len: {len(self.validation_inputs)}")
+        log.info(f"attention_mask: {self.validation_attention_mask}\n len: {len(self.validation_attention_mask)}")
+        log.info(f"labels: {self.validation_labels}\n len: {len(self.validation_labels)}")
+
         for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
             self.validation_inputs, self.validation_attention_mask, self.validation_labels
         ):
@@ -188,6 +192,14 @@ class CaptionFineTuningModule(pl.LightningModule):
             )
             batch_refs = [ref.strip() for ref in batch_refs]
             decoded_references.extend(batch_refs)
+
+        log.info(f"Predicions: {predictions}")
+        log.info(f"References: {decoded_references}")
+
+        log.info(f"Using {len(decoded_references)} references for validation metrics.")
+        log.info(f"Computing validation metrics on {len(predictions)} samples...")
+        log.info(f"Sample Prediction: {predictions[0]}")
+        log.info(f"Sample Reference: {decoded_references[0]}")
             
         metrics = self.metric_computer.compute_metrics(
             predictions=predictions,
