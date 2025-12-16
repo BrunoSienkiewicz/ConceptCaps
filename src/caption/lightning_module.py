@@ -115,7 +115,30 @@ class CaptionFineTuningModule(pl.LightningModule):
                     prompt_masks.append(attention_mask[:prompt_end])
                     break
         
-        return torch.stack(prompt_ids), torch.stack(prompt_masks)
+        # Pad prompts to same length
+        max_prompt_len = max(len(p) for p in prompt_ids)
+        
+        padded_prompt_ids = []
+        padded_prompt_masks = []
+        
+        for prompt_id, prompt_mask in zip(prompt_ids, prompt_masks):
+            # Pad input_ids with pad_token_id
+            pad_len = max_prompt_len - len(prompt_id)
+            padded_id = torch.nn.functional.pad(
+                prompt_id, 
+                (0, pad_len), 
+                value=self.tokenizer.pad_token_id
+            )
+            # Pad attention_mask with 0
+            padded_mask = torch.nn.functional.pad(
+                prompt_mask, 
+                (0, pad_len), 
+                value=0
+            )
+            padded_prompt_ids.append(padded_id)
+            padded_prompt_masks.append(padded_mask)
+        
+        return torch.stack(padded_prompt_ids), torch.stack(padded_prompt_masks)
 
     def forward(self, input_ids, attention_mask, labels=None):
         """Forward pass through the model."""
