@@ -59,13 +59,13 @@ class CaptionDataModule(pl.LightningDataModule):
             padding="max_length",
         )
         
-        # Mask prompt tokens (set labels to -100 so they don't contribute to loss)
-        labels = tokenized["input_ids"].copy()
         prompt_delimiter = self.prompt_cfg.prompt_delimiter.strip()
         delimiter_token_ids = self.tokenizer.encode(prompt_delimiter, add_special_tokens=False)
         
-        for i, token_ids in enumerate(tokenized["input_ids"]):
-            token_list = token_ids.tolist() if hasattr(token_ids, 'tolist') else token_ids
+        labels = []
+        for token_ids in tokenized["input_ids"]:
+            label = token_ids.copy() if hasattr(token_ids, 'copy') else list(token_ids)
+            token_list = label if isinstance(label, list) else label.tolist()
             
             # Search for delimiter in token sequence
             marker_found = False
@@ -73,15 +73,17 @@ class CaptionDataModule(pl.LightningDataModule):
                 if token_list[j:j+len(delimiter_token_ids)] == delimiter_token_ids:
                     # Mask all tokens up to and including the delimiter
                     mask_until = j + len(delimiter_token_ids)
-                    labels[i][:mask_until] = -100
+                    label[:mask_until] = [-100] * mask_until
                     marker_found = True
                     break
             
             # If delimiter not found, mask entire sequence
             if not marker_found:
-                labels[i][:] = -100
-                log.warning(f"Prompt delimiter not found in example {i}")
-
+                label[:] = [-100] * len(label)
+                log.warning(f"Prompt delimiter not found in example")
+            
+            labels.append(label)
+        
         tokenized["labels"] = labels
             
         return tokenized
