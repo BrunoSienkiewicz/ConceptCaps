@@ -211,10 +211,6 @@ class CaptionFineTuningModule(pl.LightningModule):
         predictions = []
         decoded_references = []
 
-        log.info(f"inputs len: {len(self.validation_inputs)}")
-        log.info(f"attention_mask len: {len(self.validation_attention_mask)}")
-        log.info(f"labels len: {len(self.validation_labels)}")
-
         for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
             self.validation_inputs, self.validation_attention_mask, self.validation_labels
         ):
@@ -232,6 +228,9 @@ class CaptionFineTuningModule(pl.LightningModule):
                 attention_mask=prompt_masks,
                 max_new_tokens=self.generation_cfg.max_new_tokens,
             )
+            # remove prompts from predictions
+            batch_preds = [pred[len(self.tokenizer.decode(prompt_ids[i], skip_special_tokens=True).strip()):].strip() 
+                           for i, pred in enumerate(batch_preds)]
             predictions.extend(batch_preds)
 
             # remove masked tokens (-100) for decoding
@@ -239,24 +238,20 @@ class CaptionFineTuningModule(pl.LightningModule):
             batch_refs = self.tokenizer.batch_decode(
                 batch_label_ids, skip_special_tokens=True
             )
-            batch_refs = [ref.strip() for ref in batch_refs]
+            # remove prompts from references
+            batch_refs = [ref[len(self.tokenizer.decode(prompt_ids[i], skip_special_tokens=True).strip()):].strip() 
+                          for i, ref in enumerate(batch_refs)]
             decoded_references.extend(batch_refs)
 
-        # Resize predictions and references to match
-        min_len = min(len(predictions), len(decoded_references))
-        log.info(f"Resizing predictions and references to min length: {min_len}")
-        predictions = predictions[:min_len]
-        decoded_references = decoded_references[:min_len]
-
-        log.info(f"Predictions: {predictions}")
-        log.info(f"References: {decoded_references}")
-
-        log.info(f"Using {len(decoded_references)} references for validation metrics.")
-        log.info(f"Computing validation metrics on {len(predictions)} samples...")
-        log.info(f"Sample Prediction: {predictions[0]}")
-        log.info(f"Sample Reference: {decoded_references[0]}")
-        log.info(f"Sample Prediction: {predictions[-1]}")
-        log.info(f"Sample Reference: {decoded_references[len(predictions)-1]}")
+        if len(predictions) != len(decoded_references):
+            log.warning(
+                f"Number of predictions ({len(predictions)}) does not match "
+                f"number of references ({len(decoded_references)})."
+            )
+            min_len = min(len(predictions), len(decoded_references))
+            log.info(f"Resizing predictions and references to min length: {min_len}")
+            predictions = predictions[:min_len]
+            decoded_references = decoded_references[:min_len]
 
         metrics = self.metric_computer.compute_metrics(
             predictions=predictions,
@@ -297,13 +292,18 @@ class CaptionFineTuningModule(pl.LightningModule):
             batch_attention_mask = torch.tensor(batch_attention_mask).to(self.model.device)
             batch_label_ids = torch.tensor(batch_label_ids).to(self.model.device)
 
+            prompt_ids, prompt_masks = self._extract_prompt_from_batch(batch_input_ids, batch_attention_mask)
+
             batch_preds = generate_batch_caption_tokenized(
                 model=self.model,
                 tokenizer=self.tokenizer,
-                input_ids=batch_input_ids,
-                attention_mask=batch_attention_mask,
+                input_ids=prompt_ids,
+                attention_mask=prompt_masks,
                 max_new_tokens=self.generation_cfg.max_new_tokens,
             )
+            # remove prompts from predictions
+            batch_preds = [pred[len(self.tokenizer.decode(prompt_ids[i], skip_special_tokens=True).strip()):].strip()
+                            for i, pred in enumerate(batch_preds)]
             predictions.extend(batch_preds)
 
             # remove masked tokens (-100) for decoding
@@ -311,13 +311,20 @@ class CaptionFineTuningModule(pl.LightningModule):
             batch_refs = self.tokenizer.batch_decode(
                 batch_label_ids, skip_special_tokens=True
             )
-            batch_refs = [ref.strip() for ref in batch_refs]
+            # remove prompts from references
+            batch_refs = [ref[len(self.tokenizer.decode(prompt_ids[i], skip_special_tokens=True).strip()):].strip() 
+                          for i, ref in enumerate(batch_refs)]
             decoded_references.extend(batch_refs)
 
-        min_len = min(len(predictions), len(decoded_references))
-        log.info(f"Resizing predictions and references to min length: {min_len}")
-        predictions = predictions[:min_len]
-        decoded_references = decoded_references[:min_len]
+        if len(predictions) != len(decoded_references):
+            log.warning(
+                f"Number of predictions ({len(predictions)}) does not match "
+                f"number of references ({len(decoded_references)})."
+            )
+            min_len = min(len(predictions), len(decoded_references))
+            log.info(f"Resizing predictions and references to min length: {min_len}")
+            predictions = predictions[:min_len]
+            decoded_references = decoded_references[:min_len]
 
         metrics = self.metric_computer.compute_metrics(
             predictions=predictions,

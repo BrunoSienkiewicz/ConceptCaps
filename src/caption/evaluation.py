@@ -392,10 +392,6 @@ class MetricComputer:
             else:
                 results[metric_cfg.name] = value
 
-            results[metric_cfg.name] = value
-
-        logger.info(f"Evaluation metrics: {results}")
-
         return results
 
     def compute_metrics(
