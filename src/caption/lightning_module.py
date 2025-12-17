@@ -220,6 +220,7 @@ class CaptionFineTuningModule(pl.LightningModule):
             batch_label_ids = torch.tensor(batch_label_ids).to(self.model.device)
 
             prompt_ids, prompt_masks = self._extract_prompt_from_batch(batch_input_ids, batch_attention_mask)
+            prompts = [self.tokenizer.decode(pid, skip_special_tokens=True) for pid in prompt_ids]
 
             batch_preds = generate_batch_caption_tokenized(
                 model=self.model,
@@ -229,8 +230,7 @@ class CaptionFineTuningModule(pl.LightningModule):
                 max_new_tokens=self.generation_cfg.max_new_tokens,
             )
             # remove prompts from predictions
-            batch_preds = [pred[len(self.tokenizer.decode(prompt_ids[i], skip_special_tokens=True).strip()):].strip() 
-                           for i, pred in enumerate(batch_preds)]
+            batch_preds = [pred[len(prompts[i]):].strip() for i, pred in enumerate(batch_preds)]
             predictions.extend(batch_preds)
 
             # remove masked tokens (-100) for decoding
@@ -239,8 +239,7 @@ class CaptionFineTuningModule(pl.LightningModule):
                 batch_label_ids, skip_special_tokens=True
             )
             # remove prompts from references
-            batch_refs = [ref[len(self.tokenizer.decode(prompt_ids[i], skip_special_tokens=True).strip()):].strip() 
-                          for i, ref in enumerate(batch_refs)]
+            batch_refs = [ref[len(prompts[i]):].strip() for i, ref in enumerate(batch_refs)]
             decoded_references.extend(batch_refs)
 
         if len(predictions) != len(decoded_references):
@@ -252,6 +251,9 @@ class CaptionFineTuningModule(pl.LightningModule):
             log.info(f"Resizing predictions and references to min length: {min_len}")
             predictions = predictions[:min_len]
             decoded_references = decoded_references[:min_len]
+        
+        log.info(f"Sample prediction: {predictions[0]}")
+        log.info(f"Sample reference: {decoded_references[0]}")
 
         metrics = self.metric_computer.compute_metrics(
             predictions=predictions,
@@ -293,6 +295,7 @@ class CaptionFineTuningModule(pl.LightningModule):
             batch_label_ids = torch.tensor(batch_label_ids).to(self.model.device)
 
             prompt_ids, prompt_masks = self._extract_prompt_from_batch(batch_input_ids, batch_attention_mask)
+            prompts = [self.tokenizer.decode(pid, skip_special_tokens=True) for pid in prompt_ids]
 
             batch_preds = generate_batch_caption_tokenized(
                 model=self.model,
@@ -302,8 +305,7 @@ class CaptionFineTuningModule(pl.LightningModule):
                 max_new_tokens=self.generation_cfg.max_new_tokens,
             )
             # remove prompts from predictions
-            batch_preds = [pred[len(self.tokenizer.decode(prompt_ids[i], skip_special_tokens=True).strip()):].strip()
-                            for i, pred in enumerate(batch_preds)]
+            batch_preds = [pred[len(prompts[i]):].strip() for i, pred in enumerate(batch_preds)]
             predictions.extend(batch_preds)
 
             # remove masked tokens (-100) for decoding
@@ -312,8 +314,7 @@ class CaptionFineTuningModule(pl.LightningModule):
                 batch_label_ids, skip_special_tokens=True
             )
             # remove prompts from references
-            batch_refs = [ref[len(self.tokenizer.decode(prompt_ids[i], skip_special_tokens=True).strip()):].strip() 
-                          for i, ref in enumerate(batch_refs)]
+            batch_refs = [ref[len(prompts[i]):].strip() for i, ref in enumerate(batch_refs)]
             decoded_references.extend(batch_refs)
 
         if len(predictions) != len(decoded_references):
@@ -325,6 +326,9 @@ class CaptionFineTuningModule(pl.LightningModule):
             log.info(f"Resizing predictions and references to min length: {min_len}")
             predictions = predictions[:min_len]
             decoded_references = decoded_references[:min_len]
+
+        log.info(f"Sample prediction: {predictions[0]}")
+        log.info(f"Sample reference: {decoded_references[0]}")
 
         metrics = self.metric_computer.compute_metrics(
             predictions=predictions,
