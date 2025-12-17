@@ -51,13 +51,6 @@ class CaptionFineTuningModule(pl.LightningModule):
         # Initialize model
         self.model = self._setup_model()
 
-        self.validation_inputs = []
-        self.validation_attention_mask = []
-        self.validation_labels = []
-        self.test_inputs = []
-        self.test_attention_mask = []
-        self.test_labels = []
-
     def _setup_model(self) -> AutoModelForCausalLM:
         """Initialize and prepare the model with LoRA."""
         quantization_config = build_quantization_config(self.model_cfg)
@@ -178,11 +171,6 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.log("val/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("val/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
-        # Store inputs and references for metric computation
-        self.validation_inputs.append(batch["input_ids"].cpu().numpy())
-        self.validation_attention_mask.append(batch["attention_mask"].cpu().numpy())
-        self.validation_labels.append(batch["labels"].cpu().numpy())
-
         return loss
 
     def test_step(self, batch, batch_idx):
@@ -199,25 +187,21 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.log("test/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("test/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
-        # Store inputs and references for metric computation
-        self.test_inputs.append(batch["input_ids"].cpu().numpy())
-        self.test_attention_mask.append(batch["attention_mask"].cpu().numpy())
-        self.test_labels.append(batch["labels"].cpu().numpy())
-
         return loss
 
-    def on_validation_epoch_end(self):
+    def validation_epoch_end(self, outputs):
         """Compute metrics at the end of validation epoch."""
         predictions = []
         decoded_references = []
+        
+        log.info(f"Outputs length: {len(outputs)}")
+        log.info(f"Sample output keys: {outputs[0].keys() if len(outputs) > 0 else 'N/A'}")
 
-        for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
-            self.validation_inputs, self.validation_attention_mask, self.validation_labels
-        ):
-            # Convert from numpy to torch tensors
-            batch_input_ids = torch.tensor(batch_input_ids).to(self.model.device)
-            batch_attention_mask = torch.tensor(batch_attention_mask).to(self.model.device)
-            batch_label_ids = torch.tensor(batch_label_ids).to(self.model.device)
+        # Iterate over validation dataloader
+        for batch in outputs:
+            batch_input_ids = torch.tensor(batch["input_ids"]).to(self.model.device)
+            batch_attention_mask = torch.tensor(batch["attention_mask"]).to(self.model.device)
+            batch_label_ids = torch.tensor(batch["labels"]).to(self.model.device)
 
             prompt_ids, prompt_masks = self._extract_prompt_from_batch(batch_input_ids, batch_attention_mask)
             prompts = [self.tokenizer.decode(pid, skip_special_tokens=True) for pid in prompt_ids]
@@ -275,24 +259,17 @@ class CaptionFineTuningModule(pl.LightningModule):
             if not isinstance(value, exclude_types):
                 self.log(f"val/{key}", value, on_epoch=True, sync_dist=True)
 
-        # Clear stored inputs and references
-        self.validation_inputs = []
-        self.validation_attention_mask = []
-        self.validation_references = []
-
-    def on_test_epoch_end(self):
+    def test_epoch_end(self, outputs):
         """Compute metrics at the end of test epoch."""
-
         predictions = []
         decoded_references = []
 
-        for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
-            self.test_inputs, self.test_attention_mask, self.test_labels
-        ):
+        # Iterate over test dataloader
+        for batch in outputs:
             # Convert from numpy to torch tensors
-            batch_input_ids = torch.tensor(batch_input_ids).to(self.model.device)
-            batch_attention_mask = torch.tensor(batch_attention_mask).to(self.model.device)
-            batch_label_ids = torch.tensor(batch_label_ids).to(self.model.device)
+            batch_input_ids = torch.tensor(batch["input_ids"]).to(self.model.device)
+            batch_attention_mask = torch.tensor(batch["attention_mask"]).to(self.model.device)
+            batch_label_ids = torch.tensor(batch["labels"]).to(self.model.device)
 
             prompt_ids, prompt_masks = self._extract_prompt_from_batch(batch_input_ids, batch_attention_mask)
             prompts = [self.tokenizer.decode(pid, skip_special_tokens=True) for pid in prompt_ids]
@@ -349,11 +326,6 @@ class CaptionFineTuningModule(pl.LightningModule):
                 continue
             if not isinstance(value, exclude_types):
                 self.log(f"test/{key}", value, on_epoch=True, sync_dist=True)
-
-        # Clear stored inputs and references
-        self.test_inputs = []
-        self.test_attention_mask = []
-        self.test_references = []
 
     def configure_optimizers(self):
         """Configure optimizer and learning rate scheduler."""
