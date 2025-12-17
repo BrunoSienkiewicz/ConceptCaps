@@ -242,6 +242,11 @@ class CaptionFineTuningModule(pl.LightningModule):
             batch_refs = [ref.strip() for ref in batch_refs]
             decoded_references.extend(batch_refs)
 
+        # Resize predictions and references to match
+        min_len = min(len(predictions), len(decoded_references))
+        predictions = predictions[:min_len]
+        decoded_references = decoded_references[:min_len]
+
         log.info(f"Predictions: {predictions}")
         log.info(f"References: {decoded_references}")
 
