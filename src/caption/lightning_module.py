@@ -195,6 +195,8 @@ class CaptionFineTuningModule(pl.LightningModule):
         decoded_references = []
         
         log.info(f"Outputs length: {len(outputs)}")
+        log.info(f"Outputs type: {type(outputs)}")
+        log.info(f"First output type: {type(outputs[0]) if len(outputs) > 0 else 'N/A'}")
         log.info(f"Sample output keys: {outputs[0].keys() if len(outputs) > 0 else 'N/A'}")
 
         # Iterate over validation dataloader
