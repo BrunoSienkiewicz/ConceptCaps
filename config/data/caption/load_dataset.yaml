@@ -1,4 +1,4 @@
-dataset_name: bsienkiewicz/musiccaps-tag-to-caption
+dataset_name: bsienkiewicz/musiccaps-tags-to-caption
 aspect_column: aspect_list
 caption_column: caption
 text_column: text
