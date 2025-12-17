@@ -244,6 +244,7 @@ class CaptionFineTuningModule(pl.LightningModule):
 
         # Resize predictions and references to match
         min_len = min(len(predictions), len(decoded_references))
+        log.info(f"Resizing predictions and references to min length: {min_len}")
         predictions = predictions[:min_len]
         decoded_references = decoded_references[:min_len]
 
@@ -287,6 +288,7 @@ class CaptionFineTuningModule(pl.LightningModule):
 
         predictions = []
         decoded_references = []
+
         for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
             self.test_inputs, self.test_attention_mask, self.test_labels
         ):
@@ -311,6 +313,11 @@ class CaptionFineTuningModule(pl.LightningModule):
             )
             batch_refs = [ref.strip() for ref in batch_refs]
             decoded_references.extend(batch_refs)
+
+        min_len = min(len(predictions), len(decoded_references))
+        log.info(f"Resizing predictions and references to min length: {min_len}")
+        predictions = predictions[:min_len]
+        decoded_references = decoded_references[:min_len]
 
         metrics = self.metric_computer.compute_metrics(
             predictions=predictions,
