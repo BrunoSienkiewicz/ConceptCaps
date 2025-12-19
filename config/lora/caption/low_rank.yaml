@@ -1,5 +1,5 @@
 r: 16
-lora_alpha: 32
+lora_alpha: 16
 target_modules:
   - q_proj
   - o_proj
