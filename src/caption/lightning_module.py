@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from itertools import islice
 from typing import Any, Dict, Optional
 
 import numpy as np
@@ -51,12 +52,11 @@ class CaptionFineTuningModule(pl.LightningModule):
         # Initialize model
         self.model = self._setup_model()
 
-        self.validation_inputs = []
-        self.validation_attention_mask = []
-        self.validation_labels = []
-        self.test_inputs = []
-        self.test_attention_mask = []
-        self.test_labels = []
+        # Store predictions and references for epoch-end evaluation
+        self.validation_predictions = []
+        self.validation_references = []
+        self.test_predictions = []
+        self.test_references = []
 
     def _setup_model(self) -> AutoModelForCausalLM:
         """Initialize and prepare the model with LoRA."""
@@ -140,6 +140,34 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         return torch.stack(padded_prompt_ids), torch.stack(padded_prompt_masks)
 
+    def _process_batch_for_metrics(self, batch_input_ids, batch_attention_mask, batch_label_ids):
+        """Generate predictions and extract references from a batch."""
+        # Extract prompts
+        prompt_ids, prompt_masks = self._extract_prompt_from_batch(batch_input_ids, batch_attention_mask)
+        prompts = [self.tokenizer.decode(pid, skip_special_tokens=True) for pid in prompt_ids]
+
+        # Generate predictions
+        batch_preds = generate_batch_caption_tokenized(
+            model=self.model,
+            tokenizer=self.tokenizer,
+            input_ids=prompt_ids,
+            attention_mask=prompt_masks,
+            max_new_tokens=self.generation_cfg.max_new_tokens,
+        )
+        # Remove prompts from predictions
+        batch_preds = [pred[len(prompts[i]):].strip() for i, pred in enumerate(batch_preds)]
+
+        # Extract references from labels
+        # Remove masked tokens (-100) for decoding
+        batch_label_ids[batch_label_ids == -100] = self.tokenizer.pad_token_id
+        batch_refs = self.tokenizer.batch_decode(
+            batch_label_ids, skip_special_tokens=True
+        )
+        # Remove prompts from references
+        batch_refs = [ref[len(prompts[i]):].strip() for i, ref in enumerate(batch_refs)]
+
+        return batch_preds, batch_refs
+
     def forward(self, input_ids, attention_mask, labels=None):
         """Forward pass through the model."""
         return self.model(
@@ -178,10 +206,18 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.log("val/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("val/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
-        # Store inputs and references for metric computation
-        self.validation_inputs.append(batch["input_ids"].cpu().numpy())
-        self.validation_attention_mask.append(batch["attention_mask"].cpu().numpy())
-        self.validation_labels.append(batch["labels"].cpu().numpy())
+        # Process batch for metrics computation
+        batch_input_ids = batch["input_ids"].to(self.model.device)
+        batch_attention_mask = batch["attention_mask"].to(self.model.device)
+        batch_label_ids = batch["labels"].clone().to(self.model.device)
+        
+        batch_preds, batch_refs = self._process_batch_for_metrics(
+            batch_input_ids, batch_attention_mask, batch_label_ids
+        )
+        
+        # Store predictions and references for epoch-end evaluation
+        self.validation_predictions.extend(batch_preds)
+        self.validation_references.extend(batch_refs)
 
         return loss
 
@@ -199,65 +235,30 @@ class CaptionFineTuningModule(pl.LightningModule):
         self.log("test/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("test/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
-        # Store inputs and references for metric computation
-        self.test_inputs.append(batch["input_ids"].cpu().numpy())
-        self.test_attention_mask.append(batch["attention_mask"].cpu().numpy())
-        self.test_labels.append(batch["labels"].cpu().numpy())
+        # Process batch for metrics computation
+        batch_input_ids = batch["input_ids"].to(self.model.device)
+        batch_attention_mask = batch["attention_mask"].to(self.model.device)
+        batch_label_ids = batch["labels"].clone().to(self.model.device)
+        
+        batch_preds, batch_refs = self._process_batch_for_metrics(
+            batch_input_ids, batch_attention_mask, batch_label_ids
+        )
+        
+        # Store predictions and references for epoch-end evaluation
+        self.test_predictions.extend(batch_preds)
+        self.test_references.extend(batch_refs)
 
         return loss
 
     def on_validation_epoch_end(self):
         """Compute metrics at the end of validation epoch."""
-        predictions = []
-        decoded_references = []
-
-        for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
-            self.validation_inputs, self.validation_attention_mask, self.validation_labels
-        ):
-            # Convert from numpy to torch tensors
-            batch_input_ids = torch.tensor(batch_input_ids).to(self.model.device)
-            batch_attention_mask = torch.tensor(batch_attention_mask).to(self.model.device)
-            batch_label_ids = torch.tensor(batch_label_ids).to(self.model.device)
-
-            prompt_ids, prompt_masks = self._extract_prompt_from_batch(batch_input_ids, batch_attention_mask)
-            prompts = [self.tokenizer.decode(pid, skip_special_tokens=True) for pid in prompt_ids]
-
-            batch_preds = generate_batch_caption_tokenized(
-                model=self.model,
-                tokenizer=self.tokenizer,
-                input_ids=prompt_ids,
-                attention_mask=prompt_masks,
-                max_new_tokens=self.generation_cfg.max_new_tokens,
-            )
-            # remove prompts from predictions
-            batch_preds = [pred[len(prompts[i]):].strip() for i, pred in enumerate(batch_preds)]
-            predictions.extend(batch_preds)
-
-            # remove masked tokens (-100) for decoding
-            batch_label_ids[batch_label_ids == -100] = self.tokenizer.pad_token_id
-            batch_refs = self.tokenizer.batch_decode(
-                batch_label_ids, skip_special_tokens=True
-            )
-            # remove prompts from references
-            batch_refs = [ref[len(prompts[i]):].strip() for i, ref in enumerate(batch_refs)]
-            decoded_references.extend(batch_refs)
-
-        if len(predictions) != len(decoded_references):
-            log.warning(
-                f"Number of predictions ({len(predictions)}) does not match "
-                f"number of references ({len(decoded_references)})."
-            )
-            min_len = min(len(predictions), len(decoded_references))
-            log.info(f"Resizing predictions and references to min length: {min_len}")
-            predictions = predictions[:min_len]
-            decoded_references = decoded_references[:min_len]
-        
-        log.info(f"Sample prediction: {predictions[0]}")
-        log.info(f"Sample reference: {decoded_references[0]}")
+        if len(self.validation_predictions) == 0:
+            log.warning("No validation predictions collected.")
+            return
 
         metrics = self.metric_computer.compute_metrics(
-            predictions=predictions,
-            references=decoded_references
+            predictions=self.validation_predictions,
+            references=self.validation_references
         )
 
         exclude_types = (dict, list, str, tuple, set)
@@ -275,64 +276,19 @@ class CaptionFineTuningModule(pl.LightningModule):
             if not isinstance(value, exclude_types):
                 self.log(f"val/{key}", value, on_epoch=True, sync_dist=True)
 
-        # Clear stored inputs and references
-        self.validation_inputs = []
-        self.validation_attention_mask = []
+        # Clear stored predictions and references
+        self.validation_predictions = []
         self.validation_references = []
 
     def on_test_epoch_end(self):
         """Compute metrics at the end of test epoch."""
-
-        predictions = []
-        decoded_references = []
-
-        for batch_input_ids, batch_attention_mask, batch_label_ids in zip(
-            self.test_inputs, self.test_attention_mask, self.test_labels
-        ):
-            # Convert from numpy to torch tensors
-            batch_input_ids = torch.tensor(batch_input_ids).to(self.model.device)
-            batch_attention_mask = torch.tensor(batch_attention_mask).to(self.model.device)
-            batch_label_ids = torch.tensor(batch_label_ids).to(self.model.device)
-
-            prompt_ids, prompt_masks = self._extract_prompt_from_batch(batch_input_ids, batch_attention_mask)
-            prompts = [self.tokenizer.decode(pid, skip_special_tokens=True) for pid in prompt_ids]
-
-            batch_preds = generate_batch_caption_tokenized(
-                model=self.model,
-                tokenizer=self.tokenizer,
-                input_ids=prompt_ids,
-                attention_mask=prompt_masks,
-                max_new_tokens=self.generation_cfg.max_new_tokens,
-            )
-            # remove prompts from predictions
-            batch_preds = [pred[len(prompts[i]):].strip() for i, pred in enumerate(batch_preds)]
-            predictions.extend(batch_preds)
-
-            # remove masked tokens (-100) for decoding
-            batch_label_ids[batch_label_ids == -100] = self.tokenizer.pad_token_id
-            batch_refs = self.tokenizer.batch_decode(
-                batch_label_ids, skip_special_tokens=True
-            )
-            # remove prompts from references
-            batch_refs = [ref[len(prompts[i]):].strip() for i, ref in enumerate(batch_refs)]
-            decoded_references.extend(batch_refs)
-
-        if len(predictions) != len(decoded_references):
-            log.warning(
-                f"Number of predictions ({len(predictions)}) does not match "
-                f"number of references ({len(decoded_references)})."
-            )
-            min_len = min(len(predictions), len(decoded_references))
-            log.info(f"Resizing predictions and references to min length: {min_len}")
-            predictions = predictions[:min_len]
-            decoded_references = decoded_references[:min_len]
-
-        log.info(f"Sample prediction: {predictions[0]}")
-        log.info(f"Sample reference: {decoded_references[0]}")
+        if len(self.test_predictions) == 0:
+            log.warning("No test predictions collected.")
+            return
 
         metrics = self.metric_computer.compute_metrics(
-            predictions=predictions,
-            references=decoded_references
+            predictions=self.test_predictions,
+            references=self.test_references
         )
 
         exclude_types = (dict, list, str, tuple, set)
@@ -350,9 +306,8 @@ class CaptionFineTuningModule(pl.LightningModule):
             if not isinstance(value, exclude_types):
                 self.log(f"test/{key}", value, on_epoch=True, sync_dist=True)
 
-        # Clear stored inputs and references
-        self.test_inputs = []
-        self.test_attention_mask = []
+        # Clear stored predictions and references
+        self.test_predictions = []
         self.test_references = []
 
     def configure_optimizers(self):
