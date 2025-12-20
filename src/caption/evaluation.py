@@ -283,7 +283,13 @@ def generate_captions_batch(
             # Generate batch
             outputs = model.generate(
                 **inputs,
-                **generate_cfg
+                max_length=generate_cfg.max_length,
+                temperature=generate_cfg.temperature,
+                top_k=generate_cfg.top_k,
+                top_p=generate_cfg.top_p,
+                do_sample=generate_cfg.do_sample,
+                repetition_penalty=generate_cfg.repetition_penalty,
+                no_repeat_ngram_size=generate_cfg.no_repeat_ngram_size,
             )
             
             # Decode batch - extract only new tokens (skip input tokens)
