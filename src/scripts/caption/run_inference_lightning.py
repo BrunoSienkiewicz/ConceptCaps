@@ -70,6 +70,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
         generation_cfg=cfg.generation,
         lora_cfg=cfg.lora,
         optimizer_cfg=cfg.trainer.optimizer,
+        prompt_cfg=cfg.prompt,
         lr_scheduler_cfg=cfg.trainer.lr_scheduler,
         tokenizer=tokenizer,
     )
