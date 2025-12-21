@@ -7,12 +7,12 @@ defaults:
 model_checkpoint:
   dirpath: ${paths.model_dir}/${model.name}/${run_id}
   filename: "epoch_{epoch:03d}"
-  monitor: "val/perplexity"
+  monitor: "val/loss"
   mode: "min"
   save_last: True
   auto_insert_metric_name: False
 
 early_stopping:
-  monitor: "val/perplexity"
+  monitor: "val/loss"
   patience: 3
   mode: "min"

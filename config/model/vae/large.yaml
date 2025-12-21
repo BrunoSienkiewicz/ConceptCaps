@@ -1,0 +1,6 @@
+# VAE model: large variant
+input_dim: 0  # Will be computed based on taxonomy
+latent_dim: 128
+hidden_dim: 512
+dropout_p: 0.3
+use_batch_norm: true

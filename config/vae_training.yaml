@@ -1,0 +1,33 @@
+# VAE Training Configuration with Hydra
+defaults:
+  - model: vae/default
+  - data: vae/default
+  - trainer: vae/default
+  - paths: default
+  - logger: null
+  - callbacks: default
+  - hydra: default
+
+# Run identification and metadata
+run_id: ${now:%Y-%m-%d_%H-%M-%S}
+task_name: vae_training
+random_state: 42
+device: cuda
+
+# Loss configuration
+loss:
+  bce_weight: 1.0
+  kld_weight: 1.0
+  use_binary_cross_entropy: true
+
+# Model naming and saving
+model_name: vae_final
+save_model: true
+
+callbacks:
+  model_checkpoint:
+    save_top_k: 1
+    filename: best-checkpoint
+
+  early_stopping:
+    patience: 10
