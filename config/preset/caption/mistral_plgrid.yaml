@@ -2,8 +2,8 @@
 defaults:
   - override /prompt: mistral
   - override /model: caption/mistral_7b_instruct
-  - override /trainer: caption_lightning/stable
-  - override /lora: caption/medium_rank
+  - override /trainer: caption_lightning/low_lr
+  - override /lora: caption/low_rank
   - override /evaluation: caption/llama_judge
   - override /generation: regularization
   - override /paths: plgrid
