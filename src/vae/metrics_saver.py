@@ -1,4 +1,5 @@
 """Metrics saving utilities for VAE training."""
+import torch
 import json
 from pathlib import Path
 from typing import Dict, Any
@@ -53,13 +54,15 @@ class MetricsSaver:
         for stage, stage_metrics in self.metrics.items():
             metrics_clean[stage] = {}
             for key, value in stage_metrics.items():
+                if isinstance(value, torch.Tensor):
+                    value = value.item()
                 try:
                     # Try to serialize
                     json.dumps(value)
                     metrics_clean[stage][key] = value
                 except (TypeError, ValueError):
                     # Fallback for non-serializable types
-                    metrics_clean[stage][key] = float(value) if isinstance(value, (int, float)) else str(value)
+                    metrics_clean[stage][key] = float(value)
         
         with open(filepath, 'w') as f:
             json.dump(metrics_clean, f, indent=2)
