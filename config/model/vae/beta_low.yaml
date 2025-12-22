@@ -1,0 +1,7 @@
+name: BetaLowVAE
+input_dim: 0
+latent_dim: 64
+hidden_dim: 256
+dropout_p: 0.3
+use_batch_norm: false
+beta: 0.5

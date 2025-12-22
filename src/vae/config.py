@@ -13,13 +13,14 @@ class VAEModelConfig:
     latent_dim: int = 32
     hidden_dim: int = 128
     dropout_p: float = 0.3
+    beta: float = 1.0
     use_batch_norm: bool = False
 
 
 @dataclass
 class VAEDataConfig:
     """Configuration for data loading and preprocessing."""
-    taxonomy_path: str = "../data/concepts_to_tags.json"
+    taxonomy_path: str = "data/concepts_to_tags.json"
     dataset_name: str = "google/MusicCaps"
     dataset_split: str = "train"
     aspect_column: str = "aspect_list"

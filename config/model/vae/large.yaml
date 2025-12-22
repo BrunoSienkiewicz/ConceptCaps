@@ -1,4 +1,5 @@
 # VAE model: large variant
+name: LargeVAE
 input_dim: 0  # Will be computed based on taxonomy
 latent_dim: 128
 hidden_dim: 512

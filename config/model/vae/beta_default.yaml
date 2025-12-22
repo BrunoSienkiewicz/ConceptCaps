@@ -1,5 +1,6 @@
 # Beta-VAE model: default variant
 # Beta-VAE encourages disentangled representations through weighted KL divergence
+name: BetaVAE
 input_dim: 0  # Will be computed based on taxonomy
 latent_dim: 32
 hidden_dim: 128

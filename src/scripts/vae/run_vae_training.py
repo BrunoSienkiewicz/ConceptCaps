@@ -10,6 +10,7 @@ from omegaconf import DictConfig, OmegaConf
 
 from src.vae import VAELightningModule, BetaVAELightningModule, VAEDataModule
 from src.vae.config import VAEConfig
+from src.vae.metrics_saver import MetricsSaver, MetricsSaveCallback
 from src.utils import print_config_tree, RankedLogger, instantiate_loggers, instantiate_callbacks
 
 
@@ -101,6 +102,11 @@ def main(cfg: DictConfig) -> None:
             weight_decay=cfg.trainer.optimizer.weight_decay if hasattr(cfg.trainer.optimizer, 'weight_decay') else 0.0,
         )
     
+    # Create metrics saver and add callback
+    metrics_saver = MetricsSaver(checkpoint_dir)
+    metrics_callback = MetricsSaveCallback(metrics_saver)
+    callbacks.append(metrics_callback)
+    
     # Create Trainer
     log.info("Creating Lightning Trainer...")
     trainer = pl.Trainer(
@@ -153,6 +159,32 @@ def main(cfg: DictConfig) -> None:
         model_save_path = model_dir / f"{cfg.model_name}.pth"
         torch.save(model.model.state_dict(), model_save_path)
         log.info(f"Model weights saved to {model_save_path}")
+    
+    # Save final metrics to models folder
+    log.info("Saving final metrics...")
+    metrics_dir = model_dir / "metrics"
+    metrics_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Save metrics JSON
+    metrics_file = metrics_saver.save(filename="metrics.json")
+    log.info(f"Metrics saved to {metrics_file}")
+    
+    # Save summary with configuration
+    config_dict = OmegaConf.to_container(cfg, resolve=True)
+    summary_file = metrics_saver.save_summary(
+        config=config_dict,
+        filename="summary.json"
+    )
+    log.info(f"Summary saved to {summary_file}")
+    
+    # Copy metrics to models/metrics folder for easy access
+    import shutil
+    metrics_copy = metrics_dir / f"{cfg.model_name}_metrics.json"
+    summary_copy = metrics_dir / f"{cfg.model_name}_summary.json"
+    shutil.copy(metrics_file, metrics_copy)
+    shutil.copy(summary_file, summary_copy)
+    log.info(f"Metrics copied to {metrics_copy}")
+    log.info(f"Summary copied to {summary_copy}")
     
     log.info(f"Training completed. Checkpoints and outputs are saved in {checkpoint_dir}")
 

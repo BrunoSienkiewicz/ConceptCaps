@@ -1,4 +1,5 @@
 # VAE model: medium variant
+name: MediumVAE
 input_dim: 0  # Will be computed based on taxonomy
 latent_dim: 64
 hidden_dim: 256

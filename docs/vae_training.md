@@ -183,6 +183,8 @@ outputs/vae_training/
     ├── lightning_logs/        # Lightning logging
     ├── checkpoints/           # Model checkpoints
     ├── final.ckpt             # Final model checkpoint
+    ├── metrics.json           # Training metrics
+    ├── summary.json           # Metrics + configuration
     └── .hydra/                # Hydra config snapshots
 ```
 
@@ -190,6 +192,14 @@ Trained model weights are saved to:
 
 ```
 models/{model_name}.pth
+```
+
+Final metrics are also copied to:
+
+```
+models/metrics/
+├── {model_name}_metrics.json    # Final metrics
+└── {model_name}_summary.json    # Metrics + config
 ```
 
 ## Model Architecture

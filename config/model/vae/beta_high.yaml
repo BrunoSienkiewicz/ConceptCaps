@@ -1,5 +1,6 @@
 # Beta-VAE model: high disentanglement
 # Beta=10.0 strongly encourages disentangled latent factors
+name: BetaHighVAE
 input_dim: 0
 latent_dim: 128
 hidden_dim: 512
