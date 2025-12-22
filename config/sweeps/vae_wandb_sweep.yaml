@@ -7,6 +7,8 @@ metric:
 parameters:
   paths:
     values: [plgrid]
+  logger:
+    values: [wandb]
   model.latent_dim:
     values: [32, 64, 128]
   model.hidden_dim:
