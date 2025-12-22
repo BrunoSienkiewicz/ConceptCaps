@@ -35,4 +35,4 @@ command:
   - ${env}
   - python
   - ${program}
-  - ${args}
+  - ${args_no_hyphens}
