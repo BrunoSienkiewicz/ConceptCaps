@@ -11,8 +11,11 @@ parameters:
   logger:
     value: wandb
   
-  preset:
-    values: [llama_plgrid, mistral_plgrid]
+  model:
+    value: caption/llama_3.1_8b_instruct
+
+  prompt:
+    value: llama
   
   # Training hyperparameters
   data.batch_size:
