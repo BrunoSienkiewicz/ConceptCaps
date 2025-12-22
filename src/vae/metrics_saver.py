@@ -36,6 +36,23 @@ class MetricsSaver:
         if stage not in self.metrics:
             self.metrics[stage] = {}
         self.metrics[stage].update(metrics)
+
+    def _clean_metrics(self) -> Dict[str, Any]:
+        """Clean metrics to ensure JSON serializability."""
+        cleaned_metrics = {}
+        for stage, stage_metrics in self.metrics.items():
+            cleaned_metrics[stage] = {}
+            for key, value in stage_metrics.items():
+                if isinstance(value, torch.Tensor):
+                    value = value.item()
+                try:
+                    # Try to serialize
+                    json.dumps(value)
+                    cleaned_metrics[stage][key] = value
+                except (TypeError, ValueError):
+                    # Fallback for non-serializable types
+                    cleaned_metrics[stage][key] = str(value)
+        return cleaned_metrics
     
     def save(self, filename: str = "metrics.json") -> Path:
         """
@@ -50,19 +67,7 @@ class MetricsSaver:
         filepath = self.output_dir / filename
         
         # Convert any non-serializable values
-        metrics_clean = {}
-        for stage, stage_metrics in self.metrics.items():
-            metrics_clean[stage] = {}
-            for key, value in stage_metrics.items():
-                if isinstance(value, torch.Tensor):
-                    value = value.item()
-                try:
-                    # Try to serialize
-                    json.dumps(value)
-                    metrics_clean[stage][key] = value
-                except (TypeError, ValueError):
-                    # Fallback for non-serializable types
-                    metrics_clean[stage][key] = float(value)
+        metrics_clean = self._clean_metrics()
         
         with open(filepath, 'w') as f:
             json.dump(metrics_clean, f, indent=2)
@@ -90,10 +95,12 @@ class MetricsSaver:
                 config_clean[key] = value
             except (TypeError, ValueError):
                 config_clean[key] = str(value)
+
+        metrics_clean = self._clean_metrics()
         
         summary = {
             'config': config_clean,
-            'metrics': self.metrics,
+            'metrics': metrics_clean,
         }
         
         with open(filepath, 'w') as f:
