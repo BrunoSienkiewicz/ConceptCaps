@@ -125,19 +125,6 @@ def main(cfg: CaptionGenerationConfig) -> None:
     log.info("Starting training...")
     trainer.fit(model, datamodule=datamodule)
 
-    # Save final model
-    log.info("Saving final model...")
-    final_model_path = checkpoint_dir / "final.ckpt"
-    trainer.save_checkpoint(final_model_path)
-
-    best_model_path = None
-    for callback in callbacks:
-        if isinstance(callback, pl.pytorch.callbacks.ModelCheckpoint):
-            best_model_path = callback.best_model_path
-            break
-    if best_model_path:
-        log.info(f"Best model checkpoint found at {best_model_path}")
-
     # Test model
     log.info("Running evaluation...")
     trainer.test(

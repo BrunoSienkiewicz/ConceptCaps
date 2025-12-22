@@ -1,8 +1,28 @@
 #!/bin/bash
 # Initialize WandB sweep and get sweep ID
-# Usage: ./scripts/init_wandb_sweep.sh
+# Usage: ./scripts/init_wandb_sweep.sh [vae|caption]
 
 cd "$(dirname "$0")/.." || exit 1
+
+# Parse sweep type argument (default to vae)
+SWEEP_TYPE="${1:-vae}"
+
+if [ "$SWEEP_TYPE" != "vae" ] && [ "$SWEEP_TYPE" != "caption" ]; then
+    echo "Error: Invalid sweep type. Must be 'vae' or 'caption'"
+    echo "Usage: ./scripts/init_wandb_sweep.sh [vae|caption]"
+    exit 1
+fi
+
+# Set sweep config and script based on type
+if [ "$SWEEP_TYPE" = "vae" ]; then
+    SWEEP_CONFIG="config/sweeps/vae_wandb_sweep.yaml"
+    SWEEP_SCRIPT="scripts/run_vae_sweep.sh"
+    SWEEP_NAME="VAE Training"
+else
+    SWEEP_CONFIG="config/sweeps/caption_wandb_sweep.yaml"
+    SWEEP_SCRIPT="scripts/run_caption_sweep.sh"
+    SWEEP_NAME="Caption Fine-Tuning"
+fi
 
 # Activate conda environment
 CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
@@ -14,8 +34,9 @@ ROOT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
 export WANDB_DIR="$ROOT_DIR/artifacts/wandb"
 mkdir -p "$WANDB_DIR"
 
-echo "Initializing WandB sweep..."
-SWEEP_OUTPUT=$(wandb sweep config/sweeps/vae_wandb_sweep.yaml 2>&1)
+echo "Initializing WandB sweep for $SWEEP_NAME..."
+echo "Using config: $SWEEP_CONFIG"
+SWEEP_OUTPUT=$(wandb sweep "$SWEEP_CONFIG" 2>&1)
 echo "$SWEEP_OUTPUT"
 
 # Extract sweep ID from output
@@ -28,12 +49,12 @@ fi
 
 echo ""
 echo "============================================="
-echo "Sweep initialized successfully!"
+echo "$SWEEP_NAME Sweep initialized successfully!"
 echo "Sweep ID: $SWEEP_ID"
 echo "============================================="
 echo ""
 echo "To run the sweep on SLURM, use:"
-echo "sbatch --export=ALL,SWEEP_ID=$SWEEP_ID scripts/run_vae_sweep.sh"
+echo "sbatch --export=ALL,SWEEP_ID=$SWEEP_ID $SWEEP_SCRIPT"
 echo ""
 echo "Or for multiple parallel agents:"
-echo "sbatch --export=ALL,SWEEP_ID=$SWEEP_ID --array=1-5 scripts/run_vae_sweep.sh"
+echo "sbatch --export=ALL,SWEEP_ID=$SWEEP_ID --array=1-5 $SWEEP_SCRIPT"

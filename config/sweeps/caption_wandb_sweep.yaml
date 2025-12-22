@@ -1,0 +1,68 @@
+project: caption_fine_tuning
+program: src/scripts/caption/run_fine_tuning_lightning.py
+method: bayes
+metric:
+  name: val/bertscore_f1
+  goal: maximize
+parameters:
+  # Fixed parameters for plgrid
+  paths:
+    value: plgrid
+  logger:
+    value: wandb
+  
+  preset:
+    values: [llama_plgrid, mistral_plgrid]
+  
+  # Training hyperparameters
+  data.batch_size:
+    value: 4
+  
+  trainer.accumulate_grad_batches:
+    value: 8
+  
+  trainer.optimizer.lr:
+    distribution: log_uniform_values
+    min: 5e-6
+    max: 1e-4
+  
+  trainer.optimizer.weight_decay:
+    distribution: uniform
+    min: 0.0
+    max: 0.1
+  
+  # LoRA hyperparameters
+  lora.r:
+    values: [8, 16, 32, 64]
+  
+  lora.lora_alpha:
+    values: [16, 32, 64]
+  
+  lora.lora_dropout:
+    distribution: uniform
+    min: 0.05
+    max: 0.2
+  
+  # Generation parameters
+  generation.temperature:
+    distribution: uniform
+    min: 0.6
+    max: 1.0
+  
+  generation.top_p:
+    distribution: uniform
+    min: 0.85
+    max: 0.98
+  
+  generation.max_new_tokens:
+    value: 128
+
+early_terminate:
+  type: hyperband
+  min_iter: 3
+
+command:
+  - ${env}
+  - python
+  - ${program}
+  - ${args}
