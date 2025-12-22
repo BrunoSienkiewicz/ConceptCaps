@@ -1,0 +1,35 @@
+project: vae_training
+program: src/scripts/vae/run_vae_training.py
+method: bayes
+metric:
+  name: val/loss
+  goal: minimize
+parameters:
+  model.latent_dim:
+    values: [32, 64, 128]
+  model.hidden_dim:
+    values: [128, 256, 512]
+  trainer.optimizer.lr:
+    distribution: log_uniform_values
+    min: 1e-5
+    max: 1e-2
+  loss.kld_weight:
+    distribution: uniform
+    min: 0.1
+    max: 2.0
+  model.dropout_p:
+    distribution: uniform
+    min: 0.1
+    max: 0.5
+  model.beta:
+    values: [0.5, 1.0, 4.0, 10.0]
+  model.use_batch_norm:
+    values: [true, false]
+early_terminate:
+  type: hyperband
+  min_iter: 10
+
+command:
+  - python
+  - ${program}
+  - ${args_no_hyphens}

@@ -31,3 +31,8 @@ callbacks:
 
   early_stopping:
     patience: 10
+
+logger:
+  wandb:
+    project: vae_training
+    log_model: true

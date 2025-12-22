@@ -39,6 +39,11 @@ def main(cfg: DictConfig) -> None:
         pl_loggers = instantiate_loggers(cfg.logger)
         if pl_loggers:
             loggers.extend(pl_loggers if isinstance(pl_loggers, list) else [pl_loggers])
+
+    if loggers:
+        for logger in loggers:
+            if hasattr(logger, 'experiment'):
+                logger.experiment.config.update(OmegaConf.to_container(cfg, resolve=True))
     
     # Set random seed for reproducibility
     log.info(f"Setting random seed to {cfg.random_state}...")

@@ -1,0 +1,8 @@
+# Default VAE data configuration
+taxonomy_path: data/concepts_to_tags.json
+dataset_name: bsienkiewicz/mtg-jaemdo-tags-dataset
+dataset_split: train
+aspect_column: aspect_list
+batch_size: 32
+dataloader_num_workers: 4
+shuffle: true

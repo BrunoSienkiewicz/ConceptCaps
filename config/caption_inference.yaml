@@ -15,3 +15,8 @@ run_id: ${now:%Y-%m-%d_%H-%M-%S}
 task_name: caption_inference
 device: cuda
 random_state: 42
+
+logger:
+  wandb:
+    project: caption_inference
+    log_model: false

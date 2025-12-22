@@ -1,0 +1,8 @@
+# Default VAE data configuration
+taxonomy_path: data/concepts_to_tags.json
+dataset_name: seungheondoh/LP-MusicCaps-MTT
+dataset_split: train
+aspect_column: tag_top188
+batch_size: 32
+dataloader_num_workers: 4
+shuffle: true
