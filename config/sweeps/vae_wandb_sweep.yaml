@@ -30,6 +30,7 @@ early_terminate:
   min_iter: 10
 
 command:
+  - ${env}
   - python
   - ${program}
-  - ${args_no_hyphens}
+  - ${args}

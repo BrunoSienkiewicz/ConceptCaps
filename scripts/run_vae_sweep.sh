@@ -8,8 +8,8 @@
 #SBATCH --time=01:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
-#SBATCH --output="logs/run_vae_sweep.out"
-#SBATCH --error="logs/run_vae_sweep.err"
+#SBATCH --output="logs/run_vae_sweep_%A_%a.out"
+#SBATCH --error="logs/run_vae_sweep_%A_%a.err"
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
@@ -25,12 +25,17 @@ export HF_HOME="$ROOT_DIR/.cache/huggingface"
 export OUT_DIR="$OUT_DIR"
 export PLGRID_ARTIFACTS_DIR="$PLGRID_ARTIFACTS_DIR"
 export CONDA_DIR="$CONDA_DIR"
+export WANDB_DIR="$PLGRID_ARTIFACTS_DIR/wandb"
 
 conda activate music-gen-interpretability3
-srun python -m hydra.main \
-  --config-path=config/sweeps/vae_wandb_sweep.yaml \
-  --config-name=vae_wandb_sweep \
-  --multirun \
-  src/scripts/vae/run_vae_training.py \
-  wandb.dir="$PLGRID_ARTIFACTS_DIR/wandb" \
-  paths=plgrid
+
+# Check if SWEEP_ID is provided as an environment variable
+if [ -z "$SWEEP_ID" ]; then
+    echo "Error: SWEEP_ID environment variable not set."
+    echo "First, initialize the sweep with: wandb sweep config/sweeps/vae_wandb_sweep.yaml"
+    echo "Then run this script with: sbatch --export=ALL,SWEEP_ID=<your-sweep-id> scripts/run_vae_sweep.sh"
+    exit 1
+fi
+
+echo "Starting WandB agent for sweep: $SWEEP_ID"
+srun wandb agent "$SWEEP_ID"
