@@ -14,8 +14,6 @@ metrics:
     kwargs:
       device_id: 1
       featurize_model_name: "gpt2"
-  - name: perplexity
-    kwargs: {}
 compute_perplexity: true
 compute_llm_judge: true
 llm_judge_config:
