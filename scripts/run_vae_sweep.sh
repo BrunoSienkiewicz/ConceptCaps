@@ -38,4 +38,4 @@ if [ -z "$SWEEP_ID" ]; then
 fi
 
 echo "Starting WandB agent for sweep: $SWEEP_ID"
-srun wandb agent "$SWEEP_ID"
+srun wandb agent "$SWEEP_ID" -- --multirun paths=plgrid
