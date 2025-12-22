@@ -21,6 +21,9 @@ parameters:
   # Training hyperparameters
   data.batch_size:
     value: 4
+
+  trainer.accumulate_grad_batches:
+    values: [2, 4, 8]
   
   trainer.optimizer.lr:
     distribution: log_uniform_values
