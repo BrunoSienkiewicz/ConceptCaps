@@ -12,6 +12,14 @@ parameters:
   logger:
     value: wandb
   
+  # Disable callbacks to prevent saving checkpoints
+  callbacks:
+    value: [early_stopping, rich_progress_bar]
+  
+  # Disable model logging to wandb
+  logger.wandb.log_model:
+    value: false
+  
   model:
     value: caption/llama_3.1_8b_instruct
 
