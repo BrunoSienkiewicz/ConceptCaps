@@ -33,7 +33,7 @@ parameters:
     value: caption/llama_3.1_8b_instruct
 
   prompt:
-    value: llama
+    values: [llama, llama_write, llama_summary, llama_paraphrase]
   
   # Training hyperparameters
   data.batch_size:
