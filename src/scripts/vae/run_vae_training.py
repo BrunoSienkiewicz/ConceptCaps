@@ -104,6 +104,8 @@ def run_latent_inference(
         
     log.info("Latent vector inference completed.")
 
+    return inference_metrics
+
 
 @hydra.main(version_base=None, config_path="../../../config", config_name="vae_training")
 def main(cfg: DictConfig) -> None:
@@ -247,12 +249,16 @@ def main(cfg: DictConfig) -> None:
     # Run inference on sampled latent vectors
     if cfg.inference.enabled:
         log.info("Running inference on sampled latent vectors...")
-        run_latent_inference(
+        inference_metrics = run_latent_inference(
             model=model,
             cfg=cfg,
             device=device,
             metrics_saver=metrics_saver,
         )
+        for logger in loggers:
+            if hasattr(logger, 'experiment'):
+                for metric_name, metric_value in inference_metrics.items():
+                    logger.experiment.log({metric_name: metric_value})
     
     # Save the model weights as PyTorch model (for inference)
     if cfg.save_model:
