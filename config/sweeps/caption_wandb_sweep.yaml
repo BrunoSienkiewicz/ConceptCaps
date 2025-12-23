@@ -15,6 +15,15 @@ parameters:
   # Disable callbacks to prevent saving checkpoints
   callbacks:
     value: [early_stopping, rich_progress_bar]
+
+  callbacks.early_stopping.monitor:
+    value: val/bertscore_f1
+
+  callbacks.early_stopping.patience:
+    value: 3
+
+  callbacks.early_stopping.mode:
+    value: max
   
   # Disable model logging to wandb
   logger.wandb.log_model:
