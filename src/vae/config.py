@@ -75,6 +75,16 @@ class VAEPathsConfig:
 
 
 @dataclass
+class VAEInferenceConfig:
+    """Configuration for VAE inference on sampled latent vectors."""
+    enabled: bool = True
+    num_samples: int = 1000
+    temperature: float = 1.0
+    threshold: float = 0.5
+    seed: Optional[int] = None
+
+
+@dataclass
 class VAEConfig:
     """Main configuration for VAE training."""
     model: VAEModelConfig = field(default_factory=VAEModelConfig)
@@ -82,6 +92,7 @@ class VAEConfig:
     trainer: VAETrainerConfig = field(default_factory=VAETrainerConfig)
     loss: VAELossConfig = field(default_factory=VAELossConfig)
     paths: VAEPathsConfig = field(default_factory=VAEPathsConfig)
+    inference: VAEInferenceConfig = field(default_factory=VAEInferenceConfig)
     
     random_state: int = 42
     device: str = "cuda"
