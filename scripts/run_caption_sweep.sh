@@ -25,6 +25,8 @@ export PLGRID_ARTIFACTS_DIR="$PLGRID_ARTIFACTS_DIR"
 export CONDA_DIR="$CONDA_DIR"
 export WANDB_DIR="$PLGRID_ARTIFACTS_DIR/wandb"
 
+conda activate music-gen-interpretability3
+
 # Check if SWEEP_ID is provided as an environment variable
 if [ -z "$SWEEP_ID" ]; then
     echo "Error: SWEEP_ID environment variable not set."
