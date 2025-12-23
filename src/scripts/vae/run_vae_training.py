@@ -36,6 +36,7 @@ def run_latent_inference(
     """
     from src.vae.metrics import VAEMetrics
     
+    model.to(device)
     model.eval()
     
     # Set seed for reproducibility
@@ -47,7 +48,7 @@ def run_latent_inference(
     log.info(f"Sampling {cfg.inference.num_samples} latent vectors from standard normal...")
     
     # Sample latent vectors from standard normal distribution
-    z = torch.randn(cfg.inference.num_samples, model.model_cfg.latent_dim).to(device)
+    z = torch.randn(cfg.inference.num_samples, model.model_cfg.latent_dim, device=device)
     
     with torch.no_grad():
         # Decode latent vectors to get reconstructions
