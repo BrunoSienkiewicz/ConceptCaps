@@ -100,9 +100,7 @@ def run_latent_inference(
         
         # Log metrics
         log.info("Latent Vector Inference Metrics:")
-        for metric_name, metric_value in inference_metrics.items():
-            log.info(f"  {metric_name}: {metric_value:.4f}")
-            metrics_saver.add_metric(metric_name, metric_value)
+        metrics_saver.update("inference", inference_metrics)
         
     log.info("Latent vector inference completed.")
 
@@ -279,16 +277,6 @@ def main(cfg: DictConfig) -> None:
         filename="summary.json"
     )
     log.info(f"Summary saved to {summary_file}")
-    
-    # Copy metrics to models/metrics folder for easy access
-    import shutil
-    metrics_copy = metrics_dir / f"{cfg.model_name}_metrics.json"
-    summary_copy = metrics_dir / f"{cfg.model_name}_summary.json"
-    shutil.copy(metrics_file, metrics_copy)
-    shutil.copy(summary_file, summary_copy)
-    log.info(f"Metrics copied to {metrics_copy}")
-    log.info(f"Summary copied to {summary_copy}")
-    
     log.info(f"Training completed. Checkpoints and outputs are saved in {checkpoint_dir}")
 
 
