@@ -3,6 +3,8 @@ defaults:
   - override /prompt: llama
   - override /model: caption/llama_3.1_8b_instruct
   - override /evaluation: caption/qwen_judge
+  - override /trainer: caption_lightning/low_lr
+  - override /lora: caption/low_rank
   - override /generation: balanced
   - override /paths: plgrid
   - override /logger: wandb
