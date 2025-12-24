@@ -17,7 +17,7 @@ metrics:
 compute_perplexity: true
 compute_llm_judge: true
 llm_judge_config:
-  judge_model_name: "Qwen/Qwen2.5-0.5B-Instruct"
+  judge_model_name: "Qwen/Qwen2.5-7B-Instruct"
   batch_size: 4
   device: ${device}
 output_predictions: true
