@@ -2,6 +2,8 @@ defaults:
   - data: caption/load_vae-tags-dataset
   - model: caption/llama_3.1_8b_instruct
   - prompt: default
+  - lora: caption/default
+  - trainer: caption_lightning/default
   - evaluation: caption/default
   - generation: default
   - paths: default
