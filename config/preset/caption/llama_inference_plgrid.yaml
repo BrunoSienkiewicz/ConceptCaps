@@ -1,8 +1,8 @@
 # @package _global_
 defaults:
-  - override /prompt: llama_zero_shot
+  - override /prompt: llama
   - override /model: caption/llama_3.1_8b_instruct
-  - override /evaluation: caption/zero_shot_judge
+  - override /evaluation: caption/qwen_judge
   - override /generation: balanced
   - override /paths: plgrid
   - override /logger: wandb

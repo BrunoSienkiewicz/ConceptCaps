@@ -41,21 +41,21 @@ srun $ENV_DIR/bin/python src/scripts/caption/run_inference_lightning.py \
 echo ""
 echo "2/5: Running zero-shot inference on random tags dataset..."
 srun $ENV_DIR/bin/python src/scripts/caption/run_inference_lightning.py \
-    +preset=caption/llama_plgrid \
+    +preset=caption/llama_inference_plgrid \
     data=caption/load_random-tags-dataset
 
 # 3. Zero-shot with VAE tags dataset
 echo ""
 echo "3/5: Running zero-shot inference on VAE tags dataset..."
 srun $ENV_DIR/bin/python src/scripts/caption/run_inference_lightning.py \
-    +preset=caption/llama_plgrid \
+    +preset=caption/llama_inference_plgrid \
     data=caption/load_vae-tags-dataset
 
 # 4. Fine-tuned with random tags dataset
 echo ""
 echo "4/5: Running fine-tuned inference on random tags dataset..."
 srun $ENV_DIR/bin/python src/scripts/caption/run_inference_lightning.py \
-    +preset=caption/llama_plgrid \
+    +preset=caption/llama_inference_plgrid \
     model.checkpoint_dir="/net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/models/meta-llama/Llama-3.1-8B-Instruct/2025-12-24_01-53-17/lora_adapter" \
     data=caption/load_random-tags-dataset
 
@@ -63,7 +63,7 @@ srun $ENV_DIR/bin/python src/scripts/caption/run_inference_lightning.py \
 echo ""
 echo "5/5: Running fine-tuned inference on VAE tags dataset..."
 srun $ENV_DIR/bin/python src/scripts/caption/run_inference_lightning.py \
-    +preset=caption/llama_plgrid \
+    +preset=caption/llama_inference_plgrid \
     model.checkpoint_dir="/net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/models/meta-llama/Llama-3.1-8B-Instruct/2025-12-24_01-53-17/lora_adapter" \
     data=caption/load_vae-tags-dataset
 
