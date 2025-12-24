@@ -32,7 +32,7 @@ llm_judge_config:
     Provide your evaluation in the following format:
     Score: [1-10]
     Reasoning: [Your explanation]
-  batch_size: 4
+  batch_size: 32
   device: ${device}
 output_predictions: true
 predictions_file: predictions.csv
