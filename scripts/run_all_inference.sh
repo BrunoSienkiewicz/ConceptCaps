@@ -2,7 +2,7 @@
 #SBATCH -J run_all_inference
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
-#SBATCH --mem-per-cpu=32GB
+#SBATCH --mem-per-cpu=16GB
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --time=10:00:00
