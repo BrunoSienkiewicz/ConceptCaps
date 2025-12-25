@@ -309,11 +309,15 @@ def generate_captions_batch(
                 attention_mask=inputs["attention_mask"],
             )
             
-            batch_preds = [out[len(inputs[i]):] for i, out in enumerate(outputs)]
-            batch_preds = tokenizer.batch_decode(
-                batch_preds, skip_special_tokens=True
-            )
-            batch_preds = [caption.strip() for caption in batch_preds]
+            # Decode full outputs (including prompts)
+            batch_preds = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+            
+            # Remove prompts from predictions by string matching
+            prompts_decoded = [tokenizer.decode(inputs["input_ids"][j], skip_special_tokens=True) 
+                              for j in range(len(batch_prompts))]
+            batch_preds = [pred[len(prompts_decoded[j]):].strip() 
+                          for j, pred in enumerate(batch_preds)]
+            
             captions.extend(batch_preds)
 
             if compute_perplexity:
