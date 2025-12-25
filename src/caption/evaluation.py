@@ -287,27 +287,6 @@ def generate_captions_batch(
     captions = []
     perplexities = []
     
-    # Extract generation parameters from config
-    gen_kwargs = {
-        'max_new_tokens': getattr(generate_cfg, 'max_new_tokens', 128),
-        'temperature': getattr(generate_cfg, 'temperature', 0.7),
-        'top_k': getattr(generate_cfg, 'top_k', 50),
-        'top_p': getattr(generate_cfg, 'top_p', 0.9),
-        'do_sample': getattr(generate_cfg, 'do_sample', True),
-        'repetition_penalty': getattr(generate_cfg, 'repetition_penalty', 1.0),
-        'no_repeat_ngram_size': getattr(generate_cfg, 'no_repeat_ngram_size', 0),
-        'pad_token_id': tokenizer.pad_token_id,
-        'eos_token_id': tokenizer.eos_token_id,
-    }
-    
-    # Add optional parameters if present
-    if hasattr(generate_cfg, 'num_beams'):
-        gen_kwargs['num_beams'] = generate_cfg.num_beams
-    if hasattr(generate_cfg, 'early_stopping'):
-        gen_kwargs['early_stopping'] = generate_cfg.early_stopping
-    if hasattr(generate_cfg, 'use_cache'):
-        gen_kwargs['use_cache'] = generate_cfg.use_cache
-    
     with torch.no_grad():
         for i in tqdm(range(0, len(prompts), batch_size), desc="Generating captions"):
             batch_prompts = prompts[i : i + batch_size]
@@ -325,7 +304,6 @@ def generate_captions_batch(
             outputs = model.generate(
                 input_ids=inputs["input_ids"],
                 attention_mask=inputs["attention_mask"],
-                **gen_kwargs,
             )
             
             # Decode batch - handle variable-length prompts
