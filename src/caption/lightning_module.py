@@ -353,3 +353,41 @@ class CaptionFineTuningModule(pl.LightningModule):
                 **self.generation_cfg
             )
         return outputs
+    
+    def generate_caption(self, prompt: str) -> str:
+        """Generate caption for a single prompt."""
+        self.model.eval()
+        inputs = self.tokenizer(
+            prompt,
+            return_tensors="pt",
+            truncation=True,
+            max_length=self.generation_cfg.get("max_length", 512),
+        ).to(self.model.device)
+        with torch.no_grad():
+            outputs = self.model.generate(
+                input_ids=inputs['input_ids'],
+                attention_mask=inputs['attention_mask'],
+                **self.generation_cfg
+            )
+        return self.tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+
+    def generate_captions_batch(self, prompts: list[str]) -> list[str]:
+        """Generate captions for a batch of prompts."""
+        self.model.eval()
+        inputs = self.tokenizer(
+            prompts,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=self.generation_cfg.get("max_length", 512),
+        ).to(self.model.device)
+        with torch.no_grad():
+            outputs = self.model.generate(
+                input_ids=inputs['input_ids'],
+                attention_mask=inputs['attention_mask'],
+                **self.generation_cfg
+            )
+        batch_captions = self.tokenizer.batch_decode(
+            outputs, skip_special_tokens=True
+        )
+        return [caption.strip() for caption in batch_captions]

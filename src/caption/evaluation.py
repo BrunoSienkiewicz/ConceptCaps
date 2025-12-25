@@ -293,28 +293,11 @@ def generate_captions_batch(
     with torch.no_grad():
         for i in tqdm(range(0, len(prompts), batch_size), desc="Generating captions"):
             batch_prompts = prompts[i : i + batch_size]
-            
-            # Tokenize batch with padding
-            inputs = tokenizer(
-                batch_prompts,
-                return_tensors="pt",
-                padding=True,
-                truncation=True,
-                max_length=getattr(generate_cfg, 'max_length', 512),
-            ).to(model.device)
-            
-            # Generate batch with all configuration parameters
-            outputs = model.generate(
-                input_ids=inputs["input_ids"],
-                attention_mask=inputs["attention_mask"],
-            )
-            
-            # Decode full outputs (including prompts)
-            batch_preds = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-            captions.extend(batch_preds)
+            batch_captions = model.generate_captions_batch(batch_prompts)
+            captions.extend(batch_captions)
 
             if compute_perplexity:
-                for caption in batch_preds:
+                for caption in batch_captions:
                     try:
                         ppl = calculate_perplexity(model, tokenizer, caption, device=model.device)
                         perplexities.append(ppl)
