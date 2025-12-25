@@ -369,7 +369,10 @@ class CaptionFineTuningModule(pl.LightningModule):
                 attention_mask=inputs['attention_mask'],
                 **self.generation_cfg
             )
-        return self.tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+        # Slice off the input tokens to get only generated text
+        input_length = inputs['input_ids'].shape[1]
+        generated_tokens = outputs[0, input_length:]
+        return self.tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
 
     def generate_captions_batch(self, prompts: list[str]) -> list[str]:
         """Generate captions for a batch of prompts."""
@@ -387,7 +390,10 @@ class CaptionFineTuningModule(pl.LightningModule):
                 attention_mask=inputs['attention_mask'],
                 **self.generation_cfg
             )
+        # Slice off the input tokens to get only generated text
+        input_length = inputs['input_ids'].shape[1]
+        generated_tokens = outputs[:, input_length:]
         batch_captions = self.tokenizer.batch_decode(
-            outputs, skip_special_tokens=True
+            generated_tokens, skip_special_tokens=True
         )
         return [caption.strip() for caption in batch_captions]
