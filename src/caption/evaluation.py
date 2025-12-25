@@ -309,23 +309,15 @@ def generate_captions_batch(
                 attention_mask=inputs["attention_mask"],
             )
             
-            # Decode batch - handle variable-length prompts
-            # Get actual length of each prompt (excluding padding)
-            prompt_lengths = inputs["attention_mask"].sum(dim=1).tolist()
-            
-            # Extract only generated tokens for each sample
-            batch_captions = []
-            for j, (output, prompt_len) in enumerate(zip(outputs, prompt_lengths)):
-                # Extract only the newly generated tokens (after the prompt)
-                generated_tokens = output[prompt_len:]
-                # Decode only the generated part
-                caption = tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
-                batch_captions.append(caption)
-            
-            captions.extend(batch_captions)
+            batch_preds = [out[len(inputs[i]):] for i, out in enumerate(outputs)]
+            batch_preds = tokenizer.batch_decode(
+                batch_preds, skip_special_tokens=True
+            )
+            batch_preds = [caption.strip() for caption in batch_preds]
+            captions.extend(batch_preds)
 
             if compute_perplexity:
-                for caption in batch_captions:
+                for caption in batch_preds:
                     try:
                         ppl = calculate_perplexity(model, tokenizer, caption, device=model.device)
                         perplexities.append(ppl)
