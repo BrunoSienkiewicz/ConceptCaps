@@ -208,8 +208,11 @@ def evaluate_with_llm_judge(
                 batch_size=batch_size,
             )
             
-            # Extract scores and reasoning from batch responses
-            for response in responses:
+            # Handle batch response structure - pipeline returns list of lists
+            # Each element is a list containing a dict with 'generated_text'
+            for response_list in responses:
+                # Get the first (and only) generation from each prompt
+                response = response_list[0] if isinstance(response_list, list) else response_list
                 judge_output = response["generated_text"]
                 
                 # Remove the input prompt from the output if present
