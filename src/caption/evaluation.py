@@ -311,13 +311,6 @@ def generate_captions_batch(
             
             # Decode full outputs (including prompts)
             batch_preds = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-            
-            # Remove prompts from predictions by string matching
-            prompts_decoded = [tokenizer.decode(inputs["input_ids"][j], skip_special_tokens=True) 
-                              for j in range(len(batch_prompts))]
-            batch_preds = [pred[len(prompts_decoded[j]):].strip() 
-                          for j, pred in enumerate(batch_preds)]
-            
             captions.extend(batch_preds)
 
             if compute_perplexity:
