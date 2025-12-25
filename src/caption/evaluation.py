@@ -191,40 +191,60 @@ def evaluate_with_llm_judge(
         batch_captions = captions[i:i+batch_size]
         batch_prompts = prompts[i:i+batch_size]
         
-        for caption, prompt in zip(batch_captions, batch_prompts):
-            judge_prompt = judge_template.format(prompt=prompt, caption=caption)
+        # Prepare batch of judge prompts
+        judge_prompts = [
+            judge_template.format(prompt=prompt, caption=caption)
+            for prompt, caption in zip(batch_prompts, batch_captions)
+        ]
+        
+        try:
+            # Process entire batch at once
+            responses = judge_pipeline(
+                judge_prompts,
+                max_new_tokens=256,
+                temperature=0.1,  # Lower temperature for more consistent scoring
+                do_sample=False,  # Use greedy decoding for scoring consistency
+                pad_token_id=judge_pipeline.tokenizer.eos_token_id,
+                batch_size=batch_size,
+            )
             
-            try:
-                response = judge_pipeline(
-                    judge_prompt,
-                    max_new_tokens=256,
-                    temperature=0.7,
-                    do_sample=True,
-                    pad_token_id=judge_pipeline.tokenizer.eos_token_id,
-                )
+            # Extract scores and reasoning from batch responses
+            for response in responses:
+                judge_output = response["generated_text"]
                 
-                judge_output = response[0]["generated_text"]
+                # Remove the input prompt from the output if present
+                for judge_prompt in judge_prompts:
+                    if judge_output.startswith(judge_prompt):
+                        judge_output = judge_output[len(judge_prompt):].strip()
+                        break
                 
                 # Extract score and reasoning
                 score = None
                 reasoning = ""
                 
                 for line in judge_output.split('\n'):
+                    line = line.strip()
                     if line.startswith("Score:"):
                         try:
                             score_text = line.replace("Score:", "").strip()
+                            # Handle formats like "Score: 8/10" or "Score: 8"
+                            score_text = score_text.split('/')[0].strip()
                             score = float(score_text.split()[0])
+                            # Clamp score to valid range
+                            score = max(1.0, min(10.0, score))
                         except:
                             score = 5.0  # Default score if parsing fails
                     elif line.startswith("Reasoning:"):
                         reasoning = line.replace("Reasoning:", "").strip()
                 
                 scores.append(score if score is not None else 5.0)
-                reasonings.append(reasoning)
+                reasonings.append(reasoning if reasoning else "No reasoning provided")
                 
-            except Exception as e:
-                logger.warning(f"Failed to evaluate caption with LLM judge: {e}")
-                scores.append(5.0)  # Default score on error
+        except Exception as e:
+            logger.warning(f"Failed to evaluate batch with LLM judge: {e}")
+            # Add default scores for failed batch
+            for _ in range(len(batch_captions)):
+                scores.append(5.0)
                 reasonings.append("Evaluation failed")
     
     return {
@@ -267,6 +287,27 @@ def generate_captions_batch(
     captions = []
     perplexities = []
     
+    # Extract generation parameters from config
+    gen_kwargs = {
+        'max_new_tokens': getattr(generate_cfg, 'max_new_tokens', 128),
+        'temperature': getattr(generate_cfg, 'temperature', 0.7),
+        'top_k': getattr(generate_cfg, 'top_k', 50),
+        'top_p': getattr(generate_cfg, 'top_p', 0.9),
+        'do_sample': getattr(generate_cfg, 'do_sample', True),
+        'repetition_penalty': getattr(generate_cfg, 'repetition_penalty', 1.0),
+        'no_repeat_ngram_size': getattr(generate_cfg, 'no_repeat_ngram_size', 0),
+        'pad_token_id': tokenizer.pad_token_id,
+        'eos_token_id': tokenizer.eos_token_id,
+    }
+    
+    # Add optional parameters if present
+    if hasattr(generate_cfg, 'num_beams'):
+        gen_kwargs['num_beams'] = generate_cfg.num_beams
+    if hasattr(generate_cfg, 'early_stopping'):
+        gen_kwargs['early_stopping'] = generate_cfg.early_stopping
+    if hasattr(generate_cfg, 'use_cache'):
+        gen_kwargs['use_cache'] = generate_cfg.use_cache
+    
     with torch.no_grad():
         for i in tqdm(range(0, len(prompts), batch_size), desc="Generating captions"):
             batch_prompts = prompts[i : i + batch_size]
@@ -277,21 +318,29 @@ def generate_captions_batch(
                 return_tensors="pt",
                 padding=True,
                 truncation=True,
-                max_length=generate_cfg.max_length,
+                max_length=getattr(generate_cfg, 'max_length', 512),
             ).to(model.device)
             
-            # Generate batch
+            # Generate batch with all configuration parameters
             outputs = model.generate(
-                **inputs,
+                input_ids=inputs["input_ids"],
+                attention_mask=inputs["attention_mask"],
+                **gen_kwargs,
             )
             
-            # Decode batch - extract only new tokens (skip input tokens)
-            input_length = inputs["input_ids"].shape[1]
-            new_tokens = outputs[:, input_length:]
-            batch_captions = tokenizer.batch_decode(
-                new_tokens, skip_special_tokens=True
-            )
-            batch_captions = [caption.strip() for caption in batch_captions]
+            # Decode batch - handle variable-length prompts
+            # Get actual length of each prompt (excluding padding)
+            prompt_lengths = inputs["attention_mask"].sum(dim=1).tolist()
+            
+            # Extract only generated tokens for each sample
+            batch_captions = []
+            for j, (output, prompt_len) in enumerate(zip(outputs, prompt_lengths)):
+                # Extract only the newly generated tokens (after the prompt)
+                generated_tokens = output[prompt_len:]
+                # Decode only the generated part
+                caption = tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
+                batch_captions.append(caption)
+            
             captions.extend(batch_captions)
 
             if compute_perplexity:

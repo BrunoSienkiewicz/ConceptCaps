@@ -32,10 +32,10 @@ echo "Running Caption Inference - All Configs"
 echo "=========================================="
 
 # 1. Zero-shot with original dataset
-echo ""
-echo "1/5: Running zero-shot inference on original dataset..."
-srun $ENV_DIR/bin/python src/scripts/caption/run_inference_lightning.py \
-    +preset=caption/zero_shot_plgrid
+# echo ""
+# echo "1/5: Running zero-shot inference on original dataset..."
+# srun $ENV_DIR/bin/python src/scripts/caption/run_inference_lightning.py \
+#     +preset=caption/zero_shot_plgrid
 
 # 2. Zero-shot with random tags dataset
 echo ""
