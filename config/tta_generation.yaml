@@ -11,3 +11,8 @@ run_id: ${now:%Y-%m-%d_%H-%M-%S}
 task_name: tta_generation
 device: cuda
 random_state: 42
+
+logger:
+  wandb:
+    project: tta_generation
+    log_model: true
