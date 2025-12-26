@@ -1,10 +1,7 @@
-dataset: "bsienkiewicz/base_vae-caption-inference-dataset"
-processor:
-  _target_: "transformers.AutoProcessor.from_pretrained"
-  pretrained_model_name_or_path: "facebook/musicgen-large"
+dataset_name: "bsienkiewicz/base_vae-caption-inference-dataset"
 batch_size: 32
 max_sequence_length: 255
 subset_size: 1
-subset: "train"
+subset: "all"
 caption_column: "caption"
 device: ${device}
