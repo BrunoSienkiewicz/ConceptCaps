@@ -3,5 +3,5 @@ batch_size: 32
 max_sequence_length: 255
 subset_size: 1
 subset: "test"
-caption_column: "caption"
+caption_column: "prediction"
 device: ${device}
