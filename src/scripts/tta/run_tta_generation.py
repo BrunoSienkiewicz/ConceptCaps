@@ -62,7 +62,7 @@ def main(cfg: TTAConfig):
         model,
         dataloader,
         data_dir / "audio_samples",
-        cfg.model.tokenizer.max_new_tokens,
+        cfg.model.model.max_new_tokens,
         cfg.data.batch_size,
         df,
         id_column=cfg.data.get("id_column", "id"),

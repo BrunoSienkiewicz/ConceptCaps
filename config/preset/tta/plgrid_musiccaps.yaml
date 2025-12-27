@@ -7,8 +7,10 @@ defaults:
 
 data:
   batch_size: 8
-  max_sequence_length: 512
+  max_sequence_length: 1024
 model:
   model:
+    max_new_tokens: 1024
+  tokenizer:
     max_new_tokens: 1024
 device: cuda
