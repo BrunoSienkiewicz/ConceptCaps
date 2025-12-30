@@ -1,9 +1,9 @@
 # @package _global_
 defaults:
-  - override /prompt: llama
+  - override /prompt: llama_refined
   - override /model: caption/llama_3.1_8b_instruct
-  - override /trainer: caption_lightning/low_lr
-  - override /lora: caption/low_rank
+  - override /trainer: caption_lightning/best
+  - override /lora: caption/best
   - override /evaluation: caption/qwen_judge
   - override /generation: balanced
   - override /paths: plgrid
@@ -15,9 +15,6 @@ data:
   max_train_samples: 1000
   max_val_samples: 100
   max_test_samples: 100
-
-trainer:
-  accumulate_grad_batches: 8
 
 callbacks:
   model_checkpoint:

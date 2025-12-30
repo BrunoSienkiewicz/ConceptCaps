@@ -1,0 +1,24 @@
+_target_: lightning.pytorch.Trainer
+max_epochs: 5
+accumulate_grad_batches: 4
+dataloader_num_workers: 2
+accelerator: auto
+devices: auto
+strategy: ddp
+precision: 16-mixed
+gradient_clip_val: 1.0
+log_every_n_steps: 5
+val_check_interval: 1.0
+check_val_every_n_epoch: 1
+enable_progress_bar: true
+enable_model_summary: false
+deterministic: false
+optimizer:
+  lr: 8e-05
+  weight_decay: 0.02
+  adam_beta1: 0.9
+  adam_beta2: 0.999
+  eps: 1e-08
+lr_scheduler:
+  T_max: 5
+  eta_min: 0
