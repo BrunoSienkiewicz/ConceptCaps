@@ -33,21 +33,33 @@ echo "=========================================="
 
 # 1. Zero-shot captions
 echo ""
-echo "1/3: Running TTA generation with zero-shot captions..."
+echo "1/5: Running TTA generation with zero-shot captions..."
 srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
     data=tta/zero_shot_captions
 
 # 2. Base VAE captions
 echo ""
-echo "2/3: Running TTA generation with base VAE captions..."
+echo "2/5: Running TTA generation with base VAE captions..."
 srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
     data=tta/base_vae_captions
 
 # 3. Fine-tuned VAE captions
 echo ""
-echo "3/3: Running TTA generation with fine-tuned VAE captions..."
+echo "3/5: Running TTA generation with fine-tuned VAE captions..."
 srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
     data=tta/ft_vae_captions
+
+# 4. MusicCaps captions
+echo ""
+echo "4/5: Running TTA generation with LP-MusicCaps captions..."
+srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
+    data=tta/musiccaps_captions
+
+# 5. LP-MusicCaps captions
+echo ""
+echo "5/5: Running TTA generation with LP-MusicCaps captions..."
+srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
+    data=tta/lp-musiccaps_captions
 
 echo ""
 echo "=========================================="
