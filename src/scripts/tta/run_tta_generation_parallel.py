@@ -1,0 +1,124 @@
+from pathlib import Path
+
+import wandb
+import time
+import hydra
+import rootutils
+import torch
+import pytorch_lightning as pl
+
+from src.utils import (RankedLogger, instantiate_loggers,
+                        instantiate_callbacks,
+                       print_config_tree)
+from src.tta.audio_parallel import generate_audio_samples_parallel
+from src.tta.config import TTAConfig
+from src.tta.data import prepare_dataloader, save_dataframe_metadata
+from src.tta.modelling import prepare_model, prepare_tokenizer
+from src.tta.evaluate import TTAEvaluator
+
+
+rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+
+log = RankedLogger(__name__, rank_zero_only=True)
+
+
+@hydra.main(version_base=None, config_path="../../../config", config_name="tta_generation")
+def main(cfg: TTAConfig):
+    log.info("Setting random seed...")
+    pl.seed_everything(cfg.random_state)
+
+    # Setup callbacks
+    callbacks = []
+    if cfg.get("callbacks"):
+        pl_callbacks = instantiate_callbacks(cfg.callbacks)
+        if pl_callbacks:
+            callbacks.extend(pl_callbacks if isinstance(pl_callbacks, list) else [pl_callbacks])
+
+    # Setup loggers
+    loggers = []
+    if cfg.get("logger"):
+        pl_loggers = instantiate_loggers(cfg.logger)
+        if pl_loggers:
+            loggers.extend(pl_loggers if isinstance(pl_loggers, list) else [pl_loggers])
+
+    # Check GPU availability
+    num_gpus = torch.cuda.device_count()
+    log.info(f"Available GPUs: {num_gpus}")
+    
+    if num_gpus < 2:
+        log.warning("Less than 2 GPUs available. For multi-GPU generation, ensure 2+ GPUs are allocated.")
+    
+    # Get device IDs from config or use all available
+    device_ids = cfg.get("device_ids", list(range(num_gpus)))
+    log.info(f"Using GPUs: {device_ids}")
+    
+    # Set primary device
+    primary_device = torch.device(f"cuda:{device_ids[0]}" if device_ids else "cuda")
+    log.info(f"Primary device: {primary_device}")
+
+    print_config_tree(cfg)
+
+    log.info("Preparing data...")
+    processor = prepare_tokenizer(cfg.model)
+    dataloader, df = prepare_dataloader(cfg.data, processor)
+
+    log.info("Loading model...")
+    model = prepare_model(cfg.model)
+    model.to(primary_device)
+
+    data_dir = Path(cfg.paths.data_dir) / cfg.model.name / cfg.run_id
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    log.info(f"Generating audio samples using {len(device_ids)} GPUs...")
+    log.info(f"Total batch size: {cfg.data.batch_size}")
+    log.info(f"Per-GPU batch size: {cfg.data.batch_size // len(device_ids) if len(device_ids) > 1 else cfg.data.batch_size}")
+    
+    generate_audio_samples_parallel(
+        model,
+        dataloader,
+        data_dir / "audio_samples",
+        cfg.model.model.max_new_tokens,
+        cfg.data.batch_size,
+        df,
+        device_ids=device_ids,
+        id_column=cfg.data.get("id_column", "id"),
+        filename_template=cfg.data.get("filename_template", "{}.wav"),
+    )
+
+    log.info("Saving metadata...")
+    save_dataframe_metadata(
+        df,
+        data_dir,
+        id_column=cfg.data.get("id_column", "id"),
+        filename_template=cfg.data.get("filename_template", "{}.wav"),
+    )
+
+    # Initialize evaluator
+    log.info("Initializing TTA evaluator...")
+    evaluator = TTAEvaluator(
+        clap_model=cfg.evaluation.get("clap_model", "laion/clap-htsat-unfused"),
+        fad_model=cfg.evaluation.get("fad_model", "google/vggish"),
+        device=str(primary_device),
+    )
+
+    log.info("TTA generation completed and logged.")
+
+    log.info("Running TTA evaluation...")
+    results = evaluator.evaluate(
+        generated_audio_dir=data_dir / "audio_samples",
+        metadata_path=data_dir / "metadata.csv",
+        output_dir=data_dir / "evaluation_results",
+        text_column=cfg.data.get("caption_column", "caption"),
+        filename_column=cfg.data.get("filename_column", "filename"),
+        batch_size=cfg.data.get("batch_size", 8),
+    )
+
+    if loggers:
+        for logger in loggers:
+            if hasattr(logger, "log_metrics"):
+                logger.log_metrics(results, step=0)
+
+    log.info(f"Results saved to {data_dir / 'evaluation_results'}")
+
+if __name__ == "__main__":
+    main()
