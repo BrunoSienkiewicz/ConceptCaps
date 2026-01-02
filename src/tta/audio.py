@@ -8,6 +8,7 @@ import scipy.io
 import torch
 import pandas as pd
 from torch.utils.data import DataLoader
+from tqdm import tqdm
 
 
 def generate_audio_samples(
@@ -21,7 +22,7 @@ def generate_audio_samples(
     filename_template: str = "{}.wav",
 ) -> None:
     os.makedirs(audio_dir, exist_ok=True)
-    for batch_idx, batch in enumerate(dataloader):
+    for batch_idx, batch in enumerate(tqdm(dataloader, desc="Generating audio")):
         input_ids, attention_mask = batch
         input_ids = input_ids.to(model.device)
         attention_mask = attention_mask.to(model.device)
