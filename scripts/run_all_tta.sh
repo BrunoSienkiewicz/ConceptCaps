@@ -32,22 +32,22 @@ echo "Running TTA Generation - All Datasets"
 echo "=========================================="
 
 # 1. Zero-shot captions
-# echo ""
-# echo "1/5: Running TTA generation with zero-shot captions..."
-# srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
-#     data=tta/zero_shot_captions
+echo ""
+echo "1/5: Running TTA generation with zero-shot captions..."
+srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
+    data=tta/zero_shot_captions
 
-# # 2. Base VAE captions
-# echo ""
-# echo "2/5: Running TTA generation with base VAE captions..."
-# srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
-#     data=tta/base_vae_captions
+# 2. Base VAE captions
+echo ""
+echo "2/5: Running TTA generation with base VAE captions..."
+srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
+    data=tta/base_vae_captions
 
-# # 3. Fine-tuned VAE captions
-# echo ""
-# echo "3/5: Running TTA generation with fine-tuned VAE captions..."
-# srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
-#     data=tta/ft_vae_captions
+# 3. Fine-tuned VAE captions
+echo ""
+echo "3/5: Running TTA generation with fine-tuned VAE captions..."
+srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
+    data=tta/ft_vae_captions
 
 # 4. MusicCaps captions
 echo ""
