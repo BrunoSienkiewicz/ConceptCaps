@@ -64,7 +64,7 @@ echo ""
 echo "5/5: Running fine-tuned inference on VAE tags dataset..."
 srun $ENV_DIR/bin/python src/scripts/caption/run_inference_lightning.py \
     +preset=caption/llama_inference_plgrid \
-    model.checkpoint_dir="/net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/models/meta-llama/Llama-3.1-8B-Instruct/2025-12-31_22-36-38/lora_adapter" \
+    model.checkpoint_dir="/net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/models/llama_lora_adapter" \
     data=caption/load_vae-tags-dataset
 
 echo ""
