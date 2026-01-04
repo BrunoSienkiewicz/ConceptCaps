@@ -2,15 +2,15 @@
 defaults:
   - override /prompt: mistral
   - override /model: caption/mistral_7b_instruct
-  - override /trainer: caption_lightning/stable
-  - override /lora: caption/high_rank
+  - override /trainer: caption_lightning/best
+  - override /lora: caption/best
   - override /evaluation: caption/llama_judge
-  - override /generation: regularization
+  - override /generation: default
   - override /paths: plgrid
   - override /logger: wandb
 
 data:
-  batch_size: 4
+  batch_size: 16
   dataloader_num_workers: 4
   max_train_samples: 100
   max_val_samples: 100
