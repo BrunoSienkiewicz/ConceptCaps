@@ -2,7 +2,7 @@ project: caption_fine_tuning
 program: src/scripts/caption/run_fine_tuning_lightning.py
 method: bayes
 metric:
-  name: val/bertscore_f1
+  name: val/mauve
   goal: maximize
 parameters:
   # Fixed parameters for plgrid
@@ -30,10 +30,10 @@ parameters:
     value: false
   
   model:
-    value: caption/llama_3.1_8b_instruct
+    value: caption/mistral_7b_instruct
 
   prompt:
-    value: llama_refined
+    value: mistral
   
   # Training hyperparameters
   data.batch_size:
