@@ -5,7 +5,7 @@
 #SBATCH --mem-per-cpu=16GB
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=05:00:00
+#SBATCH --time=07:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
 #SBATCH --output="logs/run_all_tta_%j.out"
@@ -32,16 +32,16 @@ echo "Running TTA Generation - All Datasets"
 echo "=========================================="
 
 # 1. Zero-shot captions
-echo ""
-echo "1/5: Running TTA generation with zero-shot captions..."
-srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
-    data=tta/zero_shot_captions
+# echo ""
+# echo "1/5: Running TTA generation with zero-shot captions..."
+# srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
+#     data=tta/zero_shot_captions
 
-# 2. Base VAE captions
-echo ""
-echo "2/5: Running TTA generation with base VAE captions..."
-srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
-    data=tta/base_vae_captions
+# # 2. Base VAE captions
+# echo ""
+# echo "2/5: Running TTA generation with base VAE captions..."
+# srun $ENV_DIR/bin/python src/scripts/tta/run_tta_generation.py +preset=tta/plgrid_musiccaps \
+#     data=tta/base_vae_captions
 
 # 3. Fine-tuned VAE captions
 echo ""
