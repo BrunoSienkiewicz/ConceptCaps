@@ -11,3 +11,6 @@ defaults:
 data:
   batch_size: 32
   dataloader_num_workers: 4
+
+model:
+  checkpoint: ""

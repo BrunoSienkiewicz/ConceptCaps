@@ -27,3 +27,7 @@ callbacks:
     monitor: val/bertscore_f1
     mode: max
     patience: 3
+
+logger:
+  wandb:
+    log_model: false
