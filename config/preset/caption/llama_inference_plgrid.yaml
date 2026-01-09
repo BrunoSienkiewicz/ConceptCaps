@@ -10,7 +10,7 @@ defaults:
 
 data:
   batch_size: 96
-  dataloader_num_workers: 8
+  dataloader_num_workers: 16
   max_test_samples: null
   max_val_samples: null
   max_train_samples: null
