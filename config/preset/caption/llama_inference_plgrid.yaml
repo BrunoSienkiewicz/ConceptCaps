@@ -9,7 +9,7 @@ defaults:
   - override /logger: wandb
 
 data:
-  batch_size: 64
+  batch_size: 96
   dataloader_num_workers: 8
   max_test_samples: null
   max_val_samples: null
