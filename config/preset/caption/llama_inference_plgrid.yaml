@@ -13,4 +13,4 @@ data:
   dataloader_num_workers: 4
 
 model:
-  checkpoint: ""
+  checkpoint: "/net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/models/meta-llama/Llama-3.1-8B-Instruct/2026-01-08_20-57-32/lora_adapter"
