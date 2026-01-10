@@ -28,7 +28,7 @@ parameters:
   
   # Data parameters
   data.batch_size:
-    value: 32
+    value: 8
   
   # MusicGen generation parameters
   model.tokenizer.max_new_tokens:
