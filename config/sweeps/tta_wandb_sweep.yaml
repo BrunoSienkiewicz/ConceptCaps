@@ -31,7 +31,7 @@ parameters:
     value: 32
   
   # MusicGen generation parameters
-  model.model.max_new_tokens:
+  model.tokenizer.max_new_tokens:
     values: [256, 512, 768, 1024]
   
   # Temperature controls randomness in sampling

@@ -20,6 +20,7 @@ class DatasetConfig:
     id_column: str = "id"
     caption_column: str = "caption"
     remove_columns: Optional[List[str]] = None
+    batch_size: int = 8
 
 @dataclass
 class PathsConfig:
