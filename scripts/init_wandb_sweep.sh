@@ -7,9 +7,9 @@ cd "$(dirname "$0")/.." || exit 1
 # Parse sweep type argument (default to vae)
 SWEEP_TYPE="${1:-vae}"
 
-if [ "$SWEEP_TYPE" != "vae" ] && [ "$SWEEP_TYPE" != "caption" ]; then
-    echo "Error: Invalid sweep type. Must be 'vae' or 'caption'"
-    echo "Usage: ./scripts/init_wandb_sweep.sh [vae|caption]"
+if [ "$SWEEP_TYPE" != "vae" ] && [ "$SWEEP_TYPE" != "caption" ] && [ "$SWEEP_TYPE" != "tta" ]; then
+    echo "Error: Invalid sweep type. Must be 'vae', 'caption', or 'tta'"
+    echo "Usage: ./scripts/init_wandb_sweep.sh [vae|caption|tta]"
     exit 1
 fi
 
@@ -18,10 +18,16 @@ if [ "$SWEEP_TYPE" = "vae" ]; then
     SWEEP_CONFIG="config/sweeps/vae_wandb_sweep.yaml"
     SWEEP_SCRIPT="scripts/run_vae_sweep.sh"
     SWEEP_NAME="VAE Training"
-else
+fi
+if [ "$SWEEP_TYPE" = "caption" ]; then
     SWEEP_CONFIG="config/sweeps/caption_wandb_sweep.yaml"
     SWEEP_SCRIPT="scripts/run_caption_sweep.sh"
     SWEEP_NAME="Caption Fine-Tuning"
+fi
+if [ "$SWEEP_TYPE" = "tta" ]; then
+    SWEEP_CONFIG="config/sweeps/tta_wandb_sweep.yaml"
+    SWEEP_SCRIPT="scripts/run_tta_sweep.sh"
+    SWEEP_NAME="TTA Generation"
 fi
 
 # Activate conda environment

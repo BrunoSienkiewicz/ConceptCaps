@@ -44,6 +44,14 @@ class ModelConfig:
     tokenizer: ModelTokenizerConfig = field(default_factory=ModelTokenizerConfig)
 
 @dataclass
+class GenerationConfig:
+    temperature: float = 1.0
+    top_k: int = 50
+    top_p: float = 0.95
+    do_sample: bool = True
+    guidance_scale: Optional[float] = None
+
+@dataclass
 class EvaluationConfig:
     clap_model: str = "laion/clap-htsat-unfused"
     fad_model: str = "google/vggish"
@@ -53,6 +61,7 @@ class TTAConfig(DictConfig):
     model: ModelConfig
     data: DatasetConfig
     evaluation: EvaluationConfig
+    generation: GenerationConfig
     logger: LoggerConfig
     paths: PathsConfig
     random_state: int

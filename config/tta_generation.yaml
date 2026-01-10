@@ -2,6 +2,7 @@ defaults:
   - model: tta/musicgen-small
   - data: tta/music_caps
   - evaluation: tta/default
+  - generation: musicgen_default
   - paths: default
   - logger: null
   - callbacks: default

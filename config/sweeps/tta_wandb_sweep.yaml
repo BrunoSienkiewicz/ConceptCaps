@@ -1,0 +1,76 @@
+project: tta_generation
+program: src/scripts/tta/run_tta_generation.py
+method: bayes
+metric:
+  name: clap_score_mean
+  goal: maximize
+parameters:
+  # Fixed parameters
+  paths:
+    value: plgrid
+  
+  logger:
+    value: wandb
+  
+  # Disable callbacks
+  callbacks:
+    value: null
+  
+  # Model configuration
+  model:
+    value: tta/musicgen-small
+  
+  data:
+    value: tta/music_caps
+  
+  generation:
+    value: musicgen_default
+  
+  # Data parameters
+  data.batch_size:
+    value: 8
+  
+  # MusicGen generation parameters
+  model.model.max_new_tokens:
+    values: [256, 512, 768, 1024]
+  
+  # Temperature controls randomness in sampling
+  # Lower values (0.5-0.8) = more focused/deterministic
+  # Higher values (1.0-1.5) = more diverse/creative
+  generation.temperature:
+    distribution: uniform
+    min: 0.5
+    max: 1.5
+  
+  # Top-k sampling: consider only top k tokens
+  # Lower values = more focused, higher = more diverse
+  generation.top_k:
+    values: [20, 30, 50, 80, 100]
+  
+  # Top-p (nucleus) sampling: consider tokens with cumulative probability p
+  # Lower values = more focused, higher = more diverse
+  generation.top_p:
+    distribution: uniform
+    min: 0.85
+    max: 0.99
+  
+  # Guidance scale for classifier-free guidance
+  # Higher values = stronger adherence to text prompt
+  generation.guidance_scale:
+    distribution: uniform
+    min: 1.0
+    max: 5.0
+  
+  # Sampling strategy
+  generation.do_sample:
+    value: true
+
+early_terminate:
+  type: hyperband
+  min_iter: 3
+
+command:
+  - ${env}
+  - python
+  - ${program}
+  - ${args_no_hyphens}
