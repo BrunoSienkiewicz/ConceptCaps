@@ -1,5 +1,5 @@
 #!/bin/bash -l
-#SBATCH -J run_vae_sweep
+#SBATCH -J run_tta_sweep
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=8GB
