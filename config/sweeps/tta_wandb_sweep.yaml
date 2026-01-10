@@ -21,7 +21,7 @@ parameters:
     value: tta/musicgen-small
   
   data:
-    value: tta/music_caps
+    value: tta/final_captions
   
   generation:
     value: musicgen_default
