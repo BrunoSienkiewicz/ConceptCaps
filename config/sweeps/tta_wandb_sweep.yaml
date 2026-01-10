@@ -14,11 +14,11 @@ parameters:
   
   # Disable callbacks
   callbacks:
-    value: null
+    value: none
   
   # Model configuration
   model:
-    value: tta/musicgen-small
+    value: tta/musicgen-large
   
   data:
     value: tta/final_captions
@@ -28,7 +28,7 @@ parameters:
   
   # Data parameters
   data.batch_size:
-    value: 8
+    value: 32
   
   # MusicGen generation parameters
   model.model.max_new_tokens:
