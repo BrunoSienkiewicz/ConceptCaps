@@ -16,4 +16,4 @@ data:
   max_train_samples: 100
 
 model:
-  checkpoint: "/net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/models/meta-llama/Llama-3.1-8B-Instruct/2026-01-08_20-57-32/lora_adapter"
+  checkpoint: "/net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/models/meta-llama/Llama-3.1-8B-Instruct/2025-12-31_22-36-38/lora_adapter"
