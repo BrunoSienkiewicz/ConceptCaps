@@ -1,6 +1,6 @@
 # @package _global_
 defaults:
-  - override /prompt: llama_refined
+  - override /prompt: llama
   - override /model: caption/llama_3.1_8b_instruct
   - override /evaluation: caption/qwen_judge
   - override /lora: caption/low_rank
