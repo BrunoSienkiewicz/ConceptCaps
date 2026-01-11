@@ -1,0 +1,16 @@
+# @package _global_
+defaults:
+  - override /paths: plgrid
+  - override /model: tta/musicgen-large
+  - override /data: tta/final_captions
+  - override /generation: musicgen_best
+  - override /logger: wandb
+
+data:
+  batch_size: 4
+  max_sequence_length: 1503
+model:
+  tokenizer:
+    max_new_tokens: 1503
+
+device: cuda
