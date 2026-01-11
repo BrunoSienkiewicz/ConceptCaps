@@ -1,6 +1,6 @@
 # @package _global_
 defaults:
-  - override /prompt: llama_refined
+  - override /prompt: llama
   - override /model: caption/llama_3.1_8b_instruct
   - override /trainer: caption_lightning/best
   - override /lora: caption/best
