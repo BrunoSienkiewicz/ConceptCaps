@@ -6,4 +6,4 @@ tokenizer:
   use_fast: null
   padding_side: "right"
   pad_token_as_eos: true
-  max_new_tokens: 256
+  max_new_tokens: 1503
