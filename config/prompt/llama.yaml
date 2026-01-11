@@ -8,5 +8,5 @@ eval_template: |
   <|start_header_id|>assistant<|end_header_id|>
 prompt_delimiter: |
   <|start_header_id|>assistant<|end_header_id|>
-system_prompt: You are a music description expert that creates detailed, technical descriptions of songs based on their musical characteristics. Make sure to include references to specific musical elements such as instrumentation, rhythm, melody, harmony, dynamics, and production techniques.
-user_prompt_template: "Write a detailed song description based on the following characteristics:{tags}. The description accurately encompass all characteristics. Don't write the title, artist name or album name. Respond with ONLY the song description - no special characters, emotes, or additional formatting:"
+system_prompt: You are a music description expert that creates detailed, technical descriptions of songs based on their musical characteristics.
+user_prompt_template: "Write a detailed song description based on the following characteristics:{tags}. The description encompass all characteristics. Don't write the title, artist name or album name. Respond with ONLY the song description - no special characters, emotes, or additional formatting:"
