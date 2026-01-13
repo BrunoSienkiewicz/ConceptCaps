@@ -57,7 +57,7 @@ def generate_audio_samples(
             scipy.io.wavfile.write(
                 audio_dir / filename_template.format(sample_id),
                 sampling_rate,
-                audio[0].cpu().numpy(),
+                audio[0].float().cpu().numpy(),
             )
         
         # Clear CUDA cache after each batch to prevent memory fragmentation
