@@ -14,7 +14,7 @@ data:
   persistent_workers: true
 model:
   compile: true
-  device_map: ddp
+  device_map: sequential
   tokenizer:
     max_new_tokens: 1503
 evaluation:
