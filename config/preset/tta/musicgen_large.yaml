@@ -7,9 +7,10 @@ defaults:
   - override /logger: wandb
 
 data:
-  batch_size: 4
+  batch_size: 8
   max_sequence_length: 1503
 model:
+  compile: true
   tokenizer:
     max_new_tokens: 1503
 evaluation:

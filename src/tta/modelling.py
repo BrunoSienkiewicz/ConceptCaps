@@ -28,7 +28,6 @@ def prepare_model(model_cfg: DictConfig) -> MusicgenForConditionalGeneration:
         device_map=model_cfg.device_map,
         trust_remote_code=model_cfg.trust_remote_code,
         torch_dtype=torch.bfloat16 if model_cfg.get("use_bf16", True) else torch.float32,
-        attn_implementation=model_cfg.get("attn_implementation", "sdpa"),  # Use scaled_dot_product_attention
     )
     
     # Enable gradient checkpointing to save memory
