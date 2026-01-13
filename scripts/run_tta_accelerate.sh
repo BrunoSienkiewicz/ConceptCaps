@@ -52,5 +52,7 @@ export CONDA_DIR="$CONDA_DIR"
 
 mkdir -p "$OUT_DIR/.cache/huggingface"
 
-"$ENV_DIR/bin/python" -m accelerate launch --num_processes=2 --mixed_precision=bf16 \
+conda activate "$(grep -E '^name:' environment.yml | awk '{print $2}')"
+
+accelerate launch --num_processes=2 --mixed_precision=bf16 \
     src/scripts/tta/run_tta_generation.py +preset="$PRESET"
