@@ -82,6 +82,9 @@ def main(cfg: TTAConfig):
         filename_template=cfg.data.get("filename_template", "{}.wav"),
     )
 
+    if not cfg.evaluation.get("skip_evaluation", False):
+        return
+
     # Initialize evaluator
     log.info("Initializing TTA evaluator...")
     evaluator = TTAEvaluator(

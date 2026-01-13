@@ -56,6 +56,7 @@ class GenerationConfig:
 class EvaluationConfig:
     clap_model: str = "laion/clap-htsat-unfused"
     fad_model: str = "google/vggish"
+    skip_evaluation: bool = False
 
 @dataclass
 class TTAConfig(DictConfig):

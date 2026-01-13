@@ -12,5 +12,7 @@ data:
 model:
   tokenizer:
     max_new_tokens: 1503
+evaluation:
+  skip_evaluation: true
 
 device: cuda
