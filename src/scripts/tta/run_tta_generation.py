@@ -54,7 +54,7 @@ def main(cfg: TTAConfig):
         if pl_loggers:
             loggers.extend(pl_loggers if isinstance(pl_loggers, list) else [pl_loggers])
 
-    device = torch.device(torch.cuda.current_device() if cfg.device == "cuda" and torch.cuda.is_available() else "cpu")
+    device = cfg.device if cfg.device != "cuda" else f"cuda:{os.environ.get('LOCAL_RANK', 0)}"
     log.info(f"Using device: {device}")
 
     print_config_tree(cfg)
