@@ -25,14 +25,20 @@ log = RankedLogger(__name__, rank_zero_only=True)
 
 @hydra.main(version_base=None, config_path="../../../config", config_name="tta_generation")
 def main(cfg: TTAConfig):
-    log.info("Setting random seed...")
-    pl.seed_everything(cfg.random_state)
-
+    # Debug: Check GPU assignment
     if torch.cuda.is_available():
         local_rank = int(os.environ.get("LOCAL_RANK", 0))
-        print(f"Process rank: {local_rank}, Using GPU: {torch.cuda.current_device()}")
+        world_size = int(os.environ.get("WORLD_SIZE", 1))
+        print(f"Process rank: {local_rank}/{world_size}, Using GPU: {torch.cuda.current_device()}")
         print(f"GPU Name: {torch.cuda.get_device_name()}")
         print(f"Total GPUs available: {torch.cuda.device_count()}")
+        
+        # Set CUDA device based on local rank
+        torch.cuda.set_device(local_rank)
+        print(f"After set_device - Process {local_rank} using GPU: {torch.cuda.current_device()}")
+    
+    log.info("Setting random seed...")
+    pl.seed_everything(cfg.random_state)
 
     # Setup callbacks
     callbacks = []
@@ -59,7 +65,6 @@ def main(cfg: TTAConfig):
 
     log.info("Loading model...")
     model = prepare_model(cfg.model)
-    model.to(device)
 
     data_dir = Path(cfg.paths.data_dir) / cfg.model.name / cfg.run_id
     data_dir.mkdir(parents=True, exist_ok=True)

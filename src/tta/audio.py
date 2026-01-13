@@ -83,12 +83,19 @@ def generate_audio_samples_accelerate(
 ) -> None:
     """Generate audio using Accelerate for multi-GPU distribution."""
     
+    # Initialize accelerator BEFORE moving model
     accelerator = Accelerator()
+    
+    # Debug: Print process and device info
+    print(f"[Process {accelerator.process_index}] Local rank: {accelerator.local_process_index}, Device: {accelerator.device}")
     
     os.makedirs(audio_dir, exist_ok=True)
     
-    # Prepare model and dataloader with accelerate
-    model, dataloader = accelerator.prepare(model, dataloader)
+    # Move model to the correct device for this process
+    model = model.to(accelerator.device)
+    
+    # Prepare dataloader with accelerate (distributes data across GPUs)
+    dataloader = accelerator.prepare(dataloader)
     
     sampling_rate = model.config.audio_encoder.sampling_rate
     
@@ -103,9 +110,10 @@ def generate_audio_samples_accelerate(
     if guidance_scale is not None:
         generation_kwargs["guidance_scale"] = guidance_scale
     
-    for batch_idx, batch in enumerate(tqdm(dataloader, desc="Generating audio", disable=not accelerator.is_local_main_process)):
+    for batch_idx, batch in enumerate(tqdm(dataloader, desc=f"Generating audio [GPU {accelerator.process_index}]", disable=not accelerator.is_local_main_process)):
         input_ids, attention_mask = batch
         
+        # Data is already on correct device from dataloader.prepare()
         with torch.inference_mode():
             audio_values = model.generate(
                 input_ids=input_ids,
@@ -116,8 +124,10 @@ def generate_audio_samples_accelerate(
         # Gather results from all processes
         audio_values = accelerator.gather(audio_values)
         
+        # Only main process saves files
         if accelerator.is_main_process:
             for item_idx, audio in enumerate(audio_values):
+                # Calculate global index accounting for distributed batches
                 global_idx = batch_idx * batch_size * accelerator.num_processes + item_idx
                 if global_idx < len(df):
                     sample_id = df.iloc[global_idx][id_column]
@@ -129,3 +139,6 @@ def generate_audio_samples_accelerate(
         
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
+    
+    # Wait for all processes to finish
+    accelerator.wait_for_everyone()
