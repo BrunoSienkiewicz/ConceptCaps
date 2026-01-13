@@ -18,7 +18,7 @@ model:
   tokenizer:
     max_new_tokens: 1503
 generation:
-  use_accelerate: true
+  use_accelerator: true
 evaluation:
   skip_evaluation: true
 

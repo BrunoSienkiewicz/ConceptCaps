@@ -51,7 +51,7 @@ class GenerationConfig:
     top_p: float = 0.95
     do_sample: bool = True
     guidance_scale: Optional[float] = None
-    use_accelerate: bool = False
+    use_accelerator: bool = False
 
 @dataclass
 class EvaluationConfig:
