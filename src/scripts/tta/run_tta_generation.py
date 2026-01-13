@@ -32,10 +32,6 @@ def main(cfg: TTAConfig):
         print(f"Process rank: {local_rank}/{world_size}, Using GPU: {torch.cuda.current_device()}")
         print(f"GPU Name: {torch.cuda.get_device_name()}")
         print(f"Total GPUs available: {torch.cuda.device_count()}")
-        
-        # Set CUDA device based on local rank
-        torch.cuda.set_device(local_rank)
-        print(f"After set_device - Process {local_rank} using GPU: {torch.cuda.current_device()}")
     
     log.info("Setting random seed...")
     pl.seed_everything(cfg.random_state)
