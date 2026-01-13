@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import wandb
@@ -26,6 +27,12 @@ log = RankedLogger(__name__, rank_zero_only=True)
 def main(cfg: TTAConfig):
     log.info("Setting random seed...")
     pl.seed_everything(cfg.random_state)
+
+    if torch.cuda.is_available():
+        local_rank = int(os.environ.get("LOCAL_RANK", 0))
+        print(f"Process rank: {local_rank}, Using GPU: {torch.cuda.current_device()}")
+        print(f"GPU Name: {torch.cuda.get_device_name()}")
+        print(f"Total GPUs available: {torch.cuda.device_count()}")
 
     # Setup callbacks
     callbacks = []
