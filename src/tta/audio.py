@@ -110,7 +110,7 @@ def generate_audio_samples_accelerate(
     if guidance_scale is not None:
         generation_kwargs["guidance_scale"] = guidance_scale
     
-    for batch_idx, batch in enumerate(tqdm(dataloader, desc=f"Generating audio [GPU {accelerator.process_index}]", disable=not accelerator.is_local_main_process)):
+    for batch_idx, batch in enumerate(tqdm(dataloader, desc=f"Generating audio [GPU {accelerator.process_index}]")):
         input_ids, attention_mask = batch
         
         # Data is already on correct device from dataloader.prepare()
