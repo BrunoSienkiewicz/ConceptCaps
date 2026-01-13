@@ -55,9 +55,4 @@ mkdir -p "$OUT_DIR/.cache/huggingface"
 
 conda activate "$(grep -E '^name:' environment.yml | awk '{print $2}')"
 
-accelerate launch \
-    --multi_gpu \
-    --num_processes=2 \
-    --num_machines=1 \
-    --mixed_precision=bf16 \
-    src/scripts/tta/run_tta_generation.py +preset="$PRESET"
+srun accelerate launch src/scripts/tta/run_tta_generation.py +preset="$PRESET"
