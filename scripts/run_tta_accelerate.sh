@@ -13,11 +13,44 @@
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
-# ...existing code for parsing arguments...
+# Initialize variables with default values
+PRESET="default"
+POSITIONAL_ARGS=()
 
-# For Option 3 (Accelerate) - recommended
-accelerate launch --num_processes=2 --mixed_precision=bf16 \
+while [[ $# -gt 0 ]]; do
+  case $1 in
+  -p | --preset)
+    PRESET="$2"
+    shift # past argument
+    shift # past value
+    ;;
+  -* | --*)
+    echo "Unknown option $1"
+    exit 1
+    ;;
+  *)
+    POSITIONAL_ARGS+=("$1") # save positional arg
+    shift                   # past argument
+    ;;
+  esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
+ROOT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
+OUT_DIR="$ROOT_DIR/caption_fine_tuning"
+PLGRID_ARTIFACTS_DIR="$ROOT_DIR/artifacts"
+CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
+ENV_DIR="$CONDA_DIR/envs/$(grep -E '^name:' environment.yml | awk '{print $2}')"
+
+export HYDRA_FULL_ERROR=1
+export PYTHONPATH="$PYTHONPATH:$(pwd)"
+export HF_HOME="$ROOT_DIR/.cache/huggingface"
+export OUT_DIR="$OUT_DIR"
+export PLGRID_ARTIFACTS_DIR="$PLGRID_ARTIFACTS_DIR"
+export CONDA_DIR="$CONDA_DIR"
+
+mkdir -p "$OUT_DIR/.cache/huggingface"
+
+"$ENV_DIR/bin/python" -m accelerate launch --num_processes=2 --mixed_precision=bf16 \
     src/scripts/tta/run_tta_generation.py +preset="$PRESET"
-
-# OR for Option 2 (Manual multi-GPU) - just run normally
-# "$ENV_DIR/bin/python" src/scripts/tta/run_tta_generation.py +preset="$PRESET"
