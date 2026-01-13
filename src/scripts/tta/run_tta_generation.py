@@ -10,7 +10,7 @@ import pytorch_lightning as pl
 from src.utils import (RankedLogger, instantiate_loggers,
                         instantiate_callbacks,
                        print_config_tree)
-from src.tta.audio import generate_audio_samples
+from src.tta.audio import generate_audio_samples, generate_audio_samples_accelerate
 from src.tta.config import TTAConfig
 from src.tta.data import prepare_dataloader, save_dataframe_metadata
 from src.tta.modelling import prepare_model, prepare_tokenizer
@@ -58,21 +58,40 @@ def main(cfg: TTAConfig):
     data_dir.mkdir(parents=True, exist_ok=True)
 
     log.info("Generating audio samples...")
-    generate_audio_samples(
-        model,
-        dataloader,
-        data_dir / "audio_samples",
-        cfg.model.tokenizer.max_new_tokens,
-        cfg.data.batch_size,
-        df,
-        id_column=cfg.data.get("id_column", "id"),
-        filename_template=cfg.data.get("filename_template", "{}.wav"),
-        temperature=cfg.generation.get("temperature", 1.0),
-        top_k=cfg.generation.get("top_k", 50),
-        top_p=cfg.generation.get("top_p", 0.95),
-        do_sample=cfg.generation.get("do_sample", True),
-        guidance_scale=cfg.generation.get("guidance_scale", None),
-    )
+
+    if cfg.generation.get("use_accelerator", False):
+        log.info("Using Accelerate for distributed generation...")
+        generate_audio_samples_accelerate(
+            model,
+            dataloader,
+            data_dir / "audio_samples",
+            cfg.model.tokenizer.max_new_tokens,
+            cfg.data.batch_size,
+            df,
+            id_column=cfg.data.get("id_column", "id"),
+            filename_template=cfg.data.get("filename_template", "{}.wav"),
+            temperature=cfg.generation.get("temperature", 1.0),
+            top_k=cfg.generation.get("top_k", 50),
+            top_p=cfg.generation.get("top_p", 0.95),
+            do_sample=cfg.generation.get("do_sample", True),
+            guidance_scale=cfg.generation.get("guidance_scale", None),
+        )
+    else:
+        generate_audio_samples(
+            model,
+            dataloader,
+            data_dir / "audio_samples",
+            cfg.model.tokenizer.max_new_tokens,
+            cfg.data.batch_size,
+            df,
+            id_column=cfg.data.get("id_column", "id"),
+            filename_template=cfg.data.get("filename_template", "{}.wav"),
+            temperature=cfg.generation.get("temperature", 1.0),
+            top_k=cfg.generation.get("top_k", 50),
+            top_p=cfg.generation.get("top_p", 0.95),
+            do_sample=cfg.generation.get("do_sample", True),
+            guidance_scale=cfg.generation.get("guidance_scale", None),
+        )
 
     log.info("Saving metadata...")
     save_dataframe_metadata(

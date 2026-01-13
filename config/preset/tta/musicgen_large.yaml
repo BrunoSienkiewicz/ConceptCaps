@@ -17,6 +17,8 @@ model:
   device_map: sequential
   tokenizer:
     max_new_tokens: 1503
+/generation:
+  use_accelerate: true
 evaluation:
   skip_evaluation: true
 
