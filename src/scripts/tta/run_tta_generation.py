@@ -26,7 +26,7 @@ log = RankedLogger(__name__, rank_zero_only=True)
 @hydra.main(version_base=None, config_path="../../../config", config_name="tta_generation")
 def main(cfg: TTAConfig):
     device = torch.device(cfg.device if torch.cuda.is_available() else "cpu")
-    
+
     # Debug: Check GPU assignment
     if torch.cuda.is_available() and cfg.device == "cuda":
         local_rank = int(os.environ.get("LOCAL_RANK", 0))
@@ -82,6 +82,7 @@ def main(cfg: TTAConfig):
             top_p=cfg.generation.get("top_p", 0.95),
             do_sample=cfg.generation.get("do_sample", True),
             guidance_scale=cfg.generation.get("guidance_scale", None),
+            sample_rate=cfg.generation.get("sample_rate", model.config.audio_encoder.sampling_rate),
         )
     else:
         generate_audio_samples(

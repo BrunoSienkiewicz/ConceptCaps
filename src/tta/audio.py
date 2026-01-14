@@ -80,6 +80,7 @@ def generate_audio_samples_accelerate(
     top_p: float = 0.95,
     do_sample: bool = True,
     guidance_scale: float = None,
+    sample_rate: int = 32000,
 ) -> None:
     """Generate audio using Accelerate for multi-GPU distribution."""
     
@@ -90,11 +91,10 @@ def generate_audio_samples_accelerate(
     print(f"[Process {accelerator.process_index}] Local rank: {accelerator.local_process_index}, Device: {accelerator.device}")
     
     os.makedirs(audio_dir, exist_ok=True)
-    
+
     # Prepare dataloader with accelerate (distributes data across GPUs)
     model, dataloader = accelerator.prepare(model, dataloader)
-    
-    sampling_rate = model.config.audio_encoder.sampling_rate
+
     
     generation_kwargs = {
         "max_new_tokens": max_new_tokens,
@@ -130,7 +130,7 @@ def generate_audio_samples_accelerate(
                     sample_id = df.iloc[global_idx][id_column]
                     scipy.io.wavfile.write(
                         audio_dir / filename_template.format(sample_id),
-                        sampling_rate,
+                        sample_rate,
                         audio[0].float().cpu().numpy(),
                     )
         
