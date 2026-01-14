@@ -95,7 +95,8 @@ def generate_audio_samples_accelerate(
     # Prepare dataloader with accelerate (distributes data across GPUs)
     model, dataloader = accelerator.prepare(model, dataloader)
 
-    
+    unwrapped_model = accelerator.unwrap_model(model)
+
     generation_kwargs = {
         "max_new_tokens": max_new_tokens,
         "temperature": temperature,
@@ -112,7 +113,7 @@ def generate_audio_samples_accelerate(
         
         # Data is already on correct device from dataloader.prepare()
         with torch.inference_mode():
-            audio_values = model.generate(
+            audio_values = unwrapped_model.generate(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 **generation_kwargs,
