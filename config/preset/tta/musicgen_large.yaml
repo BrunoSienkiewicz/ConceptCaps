@@ -14,7 +14,7 @@ data:
   persistent_workers: true
 model:
   compile: true
-  device_map: sequential
+  device_map: null
   tokenizer:
     max_new_tokens: 1503
 generation:

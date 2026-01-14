@@ -25,6 +25,8 @@ log = RankedLogger(__name__, rank_zero_only=True)
 
 @hydra.main(version_base=None, config_path="../../../config", config_name="tta_generation")
 def main(cfg: TTAConfig):
+    device = torch.device(cfg.device if torch.cuda.is_available() else "cpu")
+    
     # Debug: Check GPU assignment
     if torch.cuda.is_available() and cfg.device == "cuda":
         local_rank = int(os.environ.get("LOCAL_RANK", 0))
@@ -49,9 +51,6 @@ def main(cfg: TTAConfig):
         pl_loggers = instantiate_loggers(cfg.logger)
         if pl_loggers:
             loggers.extend(pl_loggers if isinstance(pl_loggers, list) else [pl_loggers])
-
-    device = cfg.device if cfg.device != "cuda" else f"cuda:{os.environ.get('LOCAL_RANK', 0)}"
-    log.info(f"Using device: {device}")
 
     print_config_tree(cfg)
 

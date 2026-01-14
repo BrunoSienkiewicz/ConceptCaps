@@ -91,9 +91,6 @@ def generate_audio_samples_accelerate(
     
     os.makedirs(audio_dir, exist_ok=True)
     
-    # Move model to the correct device for this process
-    model = model.to(accelerator.device)
-    
     # Prepare dataloader with accelerate (distributes data across GPUs)
     dataloader = accelerator.prepare(dataloader)
     
@@ -110,7 +107,7 @@ def generate_audio_samples_accelerate(
     if guidance_scale is not None:
         generation_kwargs["guidance_scale"] = guidance_scale
     
-    for batch_idx, batch in enumerate(tqdm(dataloader, desc=f"Generating audio [GPU {accelerator.process_index}]")):
+    for batch_idx, batch in enumerate(tqdm(dataloader, desc=f"Generating audio [GPU {accelerator.process_index}]", disable=not accelerator.is_main_process)):
         input_ids, attention_mask = batch
         
         # Data is already on correct device from dataloader.prepare()
