@@ -92,7 +92,7 @@ def generate_audio_samples_accelerate(
     os.makedirs(audio_dir, exist_ok=True)
     
     # Prepare dataloader with accelerate (distributes data across GPUs)
-    dataloader = accelerator.prepare(dataloader)
+    model, dataloader = accelerator.prepare(model, dataloader)
     
     sampling_rate = model.config.audio_encoder.sampling_rate
     
