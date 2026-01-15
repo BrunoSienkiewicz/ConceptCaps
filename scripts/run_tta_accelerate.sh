@@ -3,7 +3,7 @@
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=8GB
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:4
 #SBATCH --cpus-per-task=16
 #SBATCH --time=20:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
@@ -49,7 +49,7 @@ export HF_HOME="$ROOT_DIR/.cache/huggingface"
 export OUT_DIR="$OUT_DIR"
 export PLGRID_ARTIFACTS_DIR="$PLGRID_ARTIFACTS_DIR"
 export CONDA_DIR="$CONDA_DIR"
-export CUDA_VISIBLE_DEVICES=0,1
+export CUDA_VISIBLE_DEVICES=0,1,2,3
 
 mkdir -p "$OUT_DIR/.cache/huggingface"
 
@@ -57,7 +57,7 @@ conda activate "$(grep -E '^name:' environment.yml | awk '{print $2}')"
 
 srun accelerate launch \
     --multi_gpu \
-    --num_processes=2 \
+    --num_processes=4 \
     --num_machines=1 \
     --mixed_precision=bf16 \
     src/scripts/tta/run_tta_generation.py +preset="$PRESET"
