@@ -95,7 +95,12 @@ def generate_audio_samples_accelerate(
     # Prepare dataloader with accelerate (distributes data across GPUs)
     model, dataloader = accelerator.prepare(model, dataloader)
 
-    unwrapped_model = accelerator.unwrap_model(model)
+    # Get the underlying model - handle both DDP and compiled models
+    if hasattr(model, 'module'):
+        # DistributedDataParallel wraps model in .module
+        unwrapped_model = model.module
+    else:
+        unwrapped_model = model
 
     generation_kwargs = {
         "max_new_tokens": max_new_tokens,
