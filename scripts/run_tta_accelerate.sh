@@ -8,8 +8,8 @@
 #SBATCH --time=20:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
-#SBATCH --output="logs/run_tta.out"
-#SBATCH --error="logs/run_tta.err"
+#SBATCH --output="logs/run_tta_accelerate.out"
+#SBATCH --error="logs/run_tta_accelerate.err"
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
