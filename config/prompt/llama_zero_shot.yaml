@@ -7,4 +7,4 @@ eval_template: |
   <|start_header_id|>user<|end_header_id|>{user_prompt}<|eot_id|>
   <|start_header_id|>assistant<|end_header_id|>
 system_prompt: You are a music description expert that creates detailed, technical descriptions of songs based on their musical characteristics. Make sure to include references to specific musical elements such as instrumentation, rhythm, melody, harmony, dynamics, and production techniques.
-user_prompt_template: "Write a detailed song description. Don't write the artist name or album name. The description should be at least 100 characters long. Respond with ONLY the song description - no special characters, emotes, or additional formatting:"
+user_prompt_template: "Come up with completely new song description. Don't write the artist name or album name. The description should be concise and between 20 and 80 words long. Respond with ONLY the song description - no special characters, emotes, or additional formatting:"
