@@ -1,0 +1,20 @@
+max_new_tokens: 512
+batch_size: 8
+metrics:
+  - name: bleu
+    kwargs: {}
+  - name: rouge
+    kwargs: {}
+  - name: bertscore
+    kwargs:
+        lang: en
+  - name: meteor
+    kwargs: {}
+  - name: mauve
+    kwargs:
+      device_id: 1
+      featurize_model_name: "gpt2"
+compute_perplexity: true
+compute_llm_judge: false
+output_predictions: true
+predictions_file: predictions.csv

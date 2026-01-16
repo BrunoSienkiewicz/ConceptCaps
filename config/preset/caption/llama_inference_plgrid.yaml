@@ -2,7 +2,7 @@
 defaults:
   - override /prompt: llama
   - override /model: caption/llama_3.1_8b_instruct
-  - override /evaluation: caption/qwen_judge
+  - override /evaluation: caption/no_judge
   - override /lora: caption/low_rank
   - override /generation: balanced
   - override /paths: plgrid
@@ -11,9 +11,9 @@ defaults:
 data:
   batch_size: 96
   dataloader_num_workers: 16
-  max_test_samples: 50
-  max_val_samples: 50
-  max_train_samples: 50
+  max_test_samples: 100
+  max_val_samples: 100
+  max_train_samples: 100
 
 model:
   checkpoint: "/net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/models/meta-llama/Llama-3.1-8B-Instruct/2026-01-16_03-11-06/lora_adapter"

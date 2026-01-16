@@ -126,6 +126,13 @@ def main(cfg: CaptionGenerationConfig) -> None:
             }
             for id_, aspect, prediction in zip(ids, aspects, predictions)
         ]
+
+        # Save results
+        predictions_path = output_dir / f"{split}_predictions.csv"
+        results_df = pd.DataFrame(records)
+        results_df.to_csv(predictions_path, index=False)
+        
+        log.info(f"Saved {len(results_df)} predictions to: {predictions_path}")
         
         # Add perplexity scores if computed
         if quality_metrics and 'perplexity' in quality_metrics:
@@ -142,13 +149,6 @@ def main(cfg: CaptionGenerationConfig) -> None:
                 for i, record in enumerate(records):
                     record['llm_judge_score'] = llm_scores[i]
                     record['llm_judge_reasoning'] = llm_reasonings[i] if i < len(llm_reasonings) else ""
-        
-        # Save results
-        predictions_path = output_dir / f"{split}_predictions.csv"
-        results_df = pd.DataFrame(records)
-        results_df.to_csv(predictions_path, index=False)
-        
-        log.info(f"Saved {len(results_df)} predictions to: {predictions_path}")
         
         # Save quality metrics if computed
         if quality_metrics:
