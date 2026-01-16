@@ -1,4 +1,4 @@
-dataset_name: "bsienkiewicz/base_vae-caption-inference-dataset"
+dataset_name: "bsienkiewicz/zero_shot_subset-caption-inference-dataset"
 batch_size: 32
 max_sequence_length: 255
 subset_size: 1
