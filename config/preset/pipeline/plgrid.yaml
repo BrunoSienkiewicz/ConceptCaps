@@ -1,0 +1,78 @@
+# @package _global_
+# Preset for running full pipeline on PLGrid with SLURM
+
+defaults:
+  - override /paths: plgrid
+  - override /logger: wandb
+
+# Fine-tuning stage overrides
+fine_tuning:
+  model:
+    name: meta-llama/Llama-3.1-8B-Instruct
+    device_map: auto
+
+  data:
+    batch_size: 4
+    dataloader_num_workers: 4
+    max_train_samples: 1000
+    max_val_samples: 100
+    max_test_samples: 100
+
+  trainer:
+    max_epochs: 3
+    accelerator: gpu
+    devices: auto
+    strategy: ddp
+    precision: bf16
+    enable_progress_bar: false
+
+  lora:
+    r: 16
+    lora_alpha: 32
+
+# Inference stage overrides
+inference:
+  model:
+    name: meta-llama/Llama-3.1-8B-Instruct
+
+  data:
+    batch_size: 8
+    max_test_samples: 500
+
+# TTA stage overrides
+tta:
+  model:
+    name: facebook/musicgen-small
+    compile: false
+    device_map: null
+
+  data:
+    batch_size: 8
+
+  generation:
+    use_accelerator: false
+
+  evaluation:
+    skip_evaluation: true
+
+  target_split: test
+  max_samples: 100
+
+# Callbacks
+callbacks:
+  model_checkpoint:
+    monitor: val/bertscore_f1
+    mode: max
+    save_top_k: 1
+    filename: best-checkpoint
+
+  early_stopping:
+    monitor: val/bertscore_f1
+    mode: max
+    patience: 3
+
+# Logger
+logger:
+  wandb:
+    project: full_pipeline
+    log_model: false

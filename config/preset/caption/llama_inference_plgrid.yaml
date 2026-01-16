@@ -11,9 +11,9 @@ defaults:
 data:
   batch_size: 96
   dataloader_num_workers: 16
-  max_test_samples: null
-  max_val_samples: null
-  max_train_samples: null
+  max_test_samples: 50
+  max_val_samples: 50
+  max_train_samples: 50
 
 model:
-  checkpoint: "/net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/models/meta-llama/Llama-3.1-8B-Instruct/2026-01-11_15-28-36/lora_adapter"
+  checkpoint: "/net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/models/meta-llama/Llama-3.1-8B-Instruct/2026-01-16_03-11-06/lora_adapter"
