@@ -20,6 +20,6 @@ model:
 generation:
   use_accelerator: true
 evaluation:
-  skip_evaluation: true
+  skip_evaluation: false
 
 device: cuda
