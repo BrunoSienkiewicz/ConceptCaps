@@ -2,7 +2,7 @@
 defaults:
   - override /paths: plgrid
   - override /model: tta/musicgen-large
-  - override /data: tta/base_vae_subset_captions
+  - override /data: tta/zero_shot_subset_captions
   - override /generation: musicgen_best
   - override /logger: wandb
 
@@ -18,7 +18,7 @@ model:
   tokenizer:
     max_new_tokens: 1503
 generation:
-  use_accelerator: false
+  use_accelerator: true
 evaluation:
   skip_evaluation: true
 

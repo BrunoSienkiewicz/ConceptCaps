@@ -8,8 +8,8 @@
 #SBATCH --time=15:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
-#SBATCH --output=logs/caption_inference.out
-#SBATCH --error=logs/caption_inference.err
+#SBATCH --output=logs/caption_inference_%j.out
+#SBATCH --error=logs/caption_inference_%j.err
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
@@ -55,4 +55,4 @@ export PLGRID_ARTIFACTS_DIR="$PLGRID_ARTIFACTS_DIR"
 export CONDA_DIR="$CONDA_DIR"
 
 mkdir -p "$HF_HOME"
-srun "$ENV_DIR/bin/python" src/scripts/caption/run_inference_lightning.py "${HYDRA_OVERRIDES[@]}"
+srun "$ENV_DIR/bin/python" src/scripts/caption/run_inference.py "${HYDRA_OVERRIDES[@]}"

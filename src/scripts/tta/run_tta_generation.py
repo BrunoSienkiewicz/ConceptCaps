@@ -83,6 +83,7 @@ def main(cfg: TTAConfig):
             do_sample=cfg.generation.get("do_sample", True),
             guidance_scale=cfg.generation.get("guidance_scale", None),
             sample_rate=cfg.generation.get("sample_rate", model.config.audio_encoder.sampling_rate),
+            loggers=loggers,
         )
     else:
         generate_audio_samples(
@@ -99,6 +100,8 @@ def main(cfg: TTAConfig):
             top_p=cfg.generation.get("top_p", 0.95),
             do_sample=cfg.generation.get("do_sample", True),
             guidance_scale=cfg.generation.get("guidance_scale", None),
+            sample_rate=cfg.generation.get("sample_rate", model.config.audio_encoder.sampling_rate),
+            loggers=loggers,
         )
 
     log.info("Saving metadata...")

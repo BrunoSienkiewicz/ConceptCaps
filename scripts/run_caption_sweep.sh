@@ -8,8 +8,8 @@
 #SBATCH --time=06:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
-#SBATCH --output="logs/run_caption_sweep_%A_%a.out"
-#SBATCH --error="logs/run_caption_sweep_%A_%a.err"
+#SBATCH --output="logs/run_caption_sweep_%j.out"
+#SBATCH --error="logs/run_caption_sweep_%j.err"
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 

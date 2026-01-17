@@ -8,8 +8,8 @@
 #SBATCH --time=05:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
-#SBATCH --output="logs/run_tta_sweep_%A_%a.out"
-#SBATCH --error="logs/run_tta_sweep_%A_%a.err"
+#SBATCH --output="logs/run_tta_sweep_%j.out"
+#SBATCH --error="logs/run_tta_sweep_%j.err"
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
 ROOT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"

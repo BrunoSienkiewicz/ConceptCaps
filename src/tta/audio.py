@@ -9,8 +9,11 @@ import torch
 import pandas as pd
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from accelerate import Accelerator, PartialState
+from accelerate import Accelerator
+from utils.pylogger import RankedLogger
 
+
+log = RankedLogger(__name__, rank_zero_only=True)
 
 def generate_audio_samples(
     model,
@@ -26,6 +29,8 @@ def generate_audio_samples(
     top_p: float = 0.95,
     do_sample: bool = True,
     guidance_scale: float = None,
+    sample_rate: int = 32000,
+    loggers: list = None,
 ) -> None:
     os.makedirs(audio_dir, exist_ok=True)
     
@@ -34,7 +39,6 @@ def generate_audio_samples(
         input_ids = input_ids.to(model.device)
         attention_mask = attention_mask.to(model.device)
         
-        # Use inference mode for better performance
         with torch.inference_mode():
             generation_kwargs = {
                 "input_ids": input_ids,
@@ -51,13 +55,17 @@ def generate_audio_samples(
             
             audio_values = model.generate(**generation_kwargs)
         
-        sampling_rate = model.config.audio_encoder.sampling_rate
+        if loggers:
+            for logger in loggers:
+                if hasattr(logger, "log_metrics"):
+                    logger.log_metrics({"generated_samples": (batch_idx + 1) * batch_size}, step=batch_idx)
+        
         for item_idx, audio in enumerate(audio_values):
             global_idx = batch_idx * batch_size + item_idx
             sample_id = df.iloc[global_idx][id_column]
             scipy.io.wavfile.write(
                 audio_dir / filename_template.format(sample_id),
-                sampling_rate,
+                sample_rate,
                 audio[0].float().cpu().numpy(),
             )
         
@@ -81,23 +89,20 @@ def generate_audio_samples_accelerate(
     do_sample: bool = True,
     guidance_scale: float = None,
     sample_rate: int = 32000,
+    loggers: list = None,
 ) -> None:
     """Generate audio using Accelerate for multi-GPU distribution."""
-    
-    # Initialize accelerator BEFORE moving model
+
     accelerator = Accelerator()
     
     # Debug: Print process and device info
-    print(f"[Process {accelerator.process_index}] Local rank: {accelerator.local_process_index}, Device: {accelerator.device}")
+    log.info(f"[Process {accelerator.process_index}] Local rank: {accelerator.local_process_index}, Device: {accelerator.device}")
     
     os.makedirs(audio_dir, exist_ok=True)
 
-    # Prepare dataloader with accelerate (distributes data across GPUs)
     model, dataloader = accelerator.prepare(model, dataloader)
 
-    # Get the underlying model - handle both DDP and compiled models
     if hasattr(model, 'module'):
-        # DistributedDataParallel wraps model in .module
         unwrapped_model = model.module
     else:
         unwrapped_model = model
@@ -113,10 +118,9 @@ def generate_audio_samples_accelerate(
     if guidance_scale is not None:
         generation_kwargs["guidance_scale"] = guidance_scale
     
-    for batch_idx, batch in enumerate(tqdm(dataloader, desc=f"Generating audio [GPU {accelerator.process_index}]", disable=not accelerator.is_main_process)):
+    for batch_idx, batch in enumerate(tqdm(dataloader, desc="Generating audio", disable=not accelerator.is_main_process)):
         input_ids, attention_mask = batch
         
-        # Data is already on correct device from dataloader.prepare()
         with torch.inference_mode():
             audio_values = unwrapped_model.generate(
                 input_ids=input_ids,
@@ -126,6 +130,11 @@ def generate_audio_samples_accelerate(
         
         # Gather results from all processes
         audio_values = accelerator.gather(audio_values)
+
+        if loggers:
+            for logger in loggers:
+                if hasattr(logger, "log_metrics"):
+                    logger.log_metrics({"generated_samples": (batch_idx + 1) * batch_size}, step=batch_idx)
         
         # Only main process saves files
         if accelerator.is_main_process:
