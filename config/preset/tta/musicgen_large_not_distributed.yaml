@@ -21,5 +21,6 @@ generation:
   use_accelerator: false
 evaluation:
   skip_evaluation: false
+  reference_audio_dir: /net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/data/GTZAN_all
 
 device: cuda

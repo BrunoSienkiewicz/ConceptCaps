@@ -44,10 +44,12 @@ def main(cfg: TTAConfig):
     results = evaluator.evaluate(
         generated_audio_dir=data_dir / "audio_samples",
         metadata_path=data_dir / "metadata.csv",
+        reference_audio_dir=cfg.evaluation.get("reference_audio_dir", data_dir / "reference_audio_samples"),
         output_dir=data_dir / "evaluation_results",
         text_column=cfg.data.get("text_column", "caption"),
         filename_column=cfg.data.get("filename_column", "filename"),
         batch_size=cfg.data.get("batch_size", 8),
+        compute_fad=cfg.evaluation.get("compute_fad", True),
     )
 
     if loggers:

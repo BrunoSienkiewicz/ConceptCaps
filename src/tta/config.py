@@ -58,6 +58,8 @@ class EvaluationConfig:
     clap_model: str = "laion/clap-htsat-unfused"
     skip_evaluation: bool = False
     data_dir: str = "tta_evaluation"
+    compute_fad: bool = True
+    reference_audio_dir: str = ""
 
 @dataclass
 class TTAConfig(DictConfig):
