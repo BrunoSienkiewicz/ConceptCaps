@@ -10,7 +10,8 @@ import pandas as pd
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from accelerate import Accelerator
-from utils.pylogger import RankedLogger
+
+from src.utils import RankedLogger
 
 
 log = RankedLogger(__name__, rank_zero_only=True)

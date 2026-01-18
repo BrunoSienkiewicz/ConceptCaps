@@ -9,7 +9,8 @@ import numpy as np
 import pandas as pd
 import torch
 from tqdm import tqdm
-from transformers import AutoProcessor, AutoModel
+from transformers import AutoProcessor, AutoModel, AutoFeatureExtractor
+from scipy.linalg import sqrtm
 
 from src.utils import RankedLogger
 
@@ -90,6 +91,185 @@ class CLAPScore:
         }
 
 
+class FADScore:
+    """Fréchet Audio Distance (FAD) score evaluator."""
+    
+    def __init__(self, model_name: str = "google/vggish", device: str = "cuda"):
+        """Initialize FAD model.
+        
+        Args:
+            model_name: HuggingFace model identifier (e.g., "google/vggish")
+            device: Device to run the model on
+        """
+        self.device = torch.device(device if torch.cuda.is_available() else "cpu")
+        log.info(f"Loading FAD model: {model_name}")
+        
+        # Load feature extractor model
+        self.model = AutoModel.from_pretrained(model_name).to(self.device)
+        self.feature_extractor = AutoFeatureExtractor.from_pretrained(model_name)
+        self.model.eval()
+        
+        # Get expected sample rate from feature extractor
+        self.sample_rate = self.feature_extractor.sampling_rate
+        
+        log.info(f"FAD model loaded on {self.device} (sample rate: {self.sample_rate} Hz)")
+    
+    def extract_features(
+        self,
+        audio_paths: List[Path],
+        batch_size: int = 8,
+    ) -> np.ndarray:
+        """Extract features from audio files.
+        
+        Args:
+            audio_paths: List of paths to audio files
+            batch_size: Batch size for processing
+            
+        Returns:
+            Array of features (n_samples, feature_dim)
+        """
+        features = []
+        
+        with torch.no_grad():
+            for i in tqdm(range(0, len(audio_paths), batch_size), desc="Extracting features"):
+                batch_paths = audio_paths[i:i + batch_size]
+                
+                # Load and process audio
+                audios = []
+                for audio_path in batch_paths:
+                    try:
+                        audio, sr = librosa.load(audio_path, sr=self.sample_rate, mono=True)
+                        audios.append(audio)
+                    except Exception as e:
+                        log.warning(f"Failed to load {audio_path}: {e}")
+                        continue
+                
+                if not audios:
+                    continue
+                
+                # Process with feature extractor
+                inputs = self.feature_extractor(
+                    audios,
+                    sampling_rate=self.sample_rate,
+                    return_tensors="pt",
+                    padding=True,
+                ).to(self.device)
+                
+                # Extract embeddings
+                outputs = self.model(**inputs)
+                
+                # Get last hidden state or pooler output
+                if hasattr(outputs, 'last_hidden_state'):
+                    # Average pool over time dimension
+                    batch_features = outputs.last_hidden_state.mean(dim=1)
+                elif hasattr(outputs, 'pooler_output'):
+                    batch_features = outputs.pooler_output
+                else:
+                    # Fallback: use the first output
+                    batch_features = outputs[0]
+                    if len(batch_features.shape) > 2:
+                        batch_features = batch_features.mean(dim=1)
+                
+                features.append(batch_features.cpu().numpy())
+        
+        return np.vstack(features)
+    
+    def compute_statistics(self, features: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        """Compute mean and covariance of features.
+        
+        Args:
+            features: Feature array (n_samples, feature_dim)
+            
+        Returns:
+            Tuple of (mean, covariance)
+        """
+        mu = np.mean(features, axis=0)
+        sigma = np.cov(features, rowvar=False)
+        return mu, sigma
+    
+    def calculate_fad(
+        self,
+        mu1: np.ndarray,
+        sigma1: np.ndarray,
+        mu2: np.ndarray,
+        sigma2: np.ndarray,
+        eps: float = 1e-6,
+    ) -> float:
+        """Calculate Fréchet Audio Distance.
+        
+        Args:
+            mu1: Mean of first distribution
+            sigma1: Covariance of first distribution
+            mu2: Mean of second distribution
+            sigma2: Covariance of second distribution
+            eps: Small value for numerical stability
+            
+        Returns:
+            FAD score
+        """
+        # Calculate squared difference of means
+        diff = mu1 - mu2
+        
+        # Product might be almost singular
+        covmean, _ = sqrtm(sigma1.dot(sigma2), disp=False)
+        
+        # Handle numerical errors
+        if not np.isfinite(covmean).all():
+            log.warning("FAD calculation resulted in non-finite values, adding epsilon to diagonal")
+            offset = np.eye(sigma1.shape[0]) * eps
+            covmean = sqrtm((sigma1 + offset).dot(sigma2 + offset))
+        
+        # Handle complex numbers (numerical errors)
+        if np.iscomplexobj(covmean):
+            if not np.allclose(np.diagonal(covmean).imag, 0, atol=1e-3):
+                m = np.max(np.abs(covmean.imag))
+                log.warning(f"Imaginary component {m} in FAD calculation")
+            covmean = covmean.real
+        
+        fad = diff.dot(diff) + np.trace(sigma1) + np.trace(sigma2) - 2 * np.trace(covmean)
+        
+        return float(fad)
+    
+    def compute_score(
+        self,
+        generated_audio_paths: List[Path],
+        reference_audio_paths: List[Path],
+        batch_size: int = 8,
+    ) -> Dict[str, float]:
+        """Compute FAD score between generated and reference audio.
+        
+        Args:
+            generated_audio_paths: List of paths to generated audio files
+            reference_audio_paths: List of paths to reference audio files
+            batch_size: Batch size for feature extraction
+            
+        Returns:
+            Dictionary with FAD score
+        """
+        log.info(f"Computing FAD for {len(generated_audio_paths)} generated samples vs {len(reference_audio_paths)} reference samples")
+        
+        # Extract features
+        log.info("Extracting features from generated audio...")
+        gen_features = self.extract_features(generated_audio_paths, batch_size)
+        
+        log.info("Extracting features from reference audio...")
+        ref_features = self.extract_features(reference_audio_paths, batch_size)
+        
+        # Compute statistics
+        log.info("Computing statistics...")
+        mu_gen, sigma_gen = self.compute_statistics(gen_features)
+        mu_ref, sigma_ref = self.compute_statistics(ref_features)
+        
+        # Calculate FAD
+        fad_score = self.calculate_fad(mu_gen, sigma_gen, mu_ref, sigma_ref)
+        
+        return {
+            "fad_score": fad_score,
+            "n_generated": len(generated_audio_paths),
+            "n_reference": len(reference_audio_paths),
+        }
+
+
 class TTAEvaluator:
     """Comprehensive evaluator for Text-to-Audio generation."""
     
@@ -110,16 +290,19 @@ class TTAEvaluator:
         
         log.info("Initializing TTA evaluator...")
         self.clap_scorer = CLAPScore(model_name=clap_model, device=device)
+        self.fad_scorer = FADScore(model_name=fad_model, device=device)
         log.info("TTA evaluator initialized")
     
     def evaluate(
         self,
         generated_audio_dir: Path,
         metadata_path: Path,
+        reference_audio_dir: Optional[Path] = None,
         output_dir: Optional[Path] = None,
         text_column: str = "caption",
         filename_column: str = "filename",
         batch_size: int = 8,
+        compute_fad: bool = True,
     ) -> Dict[str, Any]:
         """Run comprehensive evaluation.
         
@@ -127,11 +310,11 @@ class TTAEvaluator:
             generated_audio_dir: Directory with generated audio files
             metadata_path: Path to CSV with metadata (captions, filenames)
             reference_audio_dir: Directory with reference audio (for FAD)
-            background_stats_path: Path to precomputed background stats (for FAD)
             output_dir: Directory to save evaluation results
             text_column: Column name for text prompts in metadata
             filename_column: Column name for audio filenames in metadata
             batch_size: Batch size for CLAP computation
+            compute_fad: Whether to compute FAD score (requires reference_audio_dir)
             
         Returns:
             Dictionary with all evaluation metrics
@@ -169,6 +352,30 @@ class TTAEvaluator:
         )
         results.update(clap_results)
         log.info(f"CLAP Score (mean): {clap_results['clap_score_mean']:.4f}")
+        
+        # Compute FAD score if reference audio is provided
+        if compute_fad and reference_audio_dir is not None:
+            log.info("Computing FAD score...")
+            reference_audio_dir = Path(reference_audio_dir)
+            
+            # Get all audio files from reference directory
+            reference_paths = []
+            for ext in ['*.wav', '*.mp3', '*.flac', '*.ogg']:
+                reference_paths.extend(list(reference_audio_dir.glob(ext)))
+            
+            if not reference_paths:
+                log.warning(f"No reference audio files found in {reference_audio_dir}")
+            else:
+                log.info(f"Found {len(reference_paths)} reference audio files")
+                fad_results = self.fad_scorer.compute_score(
+                    generated_audio_paths=audio_paths,
+                    reference_audio_paths=reference_paths,
+                    batch_size=batch_size,
+                )
+                results.update(fad_results)
+                log.info(f"FAD Score: {fad_results['fad_score']:.4f}")
+        elif compute_fad:
+            log.warning("FAD computation requested but no reference_audio_dir provided")
         
         # Save results
         if output_dir is not None:
