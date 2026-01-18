@@ -3,9 +3,9 @@
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=8GB
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
 #SBATCH --cpus-per-task=16
-#SBATCH --time=01:00:00
+#SBATCH --time=05:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
 #SBATCH --output="logs/run_tta_accelerate_%j.out"
@@ -57,7 +57,7 @@ conda activate "$(grep -E '^name:' environment.yml | awk '{print $2}')"
 
 srun accelerate launch \
     --multi_gpu \
-    --num_processes=1 \
+    --num_processes=2 \
     --num_machines=1 \
     --mixed_precision=bf16 \
     src/scripts/tta/run_tta_generation.py +preset="$PRESET"
