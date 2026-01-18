@@ -5,10 +5,6 @@ metric:
   name: clap_score_mean
   goal: maximize
 parameters:
-  # Fixed parameters
-  paths:
-    value: plgrid
-  
   logger:
     value: wandb
   
@@ -18,7 +14,10 @@ parameters:
   
   # Model configuration
   model:
-    value: tta/musicgen-large
+    value: tta/musicgen-small
+
+  model.tokenizer.max_new_tokens:
+    value: 767
   
   data:
     value: tta/conceptcaps_test_subset
