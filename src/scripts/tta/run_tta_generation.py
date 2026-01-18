@@ -111,6 +111,7 @@ def main(cfg: TTAConfig):
         id_column=cfg.data.get("id_column", "id"),
         filename_template=cfg.data.get("filename_template", "{}.wav"),
     )
+    log.info(f"Audio samples and metadata saved to {data_dir}")
 
     if not cfg.evaluation.get("skip_evaluation", False):
         return
