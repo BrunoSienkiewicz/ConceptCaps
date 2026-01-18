@@ -8,7 +8,7 @@ defaults:
 
 data:
   batch_size: 16
-  max_sequence_length: 765
+  max_sequence_length: 1503
   num_workers: 4
   pin_memory: true
   persistent_workers: true
@@ -16,9 +16,9 @@ model:
   compile: true
   device_map: null
   tokenizer:
-    max_new_tokens: 765
+    max_new_tokens: 1503
 generation:
-  use_accelerator: false
+  use_accelerator: true
 evaluation:
   skip_evaluation: false
   reference_audio_dir: /net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/data/GTZAN_all
