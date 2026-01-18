@@ -6,7 +6,6 @@ import torch
 import pytorch_lightning as pl
 
 from src.utils import (RankedLogger, instantiate_loggers,
-                        instantiate_callbacks,
                        print_config_tree)
 from src.tta.config import TTAConfig
 from src.tta.evaluate import TTAEvaluator
@@ -24,13 +23,6 @@ def main(cfg: TTAConfig):
     log.info("Setting random seed...")
     pl.seed_everything(cfg.random_state)
 
-    # Setup callbacks
-    callbacks = []
-    if cfg.get("callbacks"):
-        pl_callbacks = instantiate_callbacks(cfg.callbacks)
-        if pl_callbacks:
-            callbacks.extend(pl_callbacks if isinstance(pl_callbacks, list) else [pl_callbacks])
-
     # Setup loggers
     loggers = []
     if cfg.get("logger"):
@@ -40,13 +32,11 @@ def main(cfg: TTAConfig):
 
     print_config_tree(cfg)
 
-    data_dir = cfg.evaluation.get("data_dir", Path.cwd() / "tta_evaluation")
-    data_dir.mkdir(parents=True, exist_ok=True)
+    data_dir = Path(cfg.evaluation.get("data_dir", Path.cwd() / "tta_evaluation"))
 
     log.info("Initializing TTA evaluator...")
     evaluator = TTAEvaluator(
         clap_model=cfg.evaluation.get("clap_model", "laion/clap-htsat-unfused"),
-        fad_model=cfg.evaluation.get("fad_model", "google/vggish"),
         device=str(device),
     )
 
@@ -54,12 +44,10 @@ def main(cfg: TTAConfig):
     results = evaluator.evaluate(
         generated_audio_dir=data_dir / "audio_samples",
         metadata_path=data_dir / "metadata.csv",
-        reference_audio_dir=cfg.evaluation.get("reference_audio_dir", None),
         output_dir=data_dir / "evaluation_results",
-        text_column=cfg.data.get("caption_column", "caption"),
+        text_column=cfg.data.get("text_column", "caption"),
         filename_column=cfg.data.get("filename_column", "filename"),
         batch_size=cfg.data.get("batch_size", 8),
-        compute_fad=cfg.evaluation.get("compute_fad", True),
     )
 
     if loggers:

@@ -56,11 +56,8 @@ class GenerationConfig:
 @dataclass
 class EvaluationConfig:
     clap_model: str = "laion/clap-htsat-unfused"
-    fad_model: str = "google/vggish"
     skip_evaluation: bool = False
     data_dir: str = "tta_evaluation"
-    reference_audio_dir: Optional[str] = None
-    compute_fad: bool = True
 
 @dataclass
 class TTAConfig(DictConfig):

@@ -2,10 +2,10 @@
 defaults:
   - override /prompt: mistral
   - override /model: caption/mistral_7b_instruct
-  - override /trainer: caption_lightning/best
+  - override /trainer: caption/best
   - override /lora: caption/best
   - override /evaluation: caption/llama_judge
-  - override /generation: default
+  - override /generation: caption/default
   - override /paths: plgrid
   - override /logger: wandb
 

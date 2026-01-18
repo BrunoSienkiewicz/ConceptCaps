@@ -2,8 +2,8 @@
 defaults:
   - override /paths: plgrid
   - override /model: tta/musicgen-large
-  - override /data: tta/conceptcaps
-  - override /generation: musicgen_best
+  - override /data: tta/conceptcaps_test
+  - override /generation: tta/default
   - override /logger: wandb
 
 data:
@@ -20,6 +20,6 @@ model:
 generation:
   use_accelerator: true
 evaluation:
-  skip_evaluation: true
+  skip_evaluation: false
 
 device: cuda

@@ -1,12 +1,15 @@
-_target_: "src.tta.config.ModelConfig"
-model:
-  _target_: "src.tcav.model.CustomMusicGen"
-  processor:
-    _target_: "transformers.AutoProcessor.from_pretrained"
-    pretrained_model_name_or_path: "facebook/musicgen-small"
-    device: ${device}
-  model:
-    _target_: "transformers.MusicgenForConditionalGeneration.from_pretrained"
-    pretrained_model_name_or_path: "facebook/musicgen-small"
-  max_new_tokens: 256
-model_id: "musicgen-small"
+name: "facebook/musicgen-small"
+checkpoint_dir: ""
+device_map: auto
+trust_remote_code: true
+
+# Memory and speed optimizations
+use_bf16: true  # Use BF16 precision (A100 native support, 2x faster)
+gradient_checkpointing: true  # Reduce memory usage
+compile: false  # Enable torch.compile() - set to true after first run completes
+
+tokenizer:
+  max_new_tokens: 255
+  use_fast: true
+  padding_side: "left"
+  pad_token_as_eos: true

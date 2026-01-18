@@ -1,8 +1,6 @@
 clap_model: laion/clap-htsat-unfused
-fad_model: google/vggish
 skip_evaluation: false
 text_path: ${paths.data_dir}
 audio_path: ${paths.data_dir}/audio_samples
 text_column: caption
-reference_audio_dir: null
-compute_fad: true
+data_dir: tta_evaluation

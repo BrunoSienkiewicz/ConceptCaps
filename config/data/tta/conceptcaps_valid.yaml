@@ -2,6 +2,6 @@ dataset_name: "bsienkiewicz/ConceptCaps"
 batch_size: 4
 max_sequence_length: 255
 subset_size: 1
-subset: "train"
+subset: "validation"
 text_column: "prediction"
 device: ${device}

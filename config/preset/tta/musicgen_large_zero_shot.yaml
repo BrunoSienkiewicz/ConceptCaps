@@ -2,8 +2,8 @@
 defaults:
   - override /paths: plgrid
   - override /model: tta/musicgen-large
-  - override /data: tta/zero_shot_subset_captions
-  - override /generation: musicgen_best
+  - override /data: tta/zero_shot_captions
+  - override /generation: tta/default
   - override /logger: wandb
 
 data:

@@ -1,9 +1,9 @@
 defaults:
   - model: caption/llama_3.1_8b_instruct
-  - data: caption/load_dataset
+  - data: caption/load_musiccaps_dataset
   - prompt: default
   - lora: caption/default
-  - trainer: caption_lightning/default
+  - trainer: caption/default
   - evaluation: caption/default
   - generation: default
   - paths: default

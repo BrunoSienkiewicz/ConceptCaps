@@ -95,7 +95,7 @@ def prepare_dataloader(cfg: dict, processor: AutoProcessor) -> Tuple[DataLoader,
         subset=cfg.get("subset", "train"),
         subset_size=cfg.get("subset_size", 0.1),
         max_sequence_length=cfg.get("max_sequence_length", 256),
-        caption_column=cfg.get("caption_column", "caption"),
+        caption_column=cfg.get("text_column", "caption"),
         device=torch.device(cfg.get("device", "cpu")),
     )
     dataloader = DataLoader(

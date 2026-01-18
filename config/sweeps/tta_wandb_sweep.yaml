@@ -21,18 +21,11 @@ parameters:
     value: tta/musicgen-large
   
   data:
-    value: tta/final_captions
-  
-  generation:
-    value: musicgen_default
+    value: tta/conceptcaps_test_subset
   
   # Data parameters
   data.batch_size:
-    value: 8
-  
-  # MusicGen generation parameters
-  model.tokenizer.max_new_tokens:
-    values: [256, 512, 768, 1024]
+    value: 16
   
   # Temperature controls randomness in sampling
   # Lower values (0.5-0.8) = more focused/deterministic

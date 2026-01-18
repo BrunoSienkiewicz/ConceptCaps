@@ -1,8 +1,8 @@
 defaults:
   - model: tta/musicgen-small
-  - data: tta/music_caps
+  - data: tta/musiccaps
   - evaluation: tta/default
-  - generation: musicgen_default
+  - generation: tta/default
   - paths: default
   - logger: null
   - callbacks: default
@@ -12,8 +12,3 @@ run_id: ${now:%Y-%m-%d_%H-%M-%S-%f}
 task_name: tta_generation
 device: cuda
 random_state: 42
-
-logger:
-  wandb:
-    project: tta_generation
-    log_model: true

@@ -1,7 +1,7 @@
 dataset_name: "bsienkiewicz/zero_shot-caption-inference-dataset"
-batch_size: 32
+batch_size: 4
 max_sequence_length: 255
 subset_size: 1
 subset: "test"
-caption_column: "prediction"
+text_column: "prediction"
 device: ${device}
