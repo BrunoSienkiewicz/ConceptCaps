@@ -105,7 +105,7 @@ def main(cfg: TTAConfig):
     )
     log.info(f"Audio samples and metadata saved to {data_dir}")
 
-    if not cfg.evaluation.get("skip_evaluation", False):
+    if cfg.evaluation.get("skip_evaluation", False):
         return
 
     # Initialize evaluator
