@@ -3,9 +3,9 @@ import torch
 import torch.nn.functional as F
 import lightning as pl
 
-from vae.model import BetaVAE
+from src.vae.model import BetaVAE
 from src.vae.config import VAEModelConfig, VAELossConfig
-from src.vae.metrics import VAEMetrics
+from src.vae.evaluation import VAEMetrics
 
 
 class BetaVAELightningModule(pl.LightningModule):
