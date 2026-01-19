@@ -22,4 +22,8 @@ generation:
 evaluation:
   skip_evaluation: false
 
+logger:
+  wandb:
+    project: tta_generation
+
 device: cuda
