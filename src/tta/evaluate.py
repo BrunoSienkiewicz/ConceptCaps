@@ -78,7 +78,16 @@ class CLAPScore:
                 
                 outputs = self.model(**inputs)
                 
-                batch_similarities = outputs.logits_per_audio.softmax(dim=-1).cpu().numpy().diagonal()
+                # Get embeddings
+                text_embeds = outputs.text_embeds
+                audio_embeds = outputs.audio_embeds
+                
+                # Normalize embeddings
+                text_embeds = text_embeds / text_embeds.norm(dim=-1, keepdim=True)
+                audio_embeds = audio_embeds / audio_embeds.norm(dim=-1, keepdim=True)
+                
+                # Compute cosine similarity
+                batch_similarities = (audio_embeds * text_embeds).sum(dim=1).cpu().numpy()
                 similarities.extend(batch_similarities)
         
         similarities = np.array(similarities)

@@ -7,6 +7,7 @@ from pathlib import Path
 import scipy.io
 import torch
 import pandas as pd
+import numpy as np
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from accelerate import Accelerator
@@ -64,10 +65,15 @@ def generate_audio_samples(
         for item_idx, audio in enumerate(audio_values):
             global_idx = batch_idx * batch_size + item_idx
             sample_id = df.iloc[global_idx][id_column]
+
+            # Normalize/Clip audio to prevent artifacts
+            audio_data = audio[0].float().cpu().numpy()
+            audio_data = np.clip(audio_data, -1.0, 1.0)
+
             scipy.io.wavfile.write(
                 audio_dir / filename_template.format(sample_id),
                 sample_rate,
-                audio[0].float().cpu().numpy(),
+                audio_data
             )
         
         # Clear CUDA cache after each batch to prevent memory fragmentation
@@ -142,12 +148,17 @@ def generate_audio_samples_accelerate(
             for item_idx, audio in enumerate(audio_values):
                 # Calculate global index accounting for distributed batches
                 global_idx = batch_idx * batch_size * accelerator.num_processes + item_idx
+
+                # Normalize/Clip audio to prevent artifacts
+                audio_data = audio[0].float().cpu().numpy()
+                audio_data = np.clip(audio_data, -1.0, 1.0)
+
                 if global_idx < len(df):
                     sample_id = df.iloc[global_idx][id_column]
                     scipy.io.wavfile.write(
                         audio_dir / filename_template.format(sample_id),
                         sample_rate,
-                        audio[0].float().cpu().numpy(),
+                        audio_data
                     )
         
         if torch.cuda.is_available():
