@@ -170,27 +170,42 @@ class FADScore:
         generated_audio_paths: List[Path],
         reference_audio_paths: List[Path],
         batch_size: int = 8,
-    ) -> float:
+    ) -> Dict[str, Any]:
         """Compute FAD score."""
         log.info(f"Extracting features from {len(generated_audio_paths)} generated samples...")
         gen_features = self.extract_features(generated_audio_paths, batch_size)
         if len(gen_features) == 0:
             log.warning("No features extracted from generated audio")
-            return float('inf')
+            return {"score": float('inf'), "per_sample_scores": []}
 
-        mu_gen = np.mean(gen_features, axis=0)
-        sigma_gen = np.cov(gen_features, rowvar=False)
-        
         log.info(f"Extracting features from {len(reference_audio_paths)} reference samples...")
         ref_features = self.extract_features(reference_audio_paths, batch_size)
         if len(ref_features) == 0:
             log.warning("No features extracted from reference audio")
-            return float('inf')
+            return {"score": float('inf'), "per_sample_scores": []}
 
+        mu_gen = np.mean(gen_features, axis=0)
+        sigma_gen = np.cov(gen_features, rowvar=False)
+        
         mu_ref = np.mean(ref_features, axis=0)
         sigma_ref = np.cov(ref_features, rowvar=False)
         
-        return self._calculate_frechet_distance(mu_gen, sigma_gen, mu_ref, sigma_ref)
+        # Calculate global FAD
+        global_score = self._calculate_frechet_distance(mu_gen, sigma_gen, mu_ref, sigma_ref)
+
+        # Calculate per-sample FAD: ||x - mu_ref||^2 + tr(sigma_ref)
+        # This treats each sample as a distribution with mean=x and sigma=0
+        tr_sigma_ref = np.trace(sigma_ref)
+        per_sample_scores = []
+        for feat in gen_features:
+            diff = feat - mu_ref
+            dist_sq = np.dot(diff, diff)
+            per_sample_scores.append(float(dist_sq + tr_sigma_ref))
+        
+        return {
+            "score": global_score,
+            "per_sample_scores": per_sample_scores
+        }
         
     def _calculate_frechet_distance(self, mu1, sigma1, mu2, sigma2, eps=1e-6):
         """Numpy implementation of the Frechet Distance.
@@ -316,13 +331,14 @@ class TTAEvaluator:
                 reference_paths.extend(list(reference_audio_dir.glob(ext)))
             
             if reference_paths:
-                fad_score = self.fad_scorer.calculate_score(
+                fad_results = self.fad_scorer.calculate_score(
                     generated_audio_paths=audio_paths,
                     reference_audio_paths=reference_paths,
                     batch_size=batch_size,
                 )
-                results["fad_score"] = fad_score
-                log.info(f"FAD Score: {fad_score:.4f}")
+                results["fad_score"] = fad_results["score"]
+                results["fad_per_sample"] = fad_results["per_sample_scores"]
+                log.info(f"FAD Score: {fad_results['score']:.4f}")
             else:
                 log.warning(f"No reference audio files found in {reference_audio_dir}")
         elif compute_fad:
@@ -338,9 +354,14 @@ class TTAEvaluator:
                 json.dump(results, indent=2, fp=f)
             log.info(f"Evaluation results saved to {results_path}")
             
-            # Save per-sample CLAP scores if available
+            # Save per-sample scores
             df_results = df.copy()
-            df_results["clap_score"] = results["clap_scores"]
+            if "clap_scores" in results:
+                df_results["clap_score"] = results["clap_scores"]
+            
+            if "fad_per_sample" in results:
+                df_results["fad_score"] = results["fad_per_sample"]
+                
             df_results.to_csv(output_dir / "per_sample_scores.csv", index=False)
         
         log.info("TTA evaluation completed")

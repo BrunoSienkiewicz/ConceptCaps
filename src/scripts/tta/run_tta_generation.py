@@ -13,8 +13,8 @@ from src.utils import (RankedLogger, instantiate_loggers,
 from src.tta.audio import generate_audio_samples, generate_audio_samples_accelerate
 from src.tta.config import TTAConfig
 from src.tta.data import prepare_dataloader, save_dataframe_metadata
-from src.tta.modelling import prepare_model, prepare_tokenizer
-from src.tta.evaluate import TTAEvaluator
+from src.tta.model import prepare_model, prepare_tokenizer
+from src.tta.evaluation import TTAEvaluator
 
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
