@@ -5,7 +5,7 @@
 #SBATCH --mem-per-cpu=8GB
 #SBATCH --gres=gpu:4
 #SBATCH --cpus-per-task=16
-#SBATCH --time=10:00:00
+#SBATCH --time=05:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
 #SBATCH --output="logs/run_tta_accelerate_%j.out"
