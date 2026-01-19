@@ -10,7 +10,7 @@ from datasets import load_dataset
 from src.caption import CaptionGenerationConfig
 from src.utils import print_config_tree, RankedLogger, instantiate_loggers, instantiate_callbacks
 from src.caption.data import prepare_datasets
-from src.caption.modeling import prepare_tokenizer
+from caption.model import prepare_tokenizer
 from src.caption.evaluation import MetricComputer
 from src.caption.lightning_module import CaptionFineTuningModule
 from src.caption.lightning_datamodule import CaptionDataModule
@@ -25,22 +25,18 @@ log = RankedLogger(__name__, rank_zero_only=True)
 def main(cfg: CaptionGenerationConfig) -> None:
     """Main training function using PyTorch Lightning."""
 
-    # Setup callbacks
     callbacks = []
     if cfg.get("callbacks"):
         pl_callbacks = instantiate_callbacks(cfg.callbacks)
         if pl_callbacks:
             callbacks.extend(pl_callbacks if isinstance(pl_callbacks, list) else [pl_callbacks])
 
-    # Setup loggers
     loggers = []
     if cfg.get("logger"):
         pl_loggers = instantiate_loggers(cfg.logger)
         if pl_loggers:
             loggers.extend(pl_loggers if isinstance(pl_loggers, list) else [pl_loggers])
 
-    
-    # Set random seed for reproducibility
     log.info(f"Setting random seed to {cfg.random_state}...")
     pl.seed_everything(cfg.random_state, workers=True)
 
@@ -49,18 +45,16 @@ def main(cfg: CaptionGenerationConfig) -> None:
 
     torch.set_float32_matmul_precision("medium")
 
-    # Print configuration
     print_config_tree(cfg)
 
-    # Setup directories
     model_dir = Path(cfg.paths.model_dir)
     model_dir.mkdir(parents=True, exist_ok=True)
     checkpoint_dir = model_dir / cfg.model.name / cfg.run_id
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
-    # Load and prepare datasets
     log.info("Loading datasets...")
     dataset = load_dataset(cfg.data.dataset_name)
+
     log.info("Preparing datasets...")
     dataset = prepare_datasets(cfg.data, cfg.prompt, dataset)
     log.info(
@@ -87,7 +81,6 @@ def main(cfg: CaptionGenerationConfig) -> None:
         max_length=cfg.generation.max_length 
     )
 
-    # Init Lightning Module
     log.info("Creating Lightning Module...")
     model = CaptionFineTuningModule(
         model_cfg=cfg.model,
@@ -100,7 +93,6 @@ def main(cfg: CaptionGenerationConfig) -> None:
         metric_computer=metric_computer,
     )
 
-    # Create Trainer
     log.info("Creating Lightning Trainer...")
     trainer = pl.Trainer(
         default_root_dir=str(checkpoint_dir),

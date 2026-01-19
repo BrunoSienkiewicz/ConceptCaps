@@ -15,8 +15,8 @@ from peft import PeftModel
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
-from src.caption.evaluation import MetricComputer, generate_batch_caption_tokenized, generate_caption_tokenized
-from src.caption.modeling import build_quantization_config, prepare_tokenizer
+from src.caption.evaluation import MetricComputer, generate_batch_caption_tokenized
+from caption.model import prepare_training_model
 from src.utils import RankedLogger
 
 
@@ -40,60 +40,20 @@ class CaptionFineTuningModule(pl.LightningModule):
         super().__init__()
         self.save_hyperparameters(ignore=["tokenizer", "metric_computer"])
 
-        self.model_cfg = model_cfg
         self.generation_cfg = generation_cfg
-        self.lora_cfg = lora_cfg
         self.optimizer_cfg = optimizer_cfg
         self.lr_scheduler_cfg = lr_scheduler_cfg
         self.prompt_cfg = prompt_cfg
         self.tokenizer = tokenizer
         self.metric_computer = metric_computer
         
-        # Initialize model
-        self.model = self._setup_model()
+        self.model = prepare_training_model(model_cfg, lora_cfg)
 
         # Store predictions and references for epoch-end evaluation
         self.validation_predictions = []
         self.validation_references = []
         self.test_predictions = []
         self.test_references = []
-
-    def _setup_model(self) -> AutoModelForCausalLM:
-        """Initialize and prepare the model with LoRA."""
-        quantization_config = build_quantization_config(self.model_cfg)
-        
-        model = AutoModelForCausalLM.from_pretrained(
-            self.model_cfg.name,
-            quantization_config=quantization_config,
-            device_map=self.model_cfg.device_map,
-            trust_remote_code=self.model_cfg.trust_remote_code,
-        )
-        
-        if self.model_cfg.checkpoint_dir:
-            log.info(f"Loading model weights from checkpoint: {self.model_cfg.checkpoint_dir}...")
-            model = PeftModel.from_pretrained(
-                model,
-                self.model_cfg.checkpoint_dir,
-                device_map=self.model_cfg.device_map,
-                low_cpu_mem_usage=True,
-            )
-            return model
-        
-        if quantization_config is not None:
-            model = prepare_model_for_kbit_training(model)
-        
-        if getattr(self.model_cfg, 'gradient_checkpointing', False):
-            model.gradient_checkpointing_enable()
-            model.enable_input_require_grads()
-        
-        # Apply LoRA
-        lora_config = LoraConfig(**OmegaConf.to_container(self.lora_cfg, resolve=True))
-        model = get_peft_model(model, lora_config)
-        
-        log.info("Model prepared with LoRA:")
-        model.print_trainable_parameters()
-        
-        return model
 
     def _extract_prompt_from_batch(self, batch_input_ids, batch_attention_mask):
         """Extract only prompt tokens (up to delimiter) from full sequence."""
@@ -122,14 +82,12 @@ class CaptionFineTuningModule(pl.LightningModule):
         padded_prompt_masks = []
         
         for prompt_id, prompt_mask in zip(prompt_ids, prompt_masks):
-            # Pad input_ids with pad_token_id
             pad_len = max_prompt_len - len(prompt_id)
             padded_id = torch.nn.functional.pad(
                 prompt_id, 
                 (0, pad_len), 
                 value=self.tokenizer.pad_token_id
             )
-            # Pad attention_mask with 0
             padded_mask = torch.nn.functional.pad(
                 prompt_mask, 
                 (0, pad_len), 
@@ -141,8 +99,17 @@ class CaptionFineTuningModule(pl.LightningModule):
         return torch.stack(padded_prompt_ids), torch.stack(padded_prompt_masks)
 
     def _process_batch_for_metrics(self, batch_input_ids, batch_attention_mask, batch_label_ids):
-        """Generate predictions and extract references from a batch."""
-        # Extract prompts
+        """
+        This method is needed to extract predictions and references for metrics computation.
+        During training/validation/test steps, we have full sequences with prompts + targets.
+        We need to extract only the generated captions (predictions) and the target captions (references).
+
+        Args:
+            batch_input_ids: Tensor of input IDs (prompts + targets)
+            batch_attention_mask: Tensor of attention masks
+            batch_label_ids: Tensor of label IDs (targets with -100 for prompt tokens)
+        """
+
         prompt_ids, prompt_masks = self._extract_prompt_from_batch(batch_input_ids, batch_attention_mask)
         prompts = [self.tokenizer.decode(pid, skip_special_tokens=True) for pid in prompt_ids]
 
@@ -202,11 +169,9 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         loss = outputs.loss
         
-        # Log metrics
         self.log("val/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("val/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
-        # Process batch for metrics computation
         batch_input_ids = batch["input_ids"].to(self.model.device)
         batch_attention_mask = batch["attention_mask"].to(self.model.device)
         batch_label_ids = batch["labels"].clone().to(self.model.device)
@@ -215,7 +180,6 @@ class CaptionFineTuningModule(pl.LightningModule):
             batch_input_ids, batch_attention_mask, batch_label_ids
         )
         
-        # Store predictions and references for epoch-end evaluation
         self.validation_predictions.extend(batch_preds)
         self.validation_references.extend(batch_refs)
 
@@ -231,11 +195,9 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         loss = outputs.loss
         
-        # Log metrics
         self.log("test/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("test/perplexity", torch.exp(loss), on_step=False, on_epoch=True, sync_dist=True)
 
-        # Process batch for metrics computation
         batch_input_ids = batch["input_ids"].to(self.model.device)
         batch_attention_mask = batch["attention_mask"].to(self.model.device)
         batch_label_ids = batch["labels"].clone().to(self.model.device)
@@ -244,7 +206,6 @@ class CaptionFineTuningModule(pl.LightningModule):
             batch_input_ids, batch_attention_mask, batch_label_ids
         )
         
-        # Store predictions and references for epoch-end evaluation
         self.test_predictions.extend(batch_preds)
         self.test_references.extend(batch_refs)
 
@@ -263,20 +224,19 @@ class CaptionFineTuningModule(pl.LightningModule):
 
         exclude_types = (dict, list, str, tuple, set)
         
-        # Log metrics
         for key, value in metrics.items():
             if isinstance(value, dict):
                 for sub_key, sub_value in value.items():
                     if not isinstance(sub_value, exclude_types):
                         self.log(f"val/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
                 continue
+            # Mauve metric uses a special object
             if key == "mauve":
                 self.log(f"val/{key}", value.mauve, on_epoch=True, sync_dist=True)
                 continue
             if not isinstance(value, exclude_types):
                 self.log(f"val/{key}", value, on_epoch=True, sync_dist=True)
 
-        # Clear stored predictions and references
         self.validation_predictions = []
         self.validation_references = []
 
@@ -295,11 +255,13 @@ class CaptionFineTuningModule(pl.LightningModule):
         
         # Log metrics
         for key, value in metrics.items():
+            # Log metric sub-values if dict
             if isinstance(value, dict):
                 for sub_key, sub_value in value.items():
                     if not isinstance(sub_value, exclude_types):
                         self.log(f"test/{key}_{sub_key}", sub_value, on_epoch=True, sync_dist=True)
                 continue
+            # Mauve metric uses a special object
             if key == "mauve":
                 self.log(f"test/{key}", value.mauve, on_epoch=True, sync_dist=True)
                 continue
@@ -312,7 +274,6 @@ class CaptionFineTuningModule(pl.LightningModule):
 
     def configure_optimizers(self):
         """Configure optimizer and learning rate scheduler."""
-        # Get trainable parameters
         trainable_params = [p for p in self.model.parameters() if p.requires_grad]
         
         # Optimizer

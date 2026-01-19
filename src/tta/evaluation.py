@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import torch
 from tqdm import tqdm
-from transformers import AutoProcessor, AutoModel, AutoFeatureExtractor
+from transformers import AutoProcessor, AutoModel
 from scipy.linalg import sqrtm
 
 from src.utils import RankedLogger

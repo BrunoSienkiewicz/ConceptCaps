@@ -87,7 +87,6 @@ class MetricsSaver:
         """
         filepath = self.output_dir / filename
         
-        # Convert config to serializable format
         config_clean = {}
         for key, value in config.items():
             try:

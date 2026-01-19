@@ -35,23 +35,19 @@ class CaptionDataModule(pl.LightningDataModule):
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.max_length = max_length
-        
-        # Data collator
+
         self.data_collator = DataCollatorForLanguageModeling(
             tokenizer=self.tokenizer,
             mlm=False,  # Causal LM, not masked LM
         )
 
     def tokenize_function(self, examples):
-        """Tokenize the text column."""
         text_column = self.data_cfg.text_column
-        # Add EOS token if not present
         _examples = [
             text + self.tokenizer.eos_token if not text.endswith(self.tokenizer.eos_token) else text
             for text in examples[text_column]
         ]
         
-        # Tokenize
         tokenized = self.tokenizer(
             _examples,
             truncation=True,
@@ -67,17 +63,14 @@ class CaptionDataModule(pl.LightningDataModule):
             label = token_ids.copy() if hasattr(token_ids, 'copy') else list(token_ids)
             token_list = label if isinstance(label, list) else label.tolist()
             
-            # Search for delimiter in token sequence
             marker_found = False
             for j in range(len(token_list) - len(delimiter_token_ids) + 1):
                 if token_list[j:j+len(delimiter_token_ids)] == delimiter_token_ids:
-                    # Mask all tokens up to and including the delimiter
                     mask_until = j + len(delimiter_token_ids)
                     label[:mask_until] = [-100] * mask_until
                     marker_found = True
                     break
             
-            # If delimiter not found, mask entire sequence
             if not marker_found:
                 label[:] = [-100] * len(label)
                 log.warning(f"Prompt delimiter not found in example")
@@ -89,7 +82,6 @@ class CaptionDataModule(pl.LightningDataModule):
         return tokenized
 
     def setup(self, stage: Optional[str] = None):
-        """Setup datasets for training/validation/test."""
         if stage == "fit" or stage is None:
             self.train_dataset = self.dataset["train"].map(
                 self.tokenize_function,
@@ -113,7 +105,6 @@ class CaptionDataModule(pl.LightningDataModule):
             )
 
     def train_dataloader(self):
-        """Return training dataloader."""
         return DataLoader(
             self.train_dataset,
             batch_size=self.batch_size,
@@ -124,7 +115,6 @@ class CaptionDataModule(pl.LightningDataModule):
         )
 
     def val_dataloader(self):
-        """Return validation dataloader."""
         return DataLoader(
             self.val_dataset,
             batch_size=self.batch_size,
@@ -135,7 +125,6 @@ class CaptionDataModule(pl.LightningDataModule):
         )
 
     def test_dataloader(self):
-        """Return test dataloader."""
         if hasattr(self, "test_dataset"):
             return DataLoader(
                 self.test_dataset,

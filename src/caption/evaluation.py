@@ -449,7 +449,7 @@ class MetricComputer:
             }
             for reference, prediction in zip(self.references, self.predictions)
         ]
-        predictions_path = output_dir / "test_predictions.csv"
+        predictions_path = output_dir / "all_predictions.csv"
         pd.DataFrame(records).to_csv(predictions_path, index=False)
         logger.info(f"Predictions saved to {predictions_path}")
 
