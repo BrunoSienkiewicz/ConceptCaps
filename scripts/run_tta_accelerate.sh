@@ -56,7 +56,6 @@ mkdir -p "$OUT_DIR/.cache/huggingface"
 conda activate "$(grep -E '^name:' environment.yml | awk '{print $2}')"
 
 srun accelerate launch \
-    --multi_gpu \
     --num_processes=1 \
     --num_machines=1 \
     --mixed_precision=bf16 \
