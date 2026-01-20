@@ -2,9 +2,9 @@
 #SBATCH -J run_tta_accelerate
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
-#SBATCH --mem-per-cpu=8GB
+#SBATCH --mem-per-cpu=4GB
 #SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=8
 #SBATCH --time=05:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
@@ -49,7 +49,7 @@ export HF_HOME="$ROOT_DIR/.cache/huggingface"
 export OUT_DIR="$OUT_DIR"
 export PLGRID_ARTIFACTS_DIR="$PLGRID_ARTIFACTS_DIR"
 export CONDA_DIR="$CONDA_DIR"
-export CUDA_VISIBLE_DEVICES=0,1
+export CUDA_VISIBLE_DEVICES=0
 
 mkdir -p "$OUT_DIR/.cache/huggingface"
 
