@@ -12,7 +12,7 @@ from datasets import load_dataset
 from src.caption import CaptionGenerationConfig
 from src.utils import print_config_tree, RankedLogger, instantiate_loggers
 from src.caption.data import prepare_inference_datasets
-from src.caption.modeling import prepare_tokenizer
+from caption.model import prepare_tokenizer
 from src.caption.lightning_module import CaptionFineTuningModule
 from src.caption.evaluation import generate_captions_batch
 

@@ -8,7 +8,7 @@ import pytorch_lightning as pl
 from src.utils import (RankedLogger, instantiate_loggers,
                        print_config_tree)
 from src.tta.config import TTAConfig
-from src.tta.evaluate import TTAEvaluator
+from tta.evaluation import TTAEvaluator
 
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)

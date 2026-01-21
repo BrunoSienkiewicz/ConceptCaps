@@ -25,7 +25,7 @@ def run_latent_inference(
         device: Device to run inference on
         metrics_saver: MetricsSaver instance for logging metrics
     """
-    from src.vae.metrics import VAEMetrics
+    from vae.evaluation import VAEMetrics
     
     model.to(device)
     model.eval()
