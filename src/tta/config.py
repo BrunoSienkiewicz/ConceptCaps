@@ -53,8 +53,8 @@ class GenerationConfig:
 @dataclass
 class EvaluationConfig:
     clap_model: str = "laion/clap-htsat-unfused"
+    fad_model: str = "laion/clap-htsat-unfused"
     skip_evaluation: bool = False
-    data_dir: str = "tta_evaluation"
     compute_fad: bool = True
     reference_audio_dir: str = ""
 
@@ -68,4 +68,4 @@ class TTAConfig(DictConfig):
     paths: PathsConfig
     random_state: int
     batch_size: int = 8
-    device: str = "cuda:0"
+    device: str = "cuda"

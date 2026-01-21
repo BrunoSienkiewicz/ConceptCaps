@@ -1,0 +1,8 @@
+dataset_name: google/MusicCaps
+aspect_column: aspect_list
+caption_column: caption
+text_column: text
+remove_columns: null
+batch_size: 4
+max_length: 256
+dataloader_num_workers: 4

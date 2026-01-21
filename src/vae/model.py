@@ -18,7 +18,7 @@ class BetaVAE(nn.Module):
         hidden_dim: int = 128,
         dropout_p: float = 0.3,
         use_batch_norm: bool = False,
-        beta: float = 4.0,
+        beta: float = 1.0,
     ):
         super(BetaVAE, self).__init__()
         

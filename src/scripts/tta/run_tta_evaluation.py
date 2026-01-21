@@ -32,18 +32,19 @@ def main(cfg: TTAConfig):
 
     print_config_tree(cfg)
 
-    data_dir = Path(cfg.evaluation.get("data_dir", Path.cwd() / "tta_evaluation"))
+    data_dir = Path(cfg.paths.get("data_dir", Path.cwd() / "tta_evaluation"))
 
     log.info("Initializing TTA evaluator...")
     evaluator = TTAEvaluator(
         clap_model=cfg.evaluation.get("clap_model", "laion/clap-htsat-unfused"),
+        fad_model=cfg.evaluation.get("fad_model", "laion/clap-htsat-unfused"),
         device=str(device),
     )
 
     log.info("Running TTA evaluation...")
     results = evaluator.evaluate(
-        generated_audio_dir=data_dir / "audio_samples",
-        metadata_path=data_dir / "metadata.csv",
+        generated_audio_dir=cfg.evaluation.get("audio_path", data_dir / "audio_samples"),
+        metadata_path=cfg.evaluation.get("text_path", data_dir / "metadata.csv"),
         reference_audio_dir=cfg.evaluation.get("reference_audio_dir", data_dir / "reference_audio_samples"),
         output_dir=data_dir / "evaluation_results",
         text_column=cfg.data.get("text_column", "caption"),

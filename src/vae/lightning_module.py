@@ -22,7 +22,7 @@ class BetaVAELightningModule(pl.LightningModule):
         learning_rate: float = 5e-4,
         betas: tuple = (0.9, 0.999),
         weight_decay: float = 0.0,
-        beta: float = 4.0,
+        beta: float = 1.0,
     ):
         super().__init__()
         self.model_cfg = model_cfg

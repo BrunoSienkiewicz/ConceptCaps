@@ -4,7 +4,7 @@ defaults:
   - override /model: caption/llama_3.1_8b_instruct
   - override /evaluation: caption/no_judge
   - override /lora: caption/low_rank
-  - override /generation: caption/balanced
+  - override /generation: caption/best
   - override /paths: plgrid
   - override /logger: wandb
 

@@ -5,7 +5,7 @@ defaults:
   - override /trainer: caption_lightning/best
   - override /lora: caption/best
   - override /evaluation: caption/qwen_judge
-  - override /generation: caption/balanced
+  - override /generation: caption/best
   - override /paths: plgrid
   - override /logger: wandb
 
