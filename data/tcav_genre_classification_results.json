@@ -1,485 +1,260 @@
 {
     "tempo": {
-        "medium tempo": {
-            "cav_accuracy": 0.6285714285714286,
-            "genre_scores": {
-                "blues": 0.07,
-                "classical": 0.95,
-                "country": 0.5,
-                "disco": 0.03,
-                "hiphop": 0.0,
-                "jazz": 0.29292929292929293,
-                "metal": 0.19,
-                "pop": 0.06,
-                "reggae": 0.01,
-                "rock": 0.21
-            }
-        },
         "slow tempo": {
-            "cav_accuracy": 0.6790816326530612,
+            "cav_accuracy": 0.6857142857142856,
             "genre_scores": {
-                "blues": 0.2,
+                "blues": 0.42,
                 "classical": 1.0,
-                "country": 0.35,
+                "country": 0.56,
                 "disco": 0.01,
                 "hiphop": 0.0,
-                "jazz": 0.6666666666666666,
+                "jazz": 0.9292929292929293,
                 "metal": 0.0,
                 "pop": 0.04,
                 "reggae": 0.04,
-                "rock": 0.1
+                "rock": 0.2
             }
         },
         "fast tempo": {
-            "cav_accuracy": 0.6142857142857143,
+            "cav_accuracy": 0.6444444444444444,
             "genre_scores": {
-                "blues": 0.0,
+                "blues": 0.31,
                 "classical": 0.0,
-                "country": 0.0,
-                "disco": 0.02,
-                "hiphop": 0.0,
-                "jazz": 0.0,
-                "metal": 0.18,
-                "pop": 0.02,
-                "reggae": 0.0,
-                "rock": 0.09
+                "country": 0.83,
+                "disco": 0.82,
+                "hiphop": 0.45,
+                "jazz": 0.3838383838383838,
+                "metal": 1.0,
+                "pop": 0.71,
+                "reggae": 0.23,
+                "rock": 0.96
             }
         },
         "groovy": {
-            "cav_accuracy": 0.6397959183673468,
+            "cav_accuracy": 0.6933333333333332,
             "genre_scores": {
-                "blues": 0.35,
+                "blues": 0.13,
                 "classical": 0.0,
-                "country": 0.37,
-                "disco": 0.99,
-                "hiphop": 0.99,
-                "jazz": 0.06060606060606061,
-                "metal": 0.98,
-                "pop": 0.95,
-                "reggae": 0.91,
-                "rock": 0.75
+                "country": 0.41,
+                "disco": 0.57,
+                "hiphop": 0.55,
+                "jazz": 0.10101010101010101,
+                "metal": 0.22,
+                "pop": 0.33,
+                "reggae": 0.72,
+                "rock": 0.39
             }
         },
         "uptempo": {
             "cav_accuracy": 0.6333333333333333,
             "genre_scores": {
-                "blues": 0.0,
+                "blues": 0.24,
                 "classical": 0.0,
-                "country": 0.0,
-                "disco": 0.0,
-                "hiphop": 0.0,
+                "country": 0.12,
+                "disco": 0.84,
+                "hiphop": 0.94,
                 "jazz": 0.0,
-                "metal": 0.18,
-                "pop": 0.01,
-                "reggae": 0.0,
-                "rock": 0.02
+                "metal": 0.03,
+                "pop": 0.66,
+                "reggae": 0.91,
+                "rock": 0.24
+            }
+        },
+        "moderate tempo": {
+            "cav_accuracy": 0.6333333333333333,
+            "genre_scores": {
+                "blues": 0.3,
+                "classical": 0.0,
+                "country": 0.06,
+                "disco": 0.45,
+                "hiphop": 0.5,
+                "jazz": 0.04040404040404041,
+                "metal": 0.0,
+                "pop": 0.71,
+                "reggae": 0.67,
+                "rock": 0.11
             }
         },
         "upbeat": {
-            "cav_accuracy": 0.6542857142857142,
+            "cav_accuracy": 0.6499999999999999,
             "genre_scores": {
-                "blues": 0.01,
+                "blues": 0.44,
+                "classical": 0.13,
+                "country": 0.24,
+                "disco": 0.94,
+                "hiphop": 0.56,
+                "jazz": 0.7070707070707071,
+                "metal": 0.01,
+                "pop": 0.92,
+                "reggae": 0.66,
+                "rock": 0.4
+            }
+        },
+        "medium fast tempo": {
+            "cav_accuracy": 0.6666666666666666,
+            "genre_scores": {
+                "blues": 0.24,
                 "classical": 0.0,
-                "country": 0.0,
-                "disco": 0.68,
-                "hiphop": 0.64,
-                "jazz": 0.0,
-                "metal": 0.24,
-                "pop": 0.68,
-                "reggae": 0.22,
-                "rock": 0.07
+                "country": 0.82,
+                "disco": 0.39,
+                "hiphop": 0.16,
+                "jazz": 0.08080808080808081,
+                "metal": 0.02,
+                "pop": 0.07,
+                "reggae": 0.73,
+                "rock": 0.37
+            }
+        },
+        "groovy rhythm": {
+            "cav_accuracy": 0.6499999999999999,
+            "genre_scores": {
+                "blues": 1.0,
+                "classical": 0.0,
+                "country": 1.0,
+                "disco": 0.9,
+                "hiphop": 0.97,
+                "jazz": 0.8282828282828283,
+                "metal": 0.82,
+                "pop": 0.95,
+                "reggae": 1.0,
+                "rock": 0.96
             }
         }
     },
     "instrument": {
         "acoustic drums": {
-            "cav_accuracy": 0.6321428571428571,
+            "cav_accuracy": 0.6333333333333333,
             "genre_scores": {
-                "blues": 0.0,
-                "classical": 0.0,
-                "country": 0.0,
+                "blues": 0.03,
+                "classical": 0.12,
+                "country": 0.39,
                 "disco": 0.0,
                 "hiphop": 0.0,
-                "jazz": 0.0,
-                "metal": 0.07,
+                "jazz": 0.42424242424242425,
+                "metal": 0.03,
                 "pop": 0.0,
                 "reggae": 0.0,
-                "rock": 0.04
+                "rock": 0.19
             }
         },
         "electric guitar": {
-            "cav_accuracy": 0.6345238095238094,
+            "cav_accuracy": 0.6799999999999999,
             "genre_scores": {
                 "blues": 0.0,
                 "classical": 0.0,
-                "country": 0.03,
+                "country": 0.08,
                 "disco": 0.0,
                 "hiphop": 0.0,
-                "jazz": 0.010101010101010102,
-                "metal": 0.56,
+                "jazz": 0.18181818181818182,
+                "metal": 0.13,
                 "pop": 0.0,
                 "reggae": 0.0,
-                "rock": 0.16
+                "rock": 0.12
             }
         },
         "bass guitar": {
-            "cav_accuracy": 0.653968253968254,
+            "cav_accuracy": 0.6791666666666667,
             "genre_scores": {
-                "blues": 0.02,
-                "classical": 0.01,
-                "country": 0.47,
-                "disco": 0.0,
+                "blues": 0.5,
+                "classical": 0.09,
+                "country": 0.92,
+                "disco": 0.01,
                 "hiphop": 0.0,
-                "jazz": 0.30303030303030304,
-                "metal": 0.49,
-                "pop": 0.0,
-                "reggae": 0.0,
-                "rock": 0.28
+                "jazz": 0.8383838383838383,
+                "metal": 0.3,
+                "pop": 0.03,
+                "reggae": 0.01,
+                "rock": 0.56
             }
         },
         "acoustic guitar": {
-            "cav_accuracy": 0.6516483516483517,
+            "cav_accuracy": 0.6743589743589743,
             "genre_scores": {
-                "blues": 0.11,
-                "classical": 0.63,
-                "country": 0.49,
+                "blues": 0.12,
+                "classical": 0.52,
+                "country": 0.69,
                 "disco": 0.0,
                 "hiphop": 0.0,
-                "jazz": 0.6767676767676768,
-                "metal": 0.0,
+                "jazz": 0.7272727272727273,
+                "metal": 0.13,
                 "pop": 0.0,
                 "reggae": 0.0,
-                "rock": 0.11
+                "rock": 0.34
             }
         },
         "piano": {
-            "cav_accuracy": 0.6571428571428571,
+            "cav_accuracy": 0.6555555555555556,
             "genre_scores": {
-                "blues": 0.01,
-                "classical": 0.47,
-                "country": 0.04,
-                "disco": 0.0,
-                "hiphop": 0.0,
-                "jazz": 0.13131313131313133,
+                "blues": 0.56,
+                "classical": 1.0,
+                "country": 0.62,
+                "disco": 0.01,
+                "hiphop": 0.01,
+                "jazz": 0.8484848484848485,
                 "metal": 0.0,
-                "pop": 0.0,
-                "reggae": 0.0,
-                "rock": 0.0
+                "pop": 0.03,
+                "reggae": 0.3,
+                "rock": 0.19
             }
         },
         "punchy kick": {
-            "cav_accuracy": 0.6374149659863944,
+            "cav_accuracy": 0.6555555555555556,
             "genre_scores": {
-                "blues": 0.0,
+                "blues": 0.44,
                 "classical": 0.0,
-                "country": 0.04,
-                "disco": 0.83,
-                "hiphop": 0.95,
-                "jazz": 0.0,
-                "metal": 0.97,
-                "pop": 0.83,
-                "reggae": 0.41,
-                "rock": 0.41
+                "country": 0.28,
+                "disco": 0.98,
+                "hiphop": 1.0,
+                "jazz": 0.020202020202020204,
+                "metal": 0.95,
+                "pop": 0.94,
+                "reggae": 0.96,
+                "rock": 0.67
             }
         },
         "punchy snare": {
-            "cav_accuracy": 0.653968253968254,
+            "cav_accuracy": 0.6888888888888888,
             "genre_scores": {
-                "blues": 0.01,
+                "blues": 0.61,
                 "classical": 0.0,
-                "country": 0.13,
-                "disco": 0.57,
-                "hiphop": 0.58,
-                "jazz": 0.010101010101010102,
+                "country": 0.8,
+                "disco": 0.99,
+                "hiphop": 0.99,
+                "jazz": 0.25252525252525254,
                 "metal": 1.0,
-                "pop": 0.61,
-                "reggae": 0.04,
-                "rock": 0.55
+                "pop": 0.95,
+                "reggae": 0.95,
+                "rock": 0.97
             }
         },
         "groovy bass": {
-            "cav_accuracy": 0.6214285714285714,
+            "cav_accuracy": 0.6833333333333333,
             "genre_scores": {
-                "blues": 0.19,
-                "classical": 0.0,
-                "country": 0.42,
-                "disco": 0.82,
-                "hiphop": 0.93,
-                "jazz": 0.1111111111111111,
-                "metal": 0.96,
-                "pop": 0.72,
-                "reggae": 0.74,
-                "rock": 0.8
+                "blues": 1.0,
+                "classical": 0.15,
+                "country": 1.0,
+                "disco": 0.99,
+                "hiphop": 1.0,
+                "jazz": 0.9797979797979798,
+                "metal": 1.0,
+                "pop": 0.99,
+                "reggae": 1.0,
+                "rock": 1.0
             }
         },
         "male voice": {
-            "cav_accuracy": 0.6285714285714286,
-            "genre_scores": {
-                "blues": 0.0,
-                "classical": 0.0,
-                "country": 0.0,
-                "disco": 0.0,
-                "hiphop": 0.0,
-                "jazz": 0.0,
-                "metal": 0.2,
-                "pop": 0.0,
-                "reggae": 0.0,
-                "rock": 0.01
-            }
-        },
-        "male vocal": {
-            "cav_accuracy": 0.6371428571428571,
-            "genre_scores": {
-                "blues": 0.0,
-                "classical": 0.0,
-                "country": 0.0,
-                "disco": 0.0,
-                "hiphop": 0.0,
-                "jazz": 0.010101010101010102,
-                "metal": 0.0,
-                "pop": 0.0,
-                "reggae": 0.0,
-                "rock": 0.0
-            }
-        },
-        "percussion": {
-            "cav_accuracy": 0.6428571428571429,
-            "genre_scores": {
-                "blues": 0.0,
-                "classical": 0.0,
-                "country": 0.01,
-                "disco": 0.31,
-                "hiphop": 0.29,
-                "jazz": 0.0,
-                "metal": 0.29,
-                "pop": 0.13,
-                "reggae": 0.09,
-                "rock": 0.05
-            }
-        },
-        "no voices": {
-            "cav_accuracy": 0.6428571428571428,
-            "genre_scores": {
-                "blues": 0.06,
-                "classical": 0.99,
-                "country": 0.01,
-                "disco": 0.01,
-                "hiphop": 0.01,
-                "jazz": 0.31313131313131315,
-                "metal": 0.0,
-                "pop": 0.04,
-                "reggae": 0.02,
-                "rock": 0.0
-            }
-        },
-        "male singer": {
-            "cav_accuracy": 0.6142857142857143,
-            "genre_scores": {
-                "blues": 0.01,
-                "classical": 0.15,
-                "country": 0.21,
-                "disco": 0.0,
-                "hiphop": 0.0,
-                "jazz": 0.20202020202020202,
-                "metal": 0.06,
-                "pop": 0.0,
-                "reggae": 0.0,
-                "rock": 0.11
-            }
-        },
-        "electronic drums": {
-            "cav_accuracy": 0.6644897959183674,
+            "cav_accuracy": 0.6749999999999999,
             "genre_scores": {
                 "blues": 0.08,
                 "classical": 0.0,
-                "country": 0.04,
-                "disco": 0.91,
-                "hiphop": 0.99,
-                "jazz": 0.0,
-                "metal": 0.43,
-                "pop": 0.92,
-                "reggae": 0.87,
-                "rock": 0.21
-            }
-        },
-        "keyboard harmony": {
-            "cav_accuracy": 0.6244897959183674,
-            "genre_scores": {
-                "blues": 0.0,
-                "classical": 0.03,
-                "country": 0.29,
-                "disco": 0.02,
-                "hiphop": 0.0,
-                "jazz": 0.0707070707070707,
-                "metal": 0.62,
-                "pop": 0.0,
-                "reggae": 0.0,
-                "rock": 0.31
-            }
-        },
-        "flat male vocal": {
-            "cav_accuracy": 0.6515873015873015,
-            "genre_scores": {
-                "blues": 0.0,
-                "classical": 0.0,
-                "country": 0.01,
-                "disco": 0.79,
-                "hiphop": 0.82,
-                "jazz": 0.0,
-                "metal": 0.95,
-                "pop": 0.7,
-                "reggae": 0.21,
-                "rock": 0.28
-            }
-        },
-        "e-guitar": {
-            "cav_accuracy": 0.6326530612244898,
-            "genre_scores": {
-                "blues": 0.0,
-                "classical": 0.0,
-                "country": 0.06,
-                "disco": 0.02,
-                "hiphop": 0.0,
-                "jazz": 0.06060606060606061,
-                "metal": 0.55,
-                "pop": 0.02,
-                "reggae": 0.0,
-                "rock": 0.17
-            }
-        },
-        "keyboard": {
-            "cav_accuracy": 0.6285714285714286,
-            "genre_scores": {
-                "blues": 0.0,
-                "classical": 0.0,
-                "country": 0.04,
-                "disco": 0.88,
-                "hiphop": 0.62,
-                "jazz": 0.0,
-                "metal": 0.9,
-                "pop": 0.81,
-                "reggae": 0.27,
-                "rock": 0.39
-            }
-        },
-        "no singer": {
-            "cav_accuracy": 0.6485714285714285,
-            "genre_scores": {
-                "blues": 0.04,
-                "classical": 0.71,
-                "country": 0.51,
-                "disco": 0.04,
-                "hiphop": 0.0,
-                "jazz": 0.46464646464646464,
-                "metal": 0.8,
-                "pop": 0.03,
-                "reggae": 0.0,
-                "rock": 0.46
-            }
-        },
-        "groovy bass line": {
-            "cav_accuracy": 0.6285714285714286,
-            "genre_scores": {
-                "blues": 0.0,
-                "classical": 0.0,
-                "country": 0.03,
-                "disco": 0.47,
-                "hiphop": 0.7,
-                "jazz": 0.0,
-                "metal": 0.93,
-                "pop": 0.64,
-                "reggae": 0.05,
-                "rock": 0.25
-            }
-        },
-        "digital drums": {
-            "cav_accuracy": 0.6458646616541353,
-            "genre_scores": {
-                "blues": 0.73,
-                "classical": 0.21,
-                "country": 0.31,
-                "disco": 1.0,
-                "hiphop": 1.0,
-                "jazz": 0.0707070707070707,
-                "metal": 0.96,
-                "pop": 1.0,
-                "reggae": 1.0,
-                "rock": 0.64
-            }
-        },
-        "strings": {
-            "cav_accuracy": 0.6314285714285713,
-            "genre_scores": {
-                "blues": 0.0,
-                "classical": 0.97,
-                "country": 0.01,
-                "disco": 0.01,
-                "hiphop": 0.0,
-                "jazz": 0.06060606060606061,
-                "metal": 0.0,
-                "pop": 0.0,
-                "reggae": 0.02,
-                "rock": 0.0
-            }
-        },
-        "keyboard accompaniment": {
-            "cav_accuracy": 0.638095238095238,
-            "genre_scores": {
-                "blues": 0.01,
-                "classical": 0.84,
                 "country": 0.41,
                 "disco": 0.02,
-                "hiphop": 0.0,
-                "jazz": 0.06060606060606061,
-                "metal": 0.08,
+                "hiphop": 0.03,
+                "jazz": 0.21212121212121213,
+                "metal": 0.51,
                 "pop": 0.0,
-                "reggae": 0.0,
-                "rock": 0.22
-            }
-        },
-        "male vocalist": {
-            "cav_accuracy": 0.6428571428571429,
-            "genre_scores": {
-                "blues": 0.0,
-                "classical": 0.0,
-                "country": 0.33,
-                "disco": 0.01,
-                "hiphop": 0.0,
-                "jazz": 0.15151515151515152,
-                "metal": 0.47,
-                "pop": 0.0,
-                "reggae": 0.0,
-                "rock": 0.26
-            }
-        },
-        "female voice": {
-            "cav_accuracy": 0.6314285714285715,
-            "genre_scores": {
-                "blues": 0.38,
-                "classical": 0.97,
-                "country": 0.25,
-                "disco": 0.09,
-                "hiphop": 0.63,
-                "jazz": 0.2828282828282828,
-                "metal": 0.21,
-                "pop": 0.14,
-                "reggae": 0.68,
-                "rock": 0.15
-            }
-        },
-        "female vocal": {
-            "cav_accuracy": 0.6190476190476191,
-            "genre_scores": {
-                "blues": 0.9,
-                "classical": 0.81,
-                "country": 0.98,
-                "disco": 0.94,
-                "hiphop": 0.8,
-                "jazz": 0.9494949494949495,
-                "metal": 0.6,
-                "pop": 0.8,
-                "reggae": 1.0,
-                "rock": 0.94
+                "reggae": 0.1,
+                "rock": 0.44
             }
         }
     }
