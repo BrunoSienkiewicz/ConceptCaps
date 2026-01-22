@@ -125,7 +125,7 @@ def print_config_tree(
     for field in print_order:
         if field not in cfg:
             log.warning(
-                f"Field '{field}' not found in config. Skipping '{field}' config printing..."
+                f"Field '{field}' not found in config. Skipping '{field}' config printing..."  # noqa
             )
         else:
             queue.append(field)
