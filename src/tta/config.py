@@ -11,6 +11,7 @@ class LoggerConfig:
     log_dir: str
     experiment_name: str
 
+
 @dataclass
 class DatasetConfig:
     dataset_name: str = ""
@@ -19,12 +20,14 @@ class DatasetConfig:
     remove_columns: Optional[List[str]] = None
     batch_size: int = 8
 
+
 @dataclass
 class PathsConfig:
     output_dir: str
     log_dir: str
     model_dir: str
     data_dir: str
+
 
 @dataclass
 class ModelTokenizerConfig:
@@ -33,13 +36,17 @@ class ModelTokenizerConfig:
     pad_token_as_eos: bool = True
     max_new_tokens: int = 255
 
+
 @dataclass
 class ModelConfig:
     name: str
     checkpoint_dir: str = ""
     device_map: Union[str, dict, None] = "auto"
     trust_remote_code: bool = True
-    tokenizer: ModelTokenizerConfig = field(default_factory=ModelTokenizerConfig)
+    tokenizer: ModelTokenizerConfig = field(
+        default_factory=ModelTokenizerConfig
+    )
+
 
 @dataclass
 class GenerationConfig:
@@ -50,6 +57,7 @@ class GenerationConfig:
     guidance_scale: Optional[float] = None
     use_accelerator: bool = False
 
+
 @dataclass
 class EvaluationConfig:
     clap_model: str = "laion/clap-htsat-unfused"
@@ -57,6 +65,7 @@ class EvaluationConfig:
     skip_evaluation: bool = False
     compute_fad: bool = True
     reference_audio_dir: str = ""
+
 
 @dataclass
 class TTAConfig(DictConfig):

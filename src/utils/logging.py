@@ -15,12 +15,11 @@ from src.utils import pylogger
 log = pylogger.RankedLogger(__name__, rank_zero_only=True)
 
 
-
-
 def instantiate_callbacks(callbacks_cfg: DictConfig) -> List[Callback]:
     """Instantiates callbacks from config.
 
-    :param callbacks_cfg: A DictConfig object containing callback configurations.
+    :param callbacks_cfg: A DictConfig object containing callback
+        configurations.
     :return: A list of instantiated callbacks.
     """
     callbacks: List[Callback] = []
@@ -124,9 +123,12 @@ def print_config_tree(
 
     # add fields from `print_order` to queue
     for field in print_order:
-        queue.append(field) if field in cfg else log.warning(
-            f"Field '{field}' not found in config. Skipping '{field}' config printing..."
-        )
+        if field not in cfg:
+            log.warning(
+                f"Field '{field}' not found in config. Skipping '{field}' config printing..."
+            )
+        else:
+            queue.append(field)
 
     # add all the other fields to queue (not specified in `print_order`)
     for field in cfg:

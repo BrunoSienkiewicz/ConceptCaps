@@ -4,9 +4,9 @@ device_map: auto
 trust_remote_code: true
 
 # Memory and speed optimizations
-use_bf16: true  # Use BF16 precision (A100 native support, 2x faster)
-gradient_checkpointing: true  # Reduce memory usage
-compile: false  # Enable torch.compile() - set to true after first run completes
+use_bf16: true # Use BF16 precision (A100 native support, 2x faster)
+gradient_checkpointing: true # Reduce memory usage
+compile: false # Enable torch.compile() - set to true after first run completes
 
 tokenizer:
   max_new_tokens: 255

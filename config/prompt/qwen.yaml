@@ -1,9 +1,7 @@
-template:
-  <|im_start|>system {system_prompt}<|im_end|>
+template: <|im_start|>system {system_prompt}<|im_end|>
   <|im_start|>user {user_prompt}<|im_end|>
   <|im_start|>assistant {assistant_response}<|im_end|>
-eval_template:
-  <|im_start|>system {system_prompt}<|im_end|>
+eval_template: <|im_start|>system {system_prompt}<|im_end|>
   <|im_start|>user {user_prompt}<|im_end|>
   <|im_start|>assistant
 system_prompt: You are a music description expert that creates detailed, technical descriptions of songs based on their musical characteristics.

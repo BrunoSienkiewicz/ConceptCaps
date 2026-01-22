@@ -42,7 +42,7 @@ def load_and_tokenize_dataset(
     device: torch.device = torch.device("cpu"),
 ) -> Tuple[TTADataset, pd.DataFrame]:
     """Load a dataset and tokenize captions.
-    
+
     Args:
         dataset_name: HuggingFace dataset identifier
         processor: Tokenizer/processor to use
@@ -51,17 +51,17 @@ def load_and_tokenize_dataset(
         max_sequence_length: Max tokenization length
         caption_column: Name of caption column
         device: Device to load tensors to
-        
+
     Returns:
         (TTADataset, metadata_dataframe)
     """
     # Load dataset
     dataset_dict = load_dataset(dataset_name)
     df = dataset_dict[subset].to_pandas()
-    
+
     # Sample subset
     df = df.sample(frac=subset_size).reset_index(drop=True)
-    
+
     # Tokenize captions
     captions = df[caption_column].tolist()
     inputs = processor(
@@ -71,19 +71,22 @@ def load_and_tokenize_dataset(
         return_tensors="pt",
         truncation=True,
     )
-    
+
     # Create dataset
     tta_dataset = TTADataset(
         input_ids=inputs["input_ids"],
         attention_mask=inputs["attention_mask"],
         device=device,
     )
-    
+
     return tta_dataset, df
 
-def prepare_dataloader(cfg: dict, processor: AutoProcessor) -> Tuple[DataLoader, pd.DataFrame]:
+
+def prepare_dataloader(
+    cfg: dict, processor: AutoProcessor
+) -> Tuple[DataLoader, pd.DataFrame]:
     """Prepare DataLoader for TTA dataset.
-    
+
     Args:
         cfg: Configuration dictionary with dataset and dataloader parameters.
     Returns:
@@ -113,7 +116,7 @@ def save_dataframe_metadata(
     filename_template: str = "{}.wav",
 ) -> None:
     """Save dataframe metadata with audio file paths.
-    
+
     Args:
         df: DataFrame containing metadata
         data_dir: Directory where audio files are stored

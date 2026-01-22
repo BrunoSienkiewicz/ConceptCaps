@@ -8,6 +8,7 @@ from omegaconf import DictConfig
 @dataclass
 class VAEModelConfig:
     """Configuration for the VAE model architecture."""
+
     name: str = "MultiLabelVAE"
     input_dim: int = 0  # Will be computed based on taxonomy
     latent_dim: int = 32
@@ -20,6 +21,7 @@ class VAEModelConfig:
 @dataclass
 class VAEDataConfig:
     """Configuration for data loading and preprocessing."""
+
     taxonomy_path: str = "data/concepts_to_tags.json"
     dataset_name: str = "google/MusicCaps"
     dataset_split: str = "train"
@@ -32,6 +34,7 @@ class VAEDataConfig:
 @dataclass
 class VAETrainerConfig:
     """Configuration for PyTorch Lightning trainer."""
+
     max_epochs: int = 250
     accelerator: str = "auto"
     devices: Union[str, int, List[int]] = "auto"
@@ -52,6 +55,7 @@ class VAETrainerConfig:
 @dataclass
 class VAELossConfig:
     """Configuration for loss function."""
+
     bce_weight: float = 1.0
     kld_weight: float = 1.0
     use_binary_cross_entropy: bool = True
@@ -60,6 +64,7 @@ class VAELossConfig:
 @dataclass
 class BetaVAEConfig:
     """Configuration for Beta-VAE variant."""
+
     beta: float = 4.0  # Weight for KL divergence term
     # Higher beta encourages disentanglement but may reduce reconstruction quality
     # Typical values: 1.0 (standard VAE), 4.0 (balanced), 10.0+ (high disentanglement)
@@ -77,6 +82,7 @@ class VAEPathsConfig:
 @dataclass
 class VAEInferenceConfig:
     """Configuration for VAE inference on sampled latent vectors."""
+
     enabled: bool = True
     num_samples: int = 1000
     temperature: float = 1.0
@@ -87,13 +93,14 @@ class VAEInferenceConfig:
 @dataclass
 class VAEConfig:
     """Main configuration for VAE training."""
+
     model: VAEModelConfig = field(default_factory=VAEModelConfig)
     data: VAEDataConfig = field(default_factory=VAEDataConfig)
     trainer: VAETrainerConfig = field(default_factory=VAETrainerConfig)
     loss: VAELossConfig = field(default_factory=VAELossConfig)
     paths: VAEPathsConfig = field(default_factory=VAEPathsConfig)
     inference: VAEInferenceConfig = field(default_factory=VAEInferenceConfig)
-    
+
     random_state: int = 42
     device: str = "cuda"
     run_id: str = "${now:%Y-%m-%d_%H-%M-%S}"

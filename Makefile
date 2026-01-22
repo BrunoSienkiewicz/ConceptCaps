@@ -23,4 +23,4 @@ env: ## Create virtual environment
 	conda env create
 
 update: ## Update dependencies
-	conda env update --name ${ENV_NAME} --file environment.yml --prune
+	conda env update --file environment.yml --prune

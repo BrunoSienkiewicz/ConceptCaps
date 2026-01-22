@@ -210,18 +210,18 @@ The VAE consists of:
 
 **Encoder**:
 ```
-Input (input_dim) 
-  → Linear(input_dim, hidden_dim) 
-  → ReLU 
+Input (input_dim)
+  → Linear(input_dim, hidden_dim)
+  → ReLU
   → [Linear(hidden_dim, latent_dim) for μ, σ]
 ```
 
 **Decoder**:
 ```
-Latent (latent_dim) 
-  → Linear(latent_dim, hidden_dim) 
-  → ReLU 
-  → Linear(hidden_dim, input_dim) 
+Latent (latent_dim)
+  → Linear(latent_dim, hidden_dim)
+  → ReLU
+  → Linear(hidden_dim, input_dim)
   → Sigmoid
 ```
 

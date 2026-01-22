@@ -1,27 +1,36 @@
 from __future__ import annotations
 
-import torch
-import hydra
-import rootutils
-import lightning as pl
 from pathlib import Path
+
+import hydra
+import lightning as pl
+import rootutils
+import torch
 from datasets import load_dataset
 
-from src.caption import CaptionGenerationConfig
-from src.utils import print_config_tree, RankedLogger, instantiate_loggers, instantiate_callbacks
-from src.caption.data import prepare_datasets
 from caption.model import prepare_tokenizer
+from src.caption import CaptionGenerationConfig
+from src.caption.data import prepare_datasets
 from src.caption.evaluation import MetricComputer
-from src.caption.lightning_module import CaptionFineTuningModule
 from src.caption.lightning_datamodule import CaptionDataModule
-
+from src.caption.lightning_module import CaptionFineTuningModule
+from src.utils import (
+    RankedLogger,
+    instantiate_callbacks,
+    instantiate_loggers,
+    print_config_tree,
+)
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
 
-@hydra.main(version_base=None, config_path="../../../config", config_name="caption_fine_tuning")
+@hydra.main(
+    version_base=None,
+    config_path="../../../config",
+    config_name="caption_fine_tuning",
+)
 def main(cfg: CaptionGenerationConfig) -> None:
     """Main training function using PyTorch Lightning."""
 
@@ -29,13 +38,19 @@ def main(cfg: CaptionGenerationConfig) -> None:
     if cfg.get("callbacks"):
         pl_callbacks = instantiate_callbacks(cfg.callbacks)
         if pl_callbacks:
-            callbacks.extend(pl_callbacks if isinstance(pl_callbacks, list) else [pl_callbacks])
+            callbacks.extend(
+                pl_callbacks
+                if isinstance(pl_callbacks, list)
+                else [pl_callbacks]
+            )
 
     loggers = []
     if cfg.get("logger"):
         pl_loggers = instantiate_loggers(cfg.logger)
         if pl_loggers:
-            loggers.extend(pl_loggers if isinstance(pl_loggers, list) else [pl_loggers])
+            loggers.extend(
+                pl_loggers if isinstance(pl_loggers, list) else [pl_loggers]
+            )
 
     log.info(f"Setting random seed to {cfg.random_state}...")
     pl.seed_everything(cfg.random_state, workers=True)
@@ -78,7 +93,7 @@ def main(cfg: CaptionGenerationConfig) -> None:
         prompt_cfg=cfg.prompt,
         batch_size=cfg.data.batch_size,
         num_workers=cfg.data.dataloader_num_workers,
-        max_length=cfg.generation.max_length 
+        max_length=cfg.generation.max_length,
     )
 
     log.info("Creating Lightning Module...")
@@ -134,8 +149,10 @@ def main(cfg: CaptionGenerationConfig) -> None:
     if hasattr(model.model, "save_pretrained"):
         model.model.save_pretrained(checkpoint_dir / "lora_adapter")
         log.info(f"Saved LoRA adapter to {checkpoint_dir / 'lora_adapter'}")
-    
-    log.info(f"Training completed. Model and checkpoints are saved in {checkpoint_dir}")
+
+    log.info(
+        f"Training completed. Model and checkpoints are saved in {checkpoint_dir}"
+    )
 
 
 if __name__ == "__main__":

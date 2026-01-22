@@ -34,7 +34,7 @@ Measures the diversity of generated tag combinations to detect model collapse.
 
 - **Good Model**: High unique combinations %, high entropy, low Gini coefficient
 - **Model Collapse**: Low unique combinations %, low entropy, high Gini coefficient
-- **Warning Signs**: 
+- **Warning Signs**:
   - `pct_unique_combinations < 50%` suggests potential collapse
   - `gini_coefficient > 0.5` suggests dominant combinations
 

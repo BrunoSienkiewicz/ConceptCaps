@@ -10,7 +10,6 @@ from transformers import AutoTokenizer, DataCollatorForLanguageModeling
 
 from src.utils import RankedLogger
 
-
 log = RankedLogger(__name__, rank_zero_only=True)
 
 
@@ -44,44 +43,55 @@ class CaptionDataModule(pl.LightningDataModule):
     def tokenize_function(self, examples):
         text_column = self.data_cfg.text_column
         _examples = [
-            text + self.tokenizer.eos_token if not text.endswith(self.tokenizer.eos_token) else text
+            text + self.tokenizer.eos_token
+            if not text.endswith(self.tokenizer.eos_token)
+            else text
             for text in examples[text_column]
         ]
-        
+
         tokenized = self.tokenizer(
             _examples,
             truncation=True,
             max_length=self.max_length,
             padding="max_length",
         )
-        
+
         prompt_delimiter = self.prompt_cfg.prompt_delimiter.strip()
-        delimiter_token_ids = self.tokenizer.encode(prompt_delimiter, add_special_tokens=False)
-        
+        delimiter_token_ids = self.tokenizer.encode(
+            prompt_delimiter, add_special_tokens=False
+        )
+
         labels = []
         for token_ids in tokenized["input_ids"]:
-            label = token_ids.copy() if hasattr(token_ids, 'copy') else list(token_ids)
+            label = (
+                token_ids.copy()
+                if hasattr(token_ids, "copy")
+                else list(token_ids)
+            )
             token_list = label if isinstance(label, list) else label.tolist()
-            
+
             marker_found = False
             for j in range(len(token_list) - len(delimiter_token_ids) + 1):
-                if token_list[j:j+len(delimiter_token_ids)] == delimiter_token_ids:
+                if (
+                    token_list[j : j + len(delimiter_token_ids)]
+                    == delimiter_token_ids
+                ):
                     mask_until = j + len(delimiter_token_ids)
                     label[:mask_until] = [-100] * mask_until
                     marker_found = True
                     break
-            
+
             if not marker_found:
                 label[:] = [-100] * len(label)
-                log.warning(f"Prompt delimiter not found in example")
-            
+                log.warning("Prompt delimiter not found in example")
+
             labels.append(label)
-        
+
         tokenized["labels"] = labels
-            
+
         return tokenized
 
-    def setup(self, stage: Optional[str] = None):
+    def setup(self, stage: str | None = None):
         if stage == "fit" or stage is None:
             self.train_dataset = self.dataset["train"].map(
                 self.tokenize_function,
@@ -95,7 +105,7 @@ class CaptionDataModule(pl.LightningDataModule):
                 remove_columns=self.dataset["validation"].column_names,
                 desc="Tokenizing validation dataset",
             )
-    
+
         if stage == "test" or stage is None:
             self.test_dataset = self.dataset["test"].map(
                 self.tokenize_function,

@@ -1,22 +1,24 @@
 from pathlib import Path
 
 import hydra
+import pytorch_lightning as pl
 import rootutils
 import torch
-import pytorch_lightning as pl
 
-from src.utils import (RankedLogger, instantiate_loggers,
-                       print_config_tree)
 from src.tta.config import TTAConfig
 from src.tta.evaluation import TTAEvaluator
-
+from src.utils import RankedLogger, instantiate_loggers, print_config_tree
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
 
-@hydra.main(version_base=None, config_path="../../../config", config_name="tta_generation")
+@hydra.main(
+    version_base=None,
+    config_path="../../../config",
+    config_name="tta_generation",
+)
 def main(cfg: TTAConfig):
     device = torch.device(cfg.device if torch.cuda.is_available() else "cpu")
 
@@ -28,7 +30,9 @@ def main(cfg: TTAConfig):
     if cfg.get("logger"):
         pl_loggers = instantiate_loggers(cfg.logger)
         if pl_loggers:
-            loggers.extend(pl_loggers if isinstance(pl_loggers, list) else [pl_loggers])
+            loggers.extend(
+                pl_loggers if isinstance(pl_loggers, list) else [pl_loggers]
+            )
 
     print_config_tree(cfg)
 
@@ -43,9 +47,17 @@ def main(cfg: TTAConfig):
 
     log.info("Running TTA evaluation...")
     results = evaluator.evaluate(
-        generated_audio_dir=Path(cfg.evaluation.get("audio_path", data_dir / "audio_samples")),
-        metadata_path=Path(cfg.evaluation.get("text_path", data_dir / "metadata.csv")),
-        reference_audio_dir=Path(cfg.evaluation.get("reference_audio_dir", data_dir / "reference_audio_samples")),
+        generated_audio_dir=Path(
+            cfg.evaluation.get("audio_path", data_dir / "audio_samples")
+        ),
+        metadata_path=Path(
+            cfg.evaluation.get("text_path", data_dir / "metadata.csv")
+        ),
+        reference_audio_dir=Path(
+            cfg.evaluation.get(
+                "reference_audio_dir", data_dir / "reference_audio_samples"
+            )
+        ),
         output_dir=data_dir / "evaluation_results",
         text_column=cfg.data.get("text_column", "caption"),
         filename_column=cfg.data.get("filename_column", "filename"),
@@ -60,6 +72,6 @@ def main(cfg: TTAConfig):
 
     log.info(f"Results saved to {data_dir / 'evaluation_results'}")
 
+
 if __name__ == "__main__":
     main()
-

@@ -26,8 +26,12 @@ class ModelConfig:
     checkpoint_dir: str = ""
     device_map: Union[str, dict, None] = "auto"
     trust_remote_code: bool = True
-    quantization: Optional[QuantizationConfig] = field(default_factory=QuantizationConfig)
-    tokenizer: ModelTokenizerConfig = field(default_factory=ModelTokenizerConfig)
+    quantization: Optional[QuantizationConfig] = field(
+        default_factory=QuantizationConfig
+    )
+    tokenizer: ModelTokenizerConfig = field(
+        default_factory=ModelTokenizerConfig
+    )
 
 
 @dataclass
@@ -37,6 +41,7 @@ class PromptConfig:
     prompt_delimiter: str
     system_prompt: str
     user_prompt_template: str
+
 
 @dataclass
 class DatasetConfig:
