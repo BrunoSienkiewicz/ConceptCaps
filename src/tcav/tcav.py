@@ -1,4 +1,7 @@
-from typing import Dict
+"""TCAV (Testing with Concept Activation Vectors) implementation for
+interpretability."""
+
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 import torch
@@ -7,6 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import RobustScaler, normalize
 from sklearn.svm import SVC
 
+from src.constants import DEFAULT_NUM_CAV_RUNS, MIN_CAV_ACCURACY
 from src.tcav.model import MusicGenreClassifier
 from src.utils import RankedLogger
 
@@ -14,14 +18,42 @@ log = RankedLogger(__name__, rank_zero_only=True)
 
 
 class TCAV:
-    def __init__(self, model: MusicGenreClassifier, device: torch.device):
+    """Testing with Concept Activation Vectors for model interpretability.
+
+    TCAV quantifies the importance of user-defined concepts for a classifier's
+    predictions by learning concept activation vectors (CAVs) and measuring
+    directional derivatives of predictions along these vectors.
+
+    Args:
+        model: Trained genre classifier with accessible bottleneck layer.
+        device: Device to run computations on.
+
+    Example:
+        >>> tcav = TCAV(model, device="cuda")
+        >>> concept_acts = tcav.get_activations(concept_audio)
+        >>> random_acts = tcav.get_activations(random_audio)
+        >>> cav_result = tcav.train_cav(concept_acts, random_acts)
+        >>> tcav_score = tcav.compute_tcav_score(cav_result["cav"], target_audio, target_class=0)
+    """
+
+    def __init__(
+        self, model: MusicGenreClassifier, device: torch.device
+    ) -> None:
         self.model = model.to(device)
         self.device = device
 
     def get_activations(
         self, audio: torch.Tensor, batch_size: int = 32
     ) -> np.ndarray:
-        """Extract bottleneck activations in batches."""
+        """Extract bottleneck layer activations from audio samples.
+
+        Args:
+            audio: Audio tensor of shape (n_samples, n_features).
+            batch_size: Batch size for processing.
+
+        Returns:
+            Activations array of shape (n_samples, bottleneck_dim).
+        """
         activations = []
 
         for i in range(0, len(audio), batch_size):
@@ -39,7 +71,17 @@ class TCAV:
         target_class: int,
         batch_size: int = 32,
     ) -> np.ndarray:
-        """Compute directional derivatives along CAV direction."""
+        """Compute directional derivatives of predictions along CAV direction.
+
+        Args:
+            audio: Audio tensor to compute derivatives for.
+            cav: Concept activation vector.
+            target_class: Target class index for gradient computation.
+            batch_size: Batch size for processing.
+
+        Returns:
+            Array of directional derivatives.
+        """
         audio = audio.to(self.device)
         cav_tensor = torch.from_numpy(cav).float().to(self.device)
 
@@ -67,11 +109,21 @@ class TCAV:
         self,
         concept_acts: np.ndarray,
         random_acts: np.ndarray,
-        num_runs: int = 10,
+        num_runs: int = DEFAULT_NUM_CAV_RUNS,
         test_size: float = 0.2,
-    ) -> Dict:
-        """Train CAV using SVM."""
+    ) -> Dict[str, np.ndarray]:
+        """Train Concept Activation Vector using linear SVM.
 
+        Args:
+            concept_acts: Activations from concept examples.
+            random_acts: Activations from random/counter examples.
+            num_runs: Number of independent training runs for stability.
+            test_size: Fraction of data for testing.
+
+        Returns:
+            Dictionary containing 'cav' (mean vector), 'accuracy' (mean test accuracy),
+            and 'std' (standard deviation of accuracy across runs).
+        """
         cavs, scores = [], []
 
         for run in range(num_runs):
@@ -108,17 +160,17 @@ class TCAV:
             acc = accuracy_score(y_test, y_pred)
 
             # Only accept CAVs with reasonable performance
-            if acc > 0.60:  # Better than random + margin
+            if acc > MIN_CAV_ACCURACY:
                 cavs.append(cav)
                 scores.append(acc)
 
         # If no good CAVs found, return failure
         if len(cavs) == 0:
-            log.warning("Warning: No CAVs with accuracy > 0.60 found")
+            log.warning(f"No CAVs with accuracy > {MIN_CAV_ACCURACY} found")
             return {
                 "cav": None,
-                "accuracy": 0,
-                "accuracy_std": 0,
+                "accuracy": 0.0,
+                "accuracy_std": 0.0,
                 "num_successful_runs": 0,
             }
 
@@ -128,21 +180,27 @@ class TCAV:
 
         return {
             "cav": avg_cav,
-            "accuracy": np.mean(scores),
-            "accuracy_std": np.std(scores),
+            "accuracy": float(np.mean(scores)),
+            "accuracy_std": float(np.std(scores)),
             "num_successful_runs": len(scores),
         }
 
     def compute_tcav_score(
         self, activations: np.ndarray, cav: np.ndarray
     ) -> float:
-        """Compute TCAV score.
+        """Compute TCAV score as fraction of samples positively aligned with
+        CAV.
 
         Args:
-            activations: Bottleneck activations
-            cav: Concept activation vector
+            activations: Bottleneck activations of shape (n_samples, bottleneck_dim).
+            cav: Concept activation vector.
+
+        Returns:
+            TCAV score between 0 and 1.
         """
         acts_normalized = normalize(activations, norm="l2")
         cav_normalized = cav / (np.linalg.norm(cav) + 1e-8)
         similarities = np.dot(acts_normalized, cav_normalized)
-        return np.mean(similarities > 0.1)  # Threshold for positive alignment
+        return float(
+            np.mean(similarities > 0.1)
+        )  # Threshold for positive alignment

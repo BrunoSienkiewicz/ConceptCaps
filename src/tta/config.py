@@ -1,7 +1,20 @@
+"""Configuration classes for Text-to-Audio generation pipeline."""
+
 from dataclasses import dataclass, field
-from typing import List, Optional, Union
+from pathlib import Path
+from typing import Dict, List, Optional, Union
 
 from omegaconf import DictConfig
+
+from src.constants import (
+    CLAP_MODEL,
+    DEFAULT_BATCH_SIZE,
+    DEFAULT_GUIDANCE_SCALE,
+    DEFAULT_MAX_NEW_TOKENS,
+    DEFAULT_TEMPERATURE,
+    DEFAULT_TOP_K,
+    DEFAULT_TOP_P,
+)
 
 
 @dataclass
@@ -14,11 +27,11 @@ class LoggerConfig:
 
 @dataclass
 class DatasetConfig:
-    dataset_name: str = ""
+    dataset_name: str = "default/dataset"
     id_column: str = "id"
     caption_column: str = "caption"
     remove_columns: Optional[List[str]] = None
-    batch_size: int = 8
+    batch_size: int = DEFAULT_BATCH_SIZE
 
 
 @dataclass
@@ -28,21 +41,31 @@ class PathsConfig:
     model_dir: str
     data_dir: str
 
+    def __post_init__(self) -> None:
+        """Ensure all paths are Path objects."""
+        self.output_dir = str(Path(self.output_dir).resolve())
+        self.log_dir = str(Path(self.log_dir).resolve())
+        self.model_dir = str(Path(self.model_dir).resolve())
+        self.data_dir = str(Path(self.data_dir).resolve())
+
 
 @dataclass
 class ModelTokenizerConfig:
     padding_side: str = "right"
     use_fast: Optional[bool] = None
     pad_token_as_eos: bool = True
-    max_new_tokens: int = 255
+    max_new_tokens: int = DEFAULT_MAX_NEW_TOKENS
 
 
 @dataclass
 class ModelConfig:
     name: str
     checkpoint_dir: str = ""
-    device_map: Union[str, dict, None] = "auto"
+    device_map: Union[str, Dict, None] = "auto"
     trust_remote_code: bool = True
+    use_bf16: bool = True
+    compile: bool = False
+    gradient_checkpointing: bool = True
     tokenizer: ModelTokenizerConfig = field(
         default_factory=ModelTokenizerConfig
     )
@@ -50,21 +73,23 @@ class ModelConfig:
 
 @dataclass
 class GenerationConfig:
-    temperature: float = 1.0
-    top_k: int = 50
-    top_p: float = 0.95
+    temperature: float = DEFAULT_TEMPERATURE
+    top_k: int = DEFAULT_TOP_K
+    top_p: float = DEFAULT_TOP_P
     do_sample: bool = True
-    guidance_scale: Optional[float] = None
+    guidance_scale: Optional[float] = DEFAULT_GUIDANCE_SCALE
+    sample_rate: Optional[int] = None  # Will use model default if None
     use_accelerator: bool = False
 
 
 @dataclass
 class EvaluationConfig:
-    clap_model: str = "laion/clap-htsat-unfused"
-    fad_model: str = "laion/clap-htsat-unfused"
+    clap_model: str = CLAP_MODEL
+    fad_model: str = CLAP_MODEL
     skip_evaluation: bool = False
     compute_fad: bool = True
     reference_audio_dir: str = ""
+    batch_size: int = DEFAULT_BATCH_SIZE
 
 
 @dataclass
@@ -76,5 +101,6 @@ class TTAConfig(DictConfig):
     logger: LoggerConfig
     paths: PathsConfig
     random_state: int
-    batch_size: int = 8
+    batch_size: int = DEFAULT_BATCH_SIZE
     device: str = "cuda"
+    run_id: str = "default"

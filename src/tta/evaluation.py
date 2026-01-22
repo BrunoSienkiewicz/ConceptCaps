@@ -1,3 +1,5 @@
+"""Evaluation metrics for Text-to-Audio generation quality assessment."""
+
 from __future__ import annotations
 
 import json
@@ -12,23 +14,26 @@ from scipy.linalg import sqrtm
 from tqdm import tqdm
 from transformers import AutoModel, AutoProcessor
 
+from src.constants import CLAP_MODEL
 from src.utils import RankedLogger
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
 
 class CLAPScore:
-    """CLAP (Contrastive Language-Audio Pretraining) score evaluator."""
+    """CLAP-based semantic similarity evaluator for audio-text alignment.
+
+    Measures how well generated audio matches text descriptions using the
+    CLAP (Contrastive Language-Audio Pretraining) model.
+
+    Args:
+        model_name: HuggingFace CLAP model identifier.
+        device: Device for computation ('cuda' or 'cpu').
+    """
 
     def __init__(
-        self, model_name: str = "laion/clap-htsat-unfused", device: str = "cuda"
-    ):
-        """Initialize CLAP model.
-
-        Args:
-            model_name: HuggingFace model identifier for CLAP
-            device: Device to run the model on
-        """
+        self, model_name: str = CLAP_MODEL, device: str = "cuda"
+    ) -> None:
         self.device = torch.device(
             device if torch.cuda.is_available() else "cpu"
         )
@@ -46,15 +51,15 @@ class CLAPScore:
         texts: list[str],
         batch_size: int = 8,
     ) -> dict[str, float]:
-        """Compute CLAP scores between audio and text.
+        """Compute CLAP similarity scores between audio and text pairs.
 
         Args:
-            audio_paths: List of paths to generated audio files
-            texts: List of text prompts/captions
-            batch_size: Batch size for processing
+            audio_paths: Paths to generated audio files.
+            texts: Text prompts/captions corresponding to audio files.
+            batch_size: Batch size for processing.
 
         Returns:
-            Dictionary with CLAP scores
+            Dictionary with mean, std, min, max CLAP scores and per-sample scores.
         """
         assert len(audio_paths) == len(
             texts

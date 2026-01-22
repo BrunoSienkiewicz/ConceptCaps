@@ -1,7 +1,19 @@
+"""Configuration dataclasses for audio caption generation."""
+
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 from omegaconf import DictConfig
+
+from src.constants import (
+    DEFAULT_BATCH_SIZE,
+    DEFAULT_GRADIENT_CLIP_VAL,
+    DEFAULT_MAX_NEW_TOKENS,
+    DEFAULT_TEMPERATURE,
+    DEFAULT_TOP_K,
+    DEFAULT_TOP_P,
+)
 
 
 @dataclass
@@ -24,7 +36,7 @@ class ModelTokenizerConfig:
 class ModelConfig:
     name: str
     checkpoint_dir: str = ""
-    device_map: Union[str, dict, None] = "auto"
+    device_map: Union[str, Dict, None] = "auto"
     trust_remote_code: bool = True
     quantization: Optional[QuantizationConfig] = field(
         default_factory=QuantizationConfig
@@ -50,7 +62,7 @@ class DatasetConfig:
     caption_column: str = "caption"
     text_column: str = "text"
     id_column: str = "id"
-    batch_size: int = 8
+    batch_size: int = DEFAULT_BATCH_SIZE
     dataloader_num_workers: int = 4
     remove_columns: Optional[List[str]] = None
     max_train_samples: Optional[int] = None
@@ -74,9 +86,9 @@ class TrainerConfig:
     dataloader_num_workers: int = 1
     accelerator: str = "auto"
     devices: Union[str, int, List[int]] = "auto"
-    strategy: Union[str, dict, None] = "ddp"
+    strategy: Union[str, Dict, None] = "ddp"
     precision: Union[str, int] = "bf16"
-    gradient_clip_val: float = 1.0
+    gradient_clip_val: float = DEFAULT_GRADIENT_CLIP_VAL
     accumulate_grad_batches: int = 1
     log_every_n_steps: int = 5
     val_check_interval: Union[float, int, None] = 1.0
@@ -90,11 +102,11 @@ class TrainerConfig:
 
 @dataclass
 class GenerationConfig:
-    max_new_tokens: int = 256
+    max_new_tokens: int = DEFAULT_MAX_NEW_TOKENS
     max_length: int = 512
-    temperature: float = 1.0
-    top_k: int = 50
-    top_p: float = 0.95
+    temperature: float = DEFAULT_TEMPERATURE
+    top_k: int = DEFAULT_TOP_K
+    top_p: float = DEFAULT_TOP_P
     do_sample: bool = True
     repetition_penalty: float = 1.0
     no_repeat_ngram_size: int = 0
@@ -104,7 +116,7 @@ class GenerationConfig:
 @dataclass
 class EvaluationMetricConfig:
     name: str
-    kwargs: dict = field(default_factory=dict)
+    kwargs: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -122,6 +134,13 @@ class PathsConfig:
     log_dir: str
     model_dir: str
     data_dir: str
+
+    def __post_init__(self) -> None:
+        """Ensure all paths are resolved."""
+        self.output_dir = str(Path(self.output_dir).resolve())
+        self.log_dir = str(Path(self.log_dir).resolve())
+        self.model_dir = str(Path(self.model_dir).resolve())
+        self.data_dir = str(Path(self.data_dir).resolve())
 
 
 @dataclass
