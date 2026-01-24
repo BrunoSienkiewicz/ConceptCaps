@@ -5,13 +5,12 @@
 # - conda allows for installing packages without requiring certain compilers or
 #   libraries to be available in the system, since it installs precompiled binaries
 
-name: music-gen-interpretability
+name: concept-caps
 
 channels:
   - pytorch
   - nvidia
   - conda-forge
-  - defaults
 
 # it is strongly recommended to specify versions of packages installed through conda
 # to avoid situation when version-unspecified packages install their latest major
@@ -50,7 +49,6 @@ dependencies:
       - hydra-optuna-sweeper
       - hydra-colorlog
       - rootutils
-      - captum
       - pandas
       - scikit-learn
       - rich

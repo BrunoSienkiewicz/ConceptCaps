@@ -1,23 +1,27 @@
-"""Project-wide constants and configuration values."""
-
 import os
 from pathlib import Path
 from typing import Tuple
+
+# ===========================================================================
+# Final dataset paths
+# ===========================================================================
+
+METADATA_CSV_PATH = Path(os.getenv("METADATA_CSV_PATH", "../data/generated_audio_dataset/metadata.csv"))
+AUDIO_DATA_PATH = Path(os.getenv("AUDIO_DATA_PATH", "../data/generated_audio_dataset"))
+
+TCAV_RESULTS_PATH = Path(os.getenv("TCAV_RESULTS_PATH", "../data/tcav_genre_classification_results.json"))
 
 # ============================================================================
 # Environment Variables
 # ============================================================================
 
-# Project root directory
 PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT", Path(__file__).parent.parent.absolute()))
 
-# Data directories
 DATA_DIR = Path(os.getenv("DATA_DIR", PROJECT_ROOT / "data"))
 MODELS_DIR = Path(os.getenv("MODELS_DIR", PROJECT_ROOT / "models"))
 OUTPUTS_DIR = Path(os.getenv("OUTPUTS_DIR", PROJECT_ROOT / "outputs"))
 LOGS_DIR = Path(os.getenv("LOGS_DIR", PROJECT_ROOT / "logs"))
 
-# Weights & Biases
 WANDB_PROJECT = os.getenv("WANDB_PROJECT", "music-gen-interpretability")
 WANDB_ENTITY = os.getenv("WANDB_ENTITY", None)
 
@@ -35,6 +39,7 @@ DEFAULT_N_FFT = 2048
 # GTZAN Dataset Constants
 # ============================================================================
 
+GTZAN_PATH = Path(os.getenv("GTZAN_PATH", "../data/GTZAN/Data/genres_original"))
 GTZAN_GENRES: Tuple[str, ...] = (
     "blues",
     "classical",
@@ -74,6 +79,8 @@ DEFAULT_GRADIENT_CLIP_VAL = 1.0
 # TCAV Analysis Constants
 # ============================================================================
 
+GENRE_CLASSIFIER_MODEL_CHECKPOINT_PATH = Path(os.getenv("GENRE_CLASSIFIER_MODEL_CHECKPOINT_PATH", "../models/best-genre-classifier.ckpt"))
+
 MIN_CAV_ACCURACY = 0.60
 DEFAULT_NUM_CAV_RUNS = 40
 DEFAULT_NUM_CONCEPT_SAMPLES = 50
@@ -89,24 +96,8 @@ DEFAULT_TOP_K = 50
 DEFAULT_TOP_P = 0.95
 DEFAULT_MAX_NEW_TOKENS = 1503
 
-# MusicGen Models
 MUSICGEN_SMALL = "facebook/musicgen-small"
 MUSICGEN_MEDIUM = "facebook/musicgen-medium"
 MUSICGEN_LARGE = "facebook/musicgen-large"
 
-# CLAP Models
 CLAP_MODEL = "laion/clap-htsat-unfused"
-
-# ============================================================================
-# Evaluation Constants
-# ============================================================================
-
-# CLAP Score Benchmarks
-CLAP_SCORE_EXCELLENT = 0.35  # Above this is excellent
-CLAP_SCORE_GOOD = 0.25  # Above this is good
-CLAP_SCORE_ACCEPTABLE = 0.15  # Above this is acceptable
-
-# FAD Score (lower is better, these are approximate for CLAP-based FCD)
-FAD_SCORE_EXCELLENT = 0.5
-FAD_SCORE_GOOD = 1.0
-FAD_SCORE_ACCEPTABLE = 2.0
