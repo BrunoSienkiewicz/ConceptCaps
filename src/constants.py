@@ -6,6 +6,8 @@ from typing import Tuple
 # Final dataset paths
 # ===========================================================================
 
+REPO_ID = os.getenv("REPO_ID", "bsienkiewicz/ConceptCaps")
+
 METADATA_CSV_PATH = Path(os.getenv("METADATA_CSV_PATH", "../data/generated_audio_dataset/metadata.csv"))
 AUDIO_DATA_PATH = Path(os.getenv("AUDIO_DATA_PATH", "../data/generated_audio_dataset"))
 
