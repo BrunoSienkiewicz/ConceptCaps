@@ -33,15 +33,26 @@ conda env create --file environment.yml
 conda activate music-gen-interpretability3
 pip install torch==2.6
 
-cd .. && git clone https://github.com/bitsandbytes-foundation/bitsandbytes.git && cd bitsandbytes/
+
+cd 
+if [ ! -d "bitsandbytes" ]; then
+    git clone https://github.com/bitsandbytes-foundation/bitsandbytes.git
+fi
+cd bitsandbytes/
 cmake -DCOMPUTE_BACKEND=cuda -DCOMPUTE_CAPABILITY=80 -S .
 make
 pip install -e .
 
-cd .. && git clone https://github.com/huggingface/peft
+cd 
+if [ ! -d "peft" ]; then
+    git clone https://github.com/huggingface/peft
+fi
 cd peft
 pip install -e .
 
-cd .. && git clone https://github.com/huggingface/trl.git
+cd 
+if [ ! -d "trl" ]; then
+    git clone https://github.com/huggingface/trl.git
+fi
 cd trl/
 pip install -e .
