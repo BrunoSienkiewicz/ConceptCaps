@@ -30,7 +30,7 @@ conda config --add envs\_dirs $CONDA_DIR/envs
 conda config --set solver libmamba
 
 conda env create --file environment.yml
-conda activate music-gen-interpretability3
+conda activate "$(grep -E '^name:' environment.yml | awk '{print $2}')"
 pip install torch==2.6
 
 
