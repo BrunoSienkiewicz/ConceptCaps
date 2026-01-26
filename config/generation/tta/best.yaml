@@ -2,4 +2,4 @@ temperature: 0.8
 top_k: 100
 top_p: 0.98
 do_sample: true
-guidance_scale: 2.0
+guidance_scale: 2.3
