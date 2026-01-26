@@ -1,0 +1,7 @@
+dataset_name: "bsienkiewicz/quick-test-caption-inference-dataset"
+batch_size: 4
+max_sequence_length: 255
+subset_size: 1
+subset: "test"
+text_column: "prediction"
+device: ${device}
