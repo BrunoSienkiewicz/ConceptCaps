@@ -5,7 +5,7 @@
 #SBATCH --mem=16GB
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=16
-#SBATCH --time=02:00:00
+#SBATCH --time=03:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
 #SBATCH --output="output.out"
