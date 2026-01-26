@@ -13,7 +13,7 @@ from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from transformers import AutoModelForCausalLM, AutoTokenizer, EvalPrediction
 
-from caption.model import prepare_training_model
+from src.caption.model import prepare_training_model
 from src.caption.evaluation import MetricComputer, generate_batch_caption_tokenized
 from src.utils import RankedLogger
 
