@@ -62,5 +62,4 @@ dependencies:
       - nltk
       - bert-score
       - psutil
-      - fadtk
       - mauve-text
