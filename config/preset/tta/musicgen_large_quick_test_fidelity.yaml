@@ -1,0 +1,28 @@
+# @package _global_
+defaults:
+  - override /paths: plgrid
+  - override /model: tta/musicgen-large
+  - override /data: tta/quick_test
+  - override /generation: tta/fidelity
+  - override /logger: wandb
+
+data:
+  batch_size: 16
+  num_workers: 4
+  pin_memory: true
+  persistent_workers: true
+model:
+  compile: true
+  device_map: null
+  tokenizer:
+    max_new_tokens: 1503
+generation:
+  use_accelerator: true
+evaluation:
+  skip_evaluation: false
+
+logger:
+  wandb:
+    project: tta_generation
+
+device: cuda
