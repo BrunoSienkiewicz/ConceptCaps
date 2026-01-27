@@ -126,8 +126,6 @@ def generate_audio_samples_accelerate(
         "top_k": top_k,
         "top_p": top_p,
         "do_sample": do_sample,
-        "repetition_penalty": 1.2,
-        "no_repeat_ngram_size": 3,
         "use_cache": True,
     }
 
