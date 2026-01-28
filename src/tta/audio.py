@@ -60,6 +60,14 @@ def generate_audio_samples(
             "use_cache": True,  # Enable KV-cache for faster generation
         }
         audio_values = model.generate(**generation_kwargs)
+        # Immediately move to CPU to free GPU memory
+        audio_values_cpu = audio_values.cpu()
+        del audio_values
+        del input_ids
+        del attention_mask
+        
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
         if loggers:
             for logger in loggers:
@@ -69,7 +77,7 @@ def generate_audio_samples(
                         step=batch_idx,
                     )
 
-        for item_idx, audio in enumerate(audio_values):
+        for item_idx, audio in enumerate(audio_values_cpu):
             global_idx = batch_idx * batch_size + item_idx
             sample_id = df.iloc[global_idx][id_column]
 
@@ -82,10 +90,6 @@ def generate_audio_samples(
                 sample_rate,
                 audio_data,
             )
-
-        # Clear CUDA cache after each batch to prevent memory fragmentation
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
 
 
 def generate_audio_samples_accelerate(
