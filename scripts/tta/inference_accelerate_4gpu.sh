@@ -15,27 +15,32 @@ cd "$SLURM_SUBMIT_DIR" || exit 1
 
 # Initialize variables with default values
 PRESET="default"
-POSITIONAL_ARGS=()
+HYDRA_OVERRIDES=()
 
 while [[ $# -gt 0 ]]; do
   case $1 in
-  -p | --preset)
-    PRESET="$2"
-    shift # past argument
-    shift # past value
-    ;;
-  -* | --*)
-    echo "Unknown option $1"
-    exit 1
-    ;;
-  *)
-    POSITIONAL_ARGS+=("$1") # save positional arg
-    shift                   # past argument
-    ;;
+    -p|--preset)
+      PRESET="$2"
+      shift 2
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      HYDRA_OVERRIDES+=("$1")
+      shift
+      ;;
   esac
 done
 
-set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+if [[ $# -gt 0 ]]; then
+  HYDRA_OVERRIDES+=("$@")
+fi
+
+if [[ -n "$PRESET" ]]; then
+  HYDRA_OVERRIDES+=("+preset=$PRESET")
+fi
 
 ROOT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
 OUT_DIR="$ROOT_DIR/caption_fine_tuning"
@@ -60,4 +65,4 @@ srun accelerate launch \
     --num_processes=4 \
     --num_machines=1 \
     --mixed_precision=bf16 \
-    src/scripts/tta/run_tta_generation.py +preset="$PRESET"
+    src/scripts/tta/inference.py "${HYDRA_OVERRIDES[@]}"
