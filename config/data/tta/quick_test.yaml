@@ -3,5 +3,5 @@ batch_size: 4
 max_sequence_length: 255
 subset_size: 1
 subset: "test"
-text_column: "aspect_list"
+text_column: "prediction"
 device: ${device}

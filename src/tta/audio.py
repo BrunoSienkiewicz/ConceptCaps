@@ -123,8 +123,8 @@ def generate_audio_samples_accelerate(
     generation_kwargs = {
         "max_new_tokens": max_new_tokens,
         "temperature": temperature,
-        # "top_k": top_k,
-        # "top_p": top_p,
+        "top_k": top_k,
+        "top_p": top_p,
         "do_sample": do_sample,
         "use_cache": True,
     }
@@ -148,7 +148,6 @@ def generate_audio_samples_accelerate(
                 **generation_kwargs,
             )
 
-        # Gather results from all processes
         audio_values = accelerator.gather(audio_values)
 
         if loggers:
@@ -168,6 +167,11 @@ def generate_audio_samples_accelerate(
                     + item_idx
                 )
                 audio_data = audio[0].float().cpu().numpy()
+
+                # Peak normalization to prevent clipping
+                max_val = np.abs(audio_data).max()
+                if max_val > 0:
+                    audio_data = audio_data / max(max_val, 1e-6)
 
                 if global_idx < len(df):
                     sample_id = df.iloc[global_idx][id_column]
