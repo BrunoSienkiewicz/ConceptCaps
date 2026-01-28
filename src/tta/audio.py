@@ -123,8 +123,8 @@ def generate_audio_samples_accelerate(
     generation_kwargs = {
         "max_new_tokens": max_new_tokens,
         "temperature": temperature,
-        "top_k": top_k,
-        "top_p": top_p,
+        # "top_k": top_k,
+        # "top_p": top_p,
         "do_sample": do_sample,
         "use_cache": True,
     }
@@ -145,7 +145,7 @@ def generate_audio_samples_accelerate(
             audio_values = unwrapped_model.generate(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
-                # **generation_kwargs,
+                **generation_kwargs,
             )
 
         # Gather results from all processes
@@ -167,8 +167,6 @@ def generate_audio_samples_accelerate(
                     batch_idx * batch_size * accelerator.num_processes
                     + item_idx
                 )
-
-                # Normalize/Clip audio to prevent artifacts
                 audio_data = audio[0].float().cpu().numpy()
 
                 if global_idx < len(df):

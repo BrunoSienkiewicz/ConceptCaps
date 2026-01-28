@@ -7,7 +7,7 @@ defaults:
   - override /logger: wandb
 
 data:
-  batch_size: 16
+  batch_size: 24
   num_workers: 4
   pin_memory: true
   persistent_workers: true
@@ -15,7 +15,7 @@ model:
   compile: true
   device_map: null
   tokenizer:
-    max_new_tokens: 1503
+    max_new_tokens: 1003
 generation:
   use_accelerator: true
 evaluation:

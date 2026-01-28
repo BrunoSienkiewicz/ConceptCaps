@@ -1,4 +1,4 @@
-temperature: 0.8
+temperature: 1.5
 top_k: 300
 top_p: 0.95
 guidance_scale: 2.5
