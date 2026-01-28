@@ -75,25 +75,26 @@ def main(cfg: TTAConfig):
     else:
         gen_fun = generate_audio_samples
 
-    gen_fun(
-        model,
-        dataloader,
-        data_dir / "audio_samples",
-        cfg.model.tokenizer.max_new_tokens,
-        cfg.data.batch_size,
-        df,
-        id_column=cfg.data.get("id_column", "id"),
-        filename_template=cfg.data.get("filename_template", "{}.wav"),
-        temperature=cfg.generation.get("temperature", 1.0),
-        top_k=cfg.generation.get("top_k", 50),
-        top_p=cfg.generation.get("top_p", 0.95),
-        do_sample=cfg.generation.get("do_sample", True),
-        guidance_scale=cfg.generation.get("guidance_scale", None),
-        sample_rate=cfg.generation.get(
-            "sample_rate", model.config.audio_encoder.sampling_rate
-        ),
-        loggers=loggers,
-    )
+    with torch.inference_mode():
+        gen_fun(
+            model,
+            dataloader,
+            data_dir / "audio_samples",
+            cfg.model.tokenizer.max_new_tokens,
+            cfg.data.batch_size,
+            df,
+            id_column=cfg.data.get("id_column", "id"),
+            filename_template=cfg.data.get("filename_template", "{}.wav"),
+            temperature=cfg.generation.get("temperature", 1.0),
+            top_k=cfg.generation.get("top_k", 50),
+            top_p=cfg.generation.get("top_p", 0.95),
+            do_sample=cfg.generation.get("do_sample", True),
+            guidance_scale=cfg.generation.get("guidance_scale", None),
+            sample_rate=cfg.generation.get(
+                "sample_rate", model.config.audio_encoder.sampling_rate
+            ),
+            loggers=loggers,
+        )
 
     log.info("Saving metadata...")
     save_dataframe_metadata(

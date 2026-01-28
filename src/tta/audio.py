@@ -12,6 +12,8 @@ from accelerate import Accelerator
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
+
+
 from src.utils import RankedLogger
 
 log = RankedLogger(__name__, rank_zero_only=True)
@@ -51,8 +53,8 @@ def generate_audio_samples(
             "input_ids": input_ids,
             "attention_mask": attention_mask,
             "temperature": temperature,
-            # "top_k": top_k,
-            # "top_p": top_p,
+            "top_k": top_k,
+            "top_p": top_p,
             "do_sample": do_sample,
             "guidance_scale": guidance_scale,
             "use_cache": True,  # Enable KV-cache for faster generation
@@ -149,6 +151,14 @@ def generate_audio_samples_accelerate(
         )
 
         audio_values = accelerator.gather(audio_values)
+        # Immediately move to CPU to free GPU memory
+        audio_values_cpu = audio_values.cpu()
+        del audio_values
+        del input_ids
+        del attention_mask
+        
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
         if loggers:
             for logger in loggers:
@@ -160,7 +170,7 @@ def generate_audio_samples_accelerate(
 
         # Only main process saves files
         if accelerator.is_main_process:
-            for item_idx, audio in enumerate(audio_values):
+            for item_idx, audio in enumerate(audio_values_cpu):
                 # Calculate global index accounting for distributed batches
                 global_idx = (
                     batch_idx * batch_size * accelerator.num_processes
@@ -180,10 +190,6 @@ def generate_audio_samples_accelerate(
                         sample_rate,
                         audio_data,
                     )
-
-        # Clear CUDA cache after each batch to prevent memory fragmentation
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
 
     # Wait for all processes to finish
     accelerator.wait_for_everyone()

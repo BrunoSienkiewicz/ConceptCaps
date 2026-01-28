@@ -3,10 +3,6 @@ checkpoint_dir: ""
 device_map: auto
 trust_remote_code: true
 
-use_bf16: true
-gradient_checkpointing: true
-compile: false
-
 tokenizer:
   max_new_tokens: 255
   use_fast: true
