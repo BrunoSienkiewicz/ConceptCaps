@@ -145,7 +145,7 @@ def generate_audio_samples_accelerate(
             audio_values = unwrapped_model.generate(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
-                **generation_kwargs,
+                # **generation_kwargs,
             )
 
         # Gather results from all processes
@@ -170,7 +170,6 @@ def generate_audio_samples_accelerate(
 
                 # Normalize/Clip audio to prevent artifacts
                 audio_data = audio[0].float().cpu().numpy()
-                audio_data = np.clip(audio_data, -1.0, 1.0)
 
                 if global_idx < len(df):
                     sample_id = df.iloc[global_idx][id_column]
