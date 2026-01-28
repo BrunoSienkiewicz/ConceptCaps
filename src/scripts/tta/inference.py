@@ -1,21 +1,21 @@
 import os
-import time
 from pathlib import Path
 
 import hydra
 import pytorch_lightning as pl
 import rootutils
 import torch
-import wandb
+
+from transformers import AutoProcessor, MusicgenForConditionalGeneration
+
+rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 from src.tta.audio import generate_audio_samples, generate_audio_samples_accelerate
 from src.tta.config import TTAConfig
 from src.tta.data import prepare_dataloader, save_dataframe_metadata
 from src.tta.evaluation import TTAEvaluator
-from src.tta.model import prepare_model, prepare_tokenizer
 from src.utils import RankedLogger, instantiate_loggers, print_config_tree
 
-rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
@@ -23,7 +23,7 @@ log = RankedLogger(__name__, rank_zero_only=True)
 @hydra.main(
     version_base=None,
     config_path="../../../config",
-    config_name="tta_generation",
+    config_name="tta_inference",
 )
 def main(cfg: TTAConfig):
     device = torch.device(cfg.device if torch.cuda.is_available() else "cpu")
@@ -53,11 +53,17 @@ def main(cfg: TTAConfig):
     print_config_tree(cfg)
 
     log.info("Preparing data...")
-    processor = prepare_tokenizer(cfg.model)
     dataloader, df = prepare_dataloader(cfg.data, processor)
 
     log.info("Loading model...")
-    model = prepare_model(cfg.model)
+    processor = AutoProcessor.from_pretrained(
+        cfg.model.name
+    )
+    model = MusicgenForConditionalGeneration.from_pretrained(
+        cfg.model.name,
+        device_map=cfg.model.device_map,
+        trust_remote_code=cfg.model.trust_remote_code,
+    )
 
     data_dir = Path(cfg.paths.data_dir) / cfg.model.name / cfg.run_id
     data_dir.mkdir(parents=True, exist_ok=True)
@@ -66,45 +72,29 @@ def main(cfg: TTAConfig):
 
     if cfg.generation.get("use_accelerator", False):
         log.info("Using Accelerate for distributed generation...")
-        generate_audio_samples_accelerate(
-            model,
-            dataloader,
-            data_dir / "audio_samples",
-            cfg.model.tokenizer.max_new_tokens,
-            cfg.data.batch_size,
-            df,
-            id_column=cfg.data.get("id_column", "id"),
-            filename_template=cfg.data.get("filename_template", "{}.wav"),
-            temperature=cfg.generation.get("temperature", 1.0),
-            top_k=cfg.generation.get("top_k", 50),
-            top_p=cfg.generation.get("top_p", 0.95),
-            do_sample=cfg.generation.get("do_sample", True),
-            guidance_scale=cfg.generation.get("guidance_scale", None),
-            sample_rate=cfg.generation.get(
-                "sample_rate", model.config.audio_encoder.sampling_rate
-            ),
-            loggers=loggers,
-        )
+        gen_fun = generate_audio_samples_accelerate
     else:
-        generate_audio_samples(
-            model,
-            dataloader,
-            data_dir / "audio_samples",
-            cfg.model.tokenizer.max_new_tokens,
-            cfg.data.batch_size,
-            df,
-            id_column=cfg.data.get("id_column", "id"),
-            filename_template=cfg.data.get("filename_template", "{}.wav"),
-            temperature=cfg.generation.get("temperature", 1.0),
-            top_k=cfg.generation.get("top_k", 50),
-            top_p=cfg.generation.get("top_p", 0.95),
-            do_sample=cfg.generation.get("do_sample", True),
-            guidance_scale=cfg.generation.get("guidance_scale", None),
-            sample_rate=cfg.generation.get(
-                "sample_rate", model.config.audio_encoder.sampling_rate
-            ),
-            loggers=loggers,
-        )
+        gen_fun = generate_audio_samples
+
+    gen_fun(
+        model,
+        dataloader,
+        data_dir / "audio_samples",
+        cfg.model.tokenizer.max_new_tokens,
+        cfg.data.batch_size,
+        df,
+        id_column=cfg.data.get("id_column", "id"),
+        filename_template=cfg.data.get("filename_template", "{}.wav"),
+        temperature=cfg.generation.get("temperature", 1.0),
+        top_k=cfg.generation.get("top_k", 50),
+        top_p=cfg.generation.get("top_p", 0.95),
+        do_sample=cfg.generation.get("do_sample", True),
+        guidance_scale=cfg.generation.get("guidance_scale", None),
+        sample_rate=cfg.generation.get(
+            "sample_rate", model.config.audio_encoder.sampling_rate
+        ),
+        loggers=loggers,
+    )
 
     log.info("Saving metadata...")
     save_dataframe_metadata(
@@ -118,14 +108,12 @@ def main(cfg: TTAConfig):
     if cfg.evaluation.get("skip_evaluation", False):
         return
 
-    # Initialize evaluator
     log.info("Initializing TTA evaluator...")
     evaluator = TTAEvaluator(
         clap_model=cfg.evaluation.get("clap_model", "laion/clap-htsat-unfused"),
+        fad_model=cfg.evaluation.get("fad_model", "laion/clap-htsat-unfused"),
         device=str(device),
     )
-
-    log.info("TTA generation completed and logged.")
 
     log.info("Running TTA evaluation...")
     results = evaluator.evaluate(

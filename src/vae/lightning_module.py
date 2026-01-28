@@ -65,7 +65,6 @@ class BetaVAELightningModule(pl.LightningModule):
         kld = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 
         # Beta-VAE: weight the KL term by beta for disentanglement
-        # Higher beta encourages more disentangled representations
         total_loss = (
             self.loss_cfg.bce_weight * bce
             + self.loss_cfg.kld_weight * self.beta * kld

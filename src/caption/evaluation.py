@@ -17,74 +17,6 @@ from src.utils import RankedLogger
 logger = RankedLogger(__name__, rank_zero_only=True)
 
 
-def generate_caption(
-    model: AutoModelForCausalLM,
-    tokenizer: AutoTokenizer,
-    prompt: str,
-    max_new_tokens: int,
-) -> str:
-    """Generate a single caption from a prompt."""
-    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-    model.eval()
-
-    with torch.no_grad():
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=max_new_tokens,
-        )
-
-    return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
-
-
-def generate_caption_tokenized(
-    model: AutoModelForCausalLM,
-    tokenizer: AutoTokenizer,
-    input_ids: torch.Tensor,
-    attention_mask: torch.Tensor,
-    max_new_tokens: int,
-) -> tuple[str, str]:
-    """Generate a single caption from tokenized inputs."""
-    model.eval()
-
-    with torch.no_grad():
-        outputs = model.generate(
-            input_ids=input_ids.to(model.device),
-            attention_mask=attention_mask.to(model.device),
-            max_new_tokens=max_new_tokens,
-        )
-
-    input_caption = tokenizer.decode(
-        input_ids[0], skip_special_tokens=True
-    ).strip()
-    output_caption = tokenizer.decode(
-        outputs[0], skip_special_tokens=True
-    ).strip()
-
-    return input_caption, output_caption
-
-
-def generate_batch_caption_tokenized(
-    model: AutoModelForCausalLM,
-    tokenizer: AutoTokenizer,
-    input_ids: torch.Tensor,
-    attention_mask: torch.Tensor,
-    max_new_tokens: int,
-) -> list[str]:
-    """Generate captions for a batch of tokenized inputs."""
-    model.eval()
-
-    with torch.no_grad():
-        outputs = model.generate(
-            input_ids=input_ids.to(model.device),
-            attention_mask=attention_mask.to(model.device),
-            max_new_tokens=max_new_tokens,
-        )
-
-    batch_captions = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-    batch_captions = [caption.strip() for caption in batch_captions]
-    return batch_captions
-
-
 def calculate_perplexity(
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
@@ -269,97 +201,6 @@ def evaluate_with_llm_judge(
     }
 
 
-def generate_captions_batch(
-    model: AutoModelForCausalLM,
-    tokenizer: AutoTokenizer,
-    prompts: list[str],
-    generate_cfg: DictConfig,
-    batch_size: int = 8,
-    compute_perplexity: bool = False,
-    compute_llm_judge: bool = False,
-    llm_judge_config: dict[str, Any] | None = None,
-) -> tuple[list[str], dict[str, Any] | None]:
-    """Generate captions for a batch of prompts efficiently with optional
-    quality metrics.
-
-    Args:
-        model: Language model for generation
-        tokenizer: Tokenizer for encoding/decoding
-        prompts: List of input prompts
-        generate_cfg: Generation configuration
-        batch_size: Number of prompts to process per batch
-        compute_perplexity: Whether to compute perplexity for each generated caption
-        compute_llm_judge: Whether to evaluate with LLM-as-a-judge
-        llm_judge_config: Configuration for LLM judge (model_name, device, etc.)
-
-    Returns:
-        Tuple of (generated captions, quality metrics dict or None)
-    """
-    model.eval()
-    captions = []
-    perplexities = []
-
-    with torch.no_grad():
-        for i in tqdm(
-            range(0, len(prompts), batch_size), desc="Generating captions"
-        ):
-            batch_prompts = prompts[i : i + batch_size]
-            batch_captions = model.generate_captions_batch(batch_prompts)
-            captions.extend(batch_captions)
-
-            if compute_perplexity:
-                for caption in batch_captions:
-                    try:
-                        ppl = calculate_perplexity(
-                            model, tokenizer, caption, device=model.device
-                        )
-                        perplexities.append(ppl)
-                    except Exception as e:
-                        logger.warning(f"Failed to calculate perplexity: {e}")
-                        perplexities.append(float("inf"))
-
-    # Compile quality metrics
-    quality_metrics = {}
-
-    if compute_perplexity:
-        # Filter out infinite values for statistics
-        valid_perplexities = [p for p in perplexities if p != float("inf")]
-        if valid_perplexities:
-            quality_metrics["perplexity"] = {
-                "mean": float(np.mean(valid_perplexities)),
-                "std": float(np.std(valid_perplexities)),
-                "min": float(np.min(valid_perplexities)),
-                "max": float(np.max(valid_perplexities)),
-                "median": float(np.median(valid_perplexities)),
-                "all_scores": perplexities,
-            }
-            logger.info(
-                f"Perplexity - Mean: {quality_metrics['perplexity']['mean']: .2f}, "
-                f"Std: {quality_metrics['perplexity']['std']: .2f}"
-            )
-
-    if compute_llm_judge:
-        if llm_judge_config is None:
-            llm_judge_config = {
-                "judge_model_name": "meta-llama/Llama-3.2-3B-Instruct",
-                "batch_size": 4,
-                "device": str(model.device),
-            }
-
-        llm_judge_results = evaluate_with_llm_judge(
-            captions=captions,
-            prompts=prompts,
-            **llm_judge_config,
-        )
-        quality_metrics["llm_judge"] = llm_judge_results
-        logger.info(
-            f"LLM Judge - Mean Score: {llm_judge_results['llm_judge_mean_score']: .2f}, "
-            f"Std: {llm_judge_results['llm_judge_std_score']: .2f}"
-        )
-
-    return captions, quality_metrics
-
-
 class MetricComputer:
     """Computes evaluation metrics for generated captions."""
 
@@ -428,7 +269,10 @@ class MetricComputer:
         return self.metrics_results
 
     def save_predictions(self, output_dir: Path) -> dict[str, Any]:
-        """Save predictions and references to CSV file.
+        """Save predictions and metrics to output directory.
+        Files saved:
+        - <output_dir>/evaluation_metrics.json
+        - <output_dir>/all_predictions.csv
 
         Args:
             output_dir: Directory to save predictions file
@@ -441,6 +285,8 @@ class MetricComputer:
 
         results = {}
         for key, value in self.metrics_results.items():
+            # Flatten nested dicts if any
+            # Only consider one level of nesting
             if isinstance(value, dict):
                 for k, v in value.items():
                     if isinstance(v, (int, float, np.floating)):
@@ -453,7 +299,7 @@ class MetricComputer:
         metrics_path.write_text(json.dumps(results, indent=4))
         logger.info(f"Metrics saved to {metrics_path}")
 
-        # Save predictions
+        # Save predictions with references
         records = [
             {
                 "reference": reference,

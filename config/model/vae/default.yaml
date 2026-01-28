@@ -1,4 +1,3 @@
-# Default VAE model configuration
 name: MultiLabelVAE
 input_dim: 0 # Will be computed based on taxonomy
 latent_dim: 32

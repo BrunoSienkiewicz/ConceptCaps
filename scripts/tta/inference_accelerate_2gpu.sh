@@ -1,15 +1,15 @@
 #!/bin/bash -l
-#SBATCH -J run_tta_accelerate
+#SBATCH -J tta_accelerate
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=4GB
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
 #SBATCH --cpus-per-task=8
 #SBATCH --time=05:00:00
 #SBATCH -A plgxailnpw25-gpu-a100
 #SBATCH -p plgrid-gpu-a100
-#SBATCH --output="logs/run_tta_accelerate_%j.out"
-#SBATCH --error="logs/run_tta_accelerate_%j.err"
+#SBATCH --output="logs/tta_accelerate_%j.out"
+#SBATCH --error="logs/tta_accelerate_%j.err"
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
@@ -49,14 +49,15 @@ export HF_HOME="$ROOT_DIR/.cache/huggingface"
 export OUT_DIR="$OUT_DIR"
 export PLGRID_ARTIFACTS_DIR="$PLGRID_ARTIFACTS_DIR"
 export CONDA_DIR="$CONDA_DIR"
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=0,1
 
 mkdir -p "$OUT_DIR/.cache/huggingface"
 
 conda activate "$(grep -E '^name:' environment.yml | awk '{print $2}')"
 
 srun accelerate launch \
-    --num_processes=1 \
+    --multi_gpu \
+    --num_processes=2 \
     --num_machines=1 \
     --mixed_precision=bf16 \
     src/scripts/tta/run_tta_generation.py +preset="$PRESET"

@@ -1,8 +1,0 @@
-template: |
-  <|begin_of_text|><|start_header_id|>system<|end_header_id|>{system_prompt}<|eot_id|>
-  <|start_header_id|>user<|end_header_id|>{user_prompt}<|eot_id|>
-  <|start_header_id|>assistant<|end_header_id|>{assistant_response}<|eot_id|><|end_of_text|>
-prompt_delimiter: |
-  <|start_header_id|>assistant<|end_header_id|>
-system_prompt: You are a music description expert that creates detailed, technical descriptions of songs based on their musical characteristics. Make sure to include references to specific musical elements such as instrumentation, rhythm, melody, harmony, dynamics, and production techniques.
-user_prompt_template: "Write a single sentence that summarizes a song with the following attributes: {tags}. Don't write the artist name or album name. The description should be at least 100 characters long. Respond with ONLY the song description - no special characters, emotes, or additional formatting:"

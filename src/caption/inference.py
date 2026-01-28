@@ -10,128 +10,99 @@ import pandas as pd
 import torch
 from omegaconf import DictConfig
 from tqdm import tqdm
-from transformers import AutoModelForCausalLM, AutoTokenizer, EvalPrediction
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from src.caption.evaluation import generate_captions_batch
+from src.caption.evaluation import calculate_perplexity, evaluate_with_llm_judge
 from src.utils import RankedLogger
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
 
-def run_caption_inference(
-    cfg: DictConfig,
+def generate_captions_batch(
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
-    examples: list[dict],
-    predictions_path: Path,
+    prompts: list[str],
+    batch_size: int = 8,
     compute_perplexity: bool = False,
     compute_llm_judge: bool = False,
     llm_judge_config: dict[str, Any] | None = None,
-) -> pd.DataFrame:
-    """Run inference on examples using batch processing with optional quality
-    metrics.
+) -> tuple[list[str], dict[str, Any] | None]:
+    """Generate captions for a batch of prompts efficiently with optional
+    quality metrics.
 
     Args:
-        cfg: Configuration
-        model: Language model
-        tokenizer: Tokenizer
-        examples: List of examples to process
-        predictions_path: Path to save results
+        model: Language model for generation
+        tokenizer: Tokenizer for encoding/decoding
+        prompts: List of input prompts
+        generate_cfg: Generation configuration
+        batch_size: Number of prompts to process per batch
         compute_perplexity: Whether to compute perplexity for each generated caption
         compute_llm_judge: Whether to evaluate with LLM-as-a-judge
         llm_judge_config: Configuration for LLM judge (model_name, device, etc.)
 
     Returns:
-        DataFrame with predictions
+        Tuple of (generated captions, quality metrics dict or None)
     """
-    # Extract prompts and aspects from examples
-    prompts = [example[cfg.data.text_column] for example in examples]
-    aspects = [example.get(cfg.data.aspect_column, "") for example in examples]
-    ids = [
-        example.get("id", f"sample_{i}") for i, example in enumerate(examples)
-    ]
+    model.eval()
+    captions = []
+    perplexities = []
 
-    # Generate captions in batches
-    if log:
+    with torch.no_grad():
+        for i in tqdm(
+            range(0, len(prompts), batch_size), desc="Generating captions"
+        ):
+            batch_prompts = prompts[i : i + batch_size]
+            batch_captions = model.generate_captions_batch(batch_prompts)
+            captions.extend(batch_captions)
+
+            if compute_perplexity:
+                for caption in batch_captions:
+                    try:
+                        ppl = calculate_perplexity(
+                            model, tokenizer, caption, device=model.device
+                        )
+                        perplexities.append(ppl)
+                    except Exception as e:
+                        log.warning(f"Failed to calculate perplexity: {e}")
+                        perplexities.append(float("inf"))
+
+    # Compile quality metrics
+    quality_metrics = {}
+
+    if compute_perplexity:
+        # Filter out infinite values for statistics
+        valid_perplexities = [p for p in perplexities if p != float("inf")]
+        if valid_perplexities:
+            quality_metrics["perplexity"] = {
+                "mean": float(np.mean(valid_perplexities)),
+                "std": float(np.std(valid_perplexities)),
+                "min": float(np.min(valid_perplexities)),
+                "max": float(np.max(valid_perplexities)),
+                "median": float(np.median(valid_perplexities)),
+                "all_scores": perplexities,
+            }
+            log.info(
+                f"Perplexity - Mean: {quality_metrics['perplexity']['mean']: .2f}, "
+                f"Std: {quality_metrics['perplexity']['std']: .2f}"
+            )
+
+    if compute_llm_judge:
+        if llm_judge_config is None:
+            llm_judge_config = {
+                "judge_model_name": "meta-llama/Llama-3.2-3B-Instruct",
+                "batch_size": 4,
+                "device": str(model.device),
+            }
+
+        llm_judge_results = evaluate_with_llm_judge(
+            captions=captions,
+            prompts=prompts,
+            **llm_judge_config,
+        )
+        quality_metrics["llm_judge"] = llm_judge_results
         log.info(
-            f"Running inference on {len(prompts)} examples with batch size {cfg.evaluation.batch_size}..."
+            f"LLM Judge - Mean Score: {llm_judge_results['llm_judge_mean_score']: .2f}, "
+            f"Std: {llm_judge_results['llm_judge_std_score']: .2f}"
         )
 
-    predictions, quality_metrics = generate_captions_batch(
-        model,
-        tokenizer,
-        prompts,
-        cfg.generation,
-        batch_size=cfg.evaluation.batch_size,
-        compute_perplexity=compute_perplexity,
-        compute_llm_judge=compute_llm_judge,
-        llm_judge_config=llm_judge_config,
-    )
-
-    # Prepare output records
-    records = [
-        {
-            "id": id_val,
-            "aspect_list": aspect,
-            "prediction": prediction,
-        }
-        for id_val, aspect, prediction in zip(ids, aspects, predictions)
-    ]
-
-    # Add perplexity scores if computed
-    if quality_metrics and "perplexity" in quality_metrics:
-        perplexity_scores = quality_metrics["perplexity"].get("all_scores", [])
-        if len(perplexity_scores) == len(records):
-            for i, record in enumerate(records):
-                record["perplexity"] = perplexity_scores[i]
-
-    # Add LLM judge scores if computed
-    if quality_metrics and "llm_judge" in quality_metrics:
-        llm_scores = quality_metrics["llm_judge"].get("llm_judge_scores", [])
-        llm_reasonings = quality_metrics["llm_judge"].get(
-            "llm_judge_reasonings", []
-        )
-        if len(llm_scores) == len(records):
-            for i, record in enumerate(records):
-                record["llm_judge_score"] = llm_scores[i]
-                record["llm_judge_reasoning"] = (
-                    llm_reasonings[i] if i < len(llm_reasonings) else ""
-                )
-
-    # Save results
-    predictions_path.parent.mkdir(parents=True, exist_ok=True)
-    results_df = pd.DataFrame(records)
-    results_df.to_csv(predictions_path, index=False)
-
-    if log:
-        log.info(
-            f"Inference completed. Predictions saved to {predictions_path}"
-        )
-
-    # Save quality metrics if computed
-    if quality_metrics:
-        metrics_path = predictions_path.parent / "quality_metrics.json"
-        # Remove large lists from metrics for cleaner JSON
-        metrics_to_save = {}
-        for key, value in quality_metrics.items():
-            if isinstance(value, dict):
-                metrics_to_save[key] = {
-                    k: v
-                    for k, v in value.items()
-                    if k
-                    not in [
-                        "all_scores",
-                        "llm_judge_scores",
-                        "llm_judge_reasonings",
-                    ]
-                }
-            else:
-                metrics_to_save[key] = value
-
-        with open(metrics_path, "w") as f:
-            json.dump(metrics_to_save, f, indent=2)
-
-        if log:
-            log.info(f"Quality metrics saved to {metrics_path}")
-
-    return results_df
+    return captions, quality_metrics

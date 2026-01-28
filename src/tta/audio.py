@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import scipy.io
+from src.constants import DEFAULT_GUIDANCE_SCALE, DEFAULT_TOP_P, DEFAULT_TOP_K, DEFAULT_SAMPLE_RATE
 import torch
 from accelerate import Accelerator
 from torch.utils.data import DataLoader
@@ -26,14 +27,17 @@ def generate_audio_samples(
     id_column: str = "id",
     filename_template: str = "{}.wav",
     temperature: float = 1.0,
-    top_k: int = 50,
-    top_p: float = 0.95,
+    top_k: int = DEFAULT_TOP_K,
+    top_p: float = DEFAULT_TOP_P,
     do_sample: bool = True,
-    guidance_scale: float = None,
-    sample_rate: int = 32000,
+    guidance_scale: float = DEFAULT_GUIDANCE_SCALE,
+    sample_rate: int = DEFAULT_SAMPLE_RATE,
     loggers: list = None,
 ) -> None:
     os.makedirs(audio_dir, exist_ok=True)
+    if sample_rate is None:
+        # Derive sample rate from model config
+        sample_rate = model.config.audio_encoder.sampling_rate
 
     for batch_idx, batch in enumerate(
         tqdm(dataloader, desc="Generating audio")
@@ -42,21 +46,18 @@ def generate_audio_samples(
         input_ids = input_ids.to(model.device)
         attention_mask = attention_mask.to(model.device)
 
-        with torch.inference_mode():
-            generation_kwargs = {
-                "input_ids": input_ids,
-                "attention_mask": attention_mask,
-                "max_new_tokens": max_new_tokens,
-                "temperature": temperature,
-                "top_k": top_k,
-                "top_p": top_p,
-                "do_sample": do_sample,
-                "use_cache": True,  # Enable KV-cache for faster generation
-            }
-            if guidance_scale is not None:
-                generation_kwargs["guidance_scale"] = guidance_scale
-
-            audio_values = model.generate(**generation_kwargs)
+        generation_kwargs = {
+            "max_new_tokens": max_new_tokens,
+            "input_ids": input_ids,
+            "attention_mask": attention_mask,
+            "temperature": temperature,
+            # "top_k": top_k,
+            # "top_p": top_p,
+            "do_sample": do_sample,
+            "guidance_scale": guidance_scale,
+            "use_cache": True,  # Enable KV-cache for faster generation
+        }
+        audio_values = model.generate(**generation_kwargs)
 
         if loggers:
             for logger in loggers:
@@ -95,11 +96,11 @@ def generate_audio_samples_accelerate(
     id_column: str = "id",
     filename_template: str = "{}.wav",
     temperature: float = 1.0,
-    top_k: int = 50,
-    top_p: float = 0.95,
+    top_k: int = DEFAULT_TOP_K,
+    top_p: float = DEFAULT_TOP_P,
     do_sample: bool = True,
-    guidance_scale: float = None,
-    sample_rate: int = 32000,
+    guidance_scale: float = DEFAULT_GUIDANCE_SCALE,
+    sample_rate: int = DEFAULT_SAMPLE_RATE,
     loggers: list = None,
 ) -> None:
     """Generate audio using Accelerate for multi-GPU distribution."""
@@ -126,11 +127,12 @@ def generate_audio_samples_accelerate(
         "top_k": top_k,
         "top_p": top_p,
         "do_sample": do_sample,
+        "guidance_scale": guidance_scale,
         "use_cache": True,
     }
-
-    if guidance_scale is not None:
-        generation_kwargs["guidance_scale"] = guidance_scale
+    if sample_rate is None:
+        # Derive sample rate from model config
+        sample_rate = unwrapped_model.config.audio_encoder.sampling_rate
 
     for batch_idx, batch in enumerate(
         tqdm(
@@ -140,13 +142,11 @@ def generate_audio_samples_accelerate(
         )
     ):
         input_ids, attention_mask = batch
-
-        with torch.inference_mode():
-            audio_values = unwrapped_model.generate(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                **generation_kwargs,
-            )
+        audio_values = unwrapped_model.generate(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            **generation_kwargs,
+        )
 
         audio_values = accelerator.gather(audio_values)
 
@@ -181,6 +181,7 @@ def generate_audio_samples_accelerate(
                         audio_data,
                     )
 
+        # Clear CUDA cache after each batch to prevent memory fragmentation
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 

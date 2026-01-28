@@ -10,14 +10,15 @@ import rootutils
 import torch
 from datasets import load_dataset
 
+rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+
 from src.caption.model import prepare_tokenizer
 from src.caption import CaptionGenerationConfig
 from src.caption.data import prepare_inference_datasets
-from src.caption.evaluation import generate_captions_batch
+from src.caption.inference import generate_captions_batch
 from src.caption.lightning_module import CaptionFineTuningModule
 from src.utils import RankedLogger, instantiate_loggers, print_config_tree
 
-rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
@@ -53,8 +54,10 @@ def main(cfg: CaptionGenerationConfig) -> None:
 
     log.info(f"Loading dataset {cfg.data.dataset_name}...")
     dataset = load_dataset(cfg.data.dataset_name)
+
     log.info("Preparing datasets for inference...")
     dataset = prepare_inference_datasets(cfg.data, cfg.prompt, dataset)
+
     log.info(f"Dataset loaded with splits: {list(dataset.keys())}")
 
     log.info("Loading tokenizer...")

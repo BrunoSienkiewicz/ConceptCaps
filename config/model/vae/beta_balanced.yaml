@@ -1,5 +1,3 @@
-# Beta-VAE model: balanced disentanglement
-# Beta=4.0 provides a good balance between reconstruction and disentanglement
 name: BetaBalancedVAE
 input_dim: 0
 latent_dim: 64

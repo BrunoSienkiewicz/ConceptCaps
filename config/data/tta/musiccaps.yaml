@@ -1,7 +1,7 @@
 dataset_name: "google/MusicCaps"
 batch_size: 4
 max_sequence_length: 255
-subset_size: 0.2
+subset_size: 0.1
 subset: "train"
 id_column: "ytid"
 text_column: "caption"

@@ -28,16 +28,6 @@ WANDB_PROJECT = os.getenv("WANDB_PROJECT", "music-gen-interpretability")
 WANDB_ENTITY = os.getenv("WANDB_ENTITY", None)
 
 # ============================================================================
-# Audio Processing Constants
-# ============================================================================
-
-DEFAULT_SAMPLE_RATE = 16000
-DEFAULT_DURATION = 3.0
-DEFAULT_N_MELS = 128
-DEFAULT_HOP_LENGTH = 512
-DEFAULT_N_FFT = 2048
-
-# ============================================================================
 # GTZAN Dataset Constants
 # ============================================================================
 
@@ -97,6 +87,7 @@ DEFAULT_TEMPERATURE = 1.0
 DEFAULT_TOP_K = 50
 DEFAULT_TOP_P = 0.95
 DEFAULT_MAX_NEW_TOKENS = 1503
+DEFAULT_SAMPLE_RATE = 32000
 
 MUSICGEN_SMALL = "facebook/musicgen-small"
 MUSICGEN_MEDIUM = "facebook/musicgen-medium"

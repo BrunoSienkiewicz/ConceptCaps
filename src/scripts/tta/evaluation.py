@@ -5,11 +5,12 @@ import pytorch_lightning as pl
 import rootutils
 import torch
 
+rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+
 from src.tta.config import TTAConfig
 from src.tta.evaluation import TTAEvaluator
 from src.utils import RankedLogger, instantiate_loggers, print_config_tree
 
-rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 log = RankedLogger(__name__, rank_zero_only=True)
 

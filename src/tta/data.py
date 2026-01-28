@@ -55,11 +55,8 @@ def load_and_tokenize_dataset(
     Returns:
         (TTADataset, metadata_dataframe)
     """
-    # Load dataset
     dataset_dict = load_dataset(dataset_name)
     df = dataset_dict[subset].to_pandas()
-
-    # Sample subset
     df = df.sample(frac=subset_size).reset_index(drop=True)
 
     # Tokenize captions
@@ -72,7 +69,6 @@ def load_and_tokenize_dataset(
         truncation=True,
     )
 
-    # Create dataset
     tta_dataset = TTADataset(
         input_ids=inputs["input_ids"],
         attention_mask=inputs["attention_mask"],

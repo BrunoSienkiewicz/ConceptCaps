@@ -1,4 +1,3 @@
-"""VAE training script using PyTorch Lightning with Hydra configuration."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -10,6 +9,8 @@ import rootutils
 import torch
 from omegaconf import OmegaConf
 
+rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+
 from src.utils import (
     RankedLogger,
     instantiate_callbacks,
@@ -19,9 +20,8 @@ from src.utils import (
 from src.vae import BetaVAELightningModule, VAEDataModule
 from src.vae.config import VAEConfig
 from src.vae.inference import run_latent_inference
-from src.vae.metrics_saver import MetricsSaveCallback, MetricsSaver
+from src.vae.evaluation import MetricsSaveCallback, MetricsSaver
 
-rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 log = RankedLogger(__name__, rank_zero_only=True)
 

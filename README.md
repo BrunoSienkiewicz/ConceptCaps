@@ -24,11 +24,17 @@ This repository contains:
 
 ### `notebooks`
 
+Notebooks used to visualise dataset and showcase pipeline generation steps
+
 ### `docs`
 
 ### `models`
 
+Contains models binaries for VAE and TCAV analysis classifier
+
 ### `scripts`
+
+Contains helper scripts and scripts used to run jobs on slurm
 
 ## License
 

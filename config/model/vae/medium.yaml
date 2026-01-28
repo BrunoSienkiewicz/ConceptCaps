@@ -1,6 +1,0 @@
-name: MediumVAE
-input_dim: 0 # Will be computed based on taxonomy
-latent_dim: 64
-hidden_dim: 256
-dropout_p: 0.3
-use_batch_norm: false

@@ -53,7 +53,6 @@ class PathsConfig:
 class ModelTokenizerConfig:
     padding_side: str = "right"
     use_fast: Optional[bool] = None
-    pad_token_as_eos: bool = True
     max_new_tokens: int = DEFAULT_MAX_NEW_TOKENS
 
 
@@ -63,9 +62,6 @@ class ModelConfig:
     checkpoint_dir: str = ""
     device_map: Union[str, Dict, None] = "auto"
     trust_remote_code: bool = True
-    use_bf16: bool = True
-    compile: bool = False
-    gradient_checkpointing: bool = True
     tokenizer: ModelTokenizerConfig = field(
         default_factory=ModelTokenizerConfig
     )

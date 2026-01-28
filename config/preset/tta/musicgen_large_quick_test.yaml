@@ -15,7 +15,7 @@ model:
   compile: true
   device_map: null
   tokenizer:
-    max_new_tokens: 1003
+    max_new_tokens: 1503
 generation:
   use_accelerator: true
 evaluation:

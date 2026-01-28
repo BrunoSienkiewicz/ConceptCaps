@@ -9,6 +9,6 @@ defaults:
   - hydra: default
 
 run_id: ${now:%Y-%m-%d_%H-%M-%S-%f}
-task_name: tta_generation
+task_name: tta_inference
 device: cuda
 random_state: 42
