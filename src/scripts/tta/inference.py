@@ -51,10 +51,6 @@ def main(cfg: TTAConfig):
             )
 
     print_config_tree(cfg)
-
-    log.info("Preparing data...")
-    dataloader, df = prepare_dataloader(cfg.data, processor)
-
     log.info("Loading model...")
     processor = AutoProcessor.from_pretrained(
         cfg.model.name
@@ -64,6 +60,9 @@ def main(cfg: TTAConfig):
         device_map=cfg.model.device_map,
         trust_remote_code=cfg.model.trust_remote_code,
     )
+
+    log.info("Preparing data...")
+    dataloader, df = prepare_dataloader(cfg.data, processor)
 
     data_dir = Path(cfg.paths.data_dir) / cfg.model.name / cfg.run_id
     data_dir.mkdir(parents=True, exist_ok=True)
