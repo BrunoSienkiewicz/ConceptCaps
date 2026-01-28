@@ -1,5 +1,5 @@
-temperature: 1.2
+temperature: 0.8
 top_k: 250
 top_p: 0.82
 do_sample: true
-guidance_scale: 3.5
+guidance_scale: 4.0
