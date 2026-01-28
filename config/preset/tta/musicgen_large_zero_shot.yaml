@@ -8,7 +8,6 @@ defaults:
 
 data:
   batch_size: 16
-  max_sequence_length: 1503
   num_workers: 4
   pin_memory: true
   persistent_workers: true

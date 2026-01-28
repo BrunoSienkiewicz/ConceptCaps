@@ -2,7 +2,7 @@
 defaults:
   - override /paths: plgrid
   - override /model: tta/musicgen-large
-  - override /data: tta/base_model_conceptcaps
+  - override /data: tta/conceptcaps_test_0.5_subset
   - override /generation: tta/best
   - override /logger: wandb
 
@@ -16,10 +16,12 @@ model:
   device_map: null
   tokenizer:
     max_new_tokens: 1503
+  use_bf16: false
 generation:
   use_accelerator: true
 evaluation:
   skip_evaluation: false
+  reference_audio_dir: /net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/data/GTZAN_all
 
 logger:
   wandb:

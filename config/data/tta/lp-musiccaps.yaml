@@ -1,7 +1,7 @@
 dataset_name: "seungheondoh/LP-MusicCaps-MC"
 batch_size: 4
 max_sequence_length: 255
-subset_size: 0.1
+subset_size: 0.4
 subset: "train"
 id_column: "ytid"
 text_column: "caption_paraphrase"
