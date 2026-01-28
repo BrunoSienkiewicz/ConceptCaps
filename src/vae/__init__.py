@@ -1,7 +1,6 @@
 """Variational Autoencoder (VAE) module for music representation learning."""
 
 from src.vae.config import (
-    BetaVAEConfig,
     VAEConfig,
     VAEDataConfig,
     VAELossConfig,
@@ -14,7 +13,6 @@ from src.vae.model import BetaVAE
 
 __all__ = [
     "BetaVAE",
-    "BetaVAEConfig",
     "BetaVAELightningModule",
     "MetricsSaveCallback",
     "MetricsSaver",
