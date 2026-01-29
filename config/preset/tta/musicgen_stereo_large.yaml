@@ -7,8 +7,8 @@ defaults:
   - override /logger: wandb
 
 data:
-  batch_size: 1
-  num_workers: 4
+  batch_size: 3
+  num_workers: 2
   pin_memory: true
   persistent_workers: true
 model:
@@ -19,7 +19,7 @@ model:
 generation:
   use_accelerator: true
 evaluation:
-  skip_evaluation: false
+  skip_evaluation: true
 
 logger:
   wandb:

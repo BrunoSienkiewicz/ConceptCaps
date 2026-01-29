@@ -61,6 +61,14 @@ def main(cfg: TTAConfig):
         trust_remote_code=cfg.model.trust_remote_code,
     )
 
+    # Compile model for faster inference (PyTorch 2.0+)
+    if cfg.generation.get("use_torch_compile", True) and hasattr(torch, "compile"):
+        log.info("Compiling model with torch.compile...")
+        model = torch.compile(model, mode="reduce-overhead")
+
+    if hasattr(model, "generation_config"):
+        model.generation_config.cache_implementation = "static"
+
     log.info("Preparing data...")
     dataloader, df = prepare_dataloader(cfg.data, processor)
 
@@ -74,6 +82,15 @@ def main(cfg: TTAConfig):
         gen_fun = generate_audio_samples_accelerate
     else:
         gen_fun = generate_audio_samples
+
+    if cfg.generation.get("warmup", True):
+        log.info("Running warmup generation...")
+        with torch.inference_mode():
+            dummy_input = processor(text=["warmup"], return_tensors="pt", padding=True)
+            dummy_input = {k: v.to(model.device) for k, v in dummy_input.items()}
+            _ = model.generate(**dummy_input, max_new_tokens=10)
+            del dummy_input
+            torch.cuda.empty_cache()
 
     with torch.inference_mode():
         gen_fun(

@@ -141,6 +141,7 @@ def generate_audio_samples_accelerate(
         "return_dict_in_generate": False,  # Don't store intermediate outputs
         "output_attentions": False,
         "output_hidden_states": False,
+        "num_beams": 1,  # Greedy/sampling is faster than beam search
     }
     if sample_rate is None:
         # Derive sample rate from model config
