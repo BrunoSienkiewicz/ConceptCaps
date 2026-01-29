@@ -2,7 +2,7 @@
 #SBATCH -J tta_accelerate
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
-#SBATCH --mem-per-cpu=4GB
+#SBATCH --mem-per-cpu=8GB
 #SBATCH --gres=gpu:4
 #SBATCH --cpus-per-task=8
 #SBATCH --time=05:00:00
