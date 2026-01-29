@@ -1,0 +1,10 @@
+name: "facebook/musicgen-stereo-large"
+checkpoint_dir: ""
+device_map: auto
+trust_remote_code: true
+
+tokenizer:
+  max_new_tokens: 1503
+  use_fast: true
+  padding_side: "left"
+  pad_token_as_eos: true
