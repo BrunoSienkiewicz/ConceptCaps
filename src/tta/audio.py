@@ -58,6 +58,9 @@ def generate_audio_samples(
             "do_sample": do_sample,
             "guidance_scale": guidance_scale,
             "use_cache": True,  # Enable KV-cache for faster generation
+            "return_dict_in_generate": False,  # Don't store intermediate outputs
+            "output_attentions": False,
+            "output_hidden_states": False,
         }
         audio_values = model.generate(**generation_kwargs)
         # Immediately move to CPU to free GPU memory
@@ -135,6 +138,9 @@ def generate_audio_samples_accelerate(
         "do_sample": do_sample,
         "guidance_scale": guidance_scale,
         "use_cache": True,
+        "return_dict_in_generate": False,  # Don't store intermediate outputs
+        "output_attentions": False,
+        "output_hidden_states": False,
     }
     if sample_rate is None:
         # Derive sample rate from model config
