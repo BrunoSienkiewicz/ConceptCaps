@@ -69,7 +69,7 @@ def main(cfg: TTAConfig):
 
     log.info("Generating audio samples...")
 
-    if cfg.generation.get("use_accelerator", False):
+    if cfg.generation.get("use_accelerator", True):
         log.info("Using Accelerate for distributed generation...")
         gen_fun = generate_audio_samples_accelerate
     else:
@@ -105,7 +105,7 @@ def main(cfg: TTAConfig):
     )
     log.info(f"Audio samples and metadata saved to {data_dir}")
 
-    if cfg.evaluation.get("skip_evaluation", False):
+    if cfg.evaluation.get("skip_evaluation", True):
         return
 
     log.info("Initializing TTA evaluator...")
