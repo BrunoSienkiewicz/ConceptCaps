@@ -196,7 +196,7 @@ The dataset inherits biases from MusicCaps, which:
 
 ### Dataset Curators
 
-This dataset was created by Bruno Sienkiewicz as part of research on interpretability in text-to-audio generation systems.
+This dataset was created by Bruno Sienkiewicz, Łukasz Neumann, and Mateusz Modrzejewski as part of research on interpretability in text-to-audio generation systems.
 
 ### Licensing Information
 
@@ -207,6 +207,12 @@ This dataset is released under the [CC-BY-4.0 License](https://creativecommons.o
 If you use ConceptCaps in your research, please cite:
 
 ```bibtex
+@article{sienkiewicz2026conceptcaps,
+  title={ConceptCaps -- a Distilled Concept Dataset for Interpretability in Music Models},
+  author={Sienkiewicz, Bruno and Neumann, Łukasz and Modrzejewski, Mateusz},
+  journal={arXiv preprint arXiv:2601.14157},
+  year={2026}
+}
 ```
 
 ### Contributions

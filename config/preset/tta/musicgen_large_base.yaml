@@ -2,7 +2,7 @@
 defaults:
   - override /paths: plgrid
   - override /model: tta/musicgen-large
-  - override /data: tta/base_model_conceptcaps
+  - override /data: tta/base_model_captions
   - override /generation: tta/best
   - override /logger: wandb
 
