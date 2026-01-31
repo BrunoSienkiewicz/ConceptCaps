@@ -12,7 +12,7 @@
 #SBATCH --error="logs/jupyter_%j.err"
 
 # Activate your conda environment
-conda activate music-gen-interpretability3
+conda activate $(grep -E '^name:' environment.yml | awk '{print $2}')
 
 # Get the compute node hostname
 NODE=$(hostname)

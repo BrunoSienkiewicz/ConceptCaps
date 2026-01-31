@@ -16,16 +16,8 @@
 
 ## Overview
 
-This repository contains the source code, configurations, and data used to create the **ConceptCaps** dataset — a concept-based music captioning dataset designed for interpretability research in text-to-audio (TTA) generation systems.
-
-ConceptCaps provides structured musical concept annotations alongside natural language captions, enabling fine-grained analysis of how TTA models represent and generate musical concepts.
-
-### Key Features
-
-- **23k music-caption-audio triplets** with explicit labels from a 200-attribute taxonomy
-- **Four concept categories**: genre, mood, instruments, tempo
-- **Separated semantic modeling from text generation**: VAE learns attribute co-occurrence, LLM generates descriptions
-- **Validated through multiple metrics**: CLAP alignment, BERTScore, MAUVE, and TCAV analysis
+ConceptCaps is a music captioning dataset derived from MusicCaps, specifically designed for concept-based interpretability research in text-to-audio (TTA) generation systems.
+The dataset provides categorized musical concept annotations from distilled taxonomy (200 unique tags) alongside natural language captions, enabling fine-grained analysis of how TTA models represent and generate musical concepts.
 
 ## TL;DR
 
@@ -35,22 +27,25 @@ Concept-based interpretability methods like TCAV require clean, well-separated p
 2. **Fine-tuning an LLM** to convert attribute lists into professional descriptions
 3. Synthesizing audio with **MusicGen**
 
+This pipeline resulted in large high-quality dataset that can be successfuly used for interpretability research, as demonstrated by downstream TCAV analysis.
+
+### Generation Pipeline
+
+![](./docs/assets/pipeline.pdf)
+
+### Key Features
+
+- **21k music-caption-audio triplets** with explicit labels from a 200-attribute taxonomy
+- **178 hours of audio content** paired with textual descriptions
+- **Four concept categories**: genre, mood, instruments, tempo
+- **Separated semantic modeling from text generation**: VAE learns attribute co-occurrence, LLM generates descriptions
+- **Validated through multiple metrics**: CLAP alignment, BERTScore, MAUVE, and TCAV analysis
+
 This separation improves coherence and controllability over end-to-end approaches.
 
 ## Dataset
 
 The dataset is available on Hugging Face: **[bsienkiewicz/ConceptCaps](https://huggingface.co/datasets/bsienkiewicz/ConceptCaps)**
-
-### Configurations
-
-| Configuration | Samples | Audio |
-|--------------|---------|-------|
-| `default` | 5,358 | ❌ |
-| `25pct` | 1,339 | ❌ |
-| `10pct` | 535 | ❌ |
-| `audio` | 5,358 | ✅ |
-| `25pct-audio` | 1,339 | ✅ |
-| `10pct-audio` | 535 | ✅ |
 
 ### Quick Start
 
@@ -70,12 +65,9 @@ dataset = load_dataset("bsienkiewicz/ConceptCaps", "audio")
 ├── config/                 # Hydra configuration files
 │   ├── callbacks/          # Training callbacks (checkpoints, early stopping, etc.)
 │   ├── data/               # Data module configurations
-│   │   ├── caption/        # Caption dataset configs
-│   │   ├── tta/            # Text-to-audio configs
-│   │   └── vae/            # VAE dataset configs
 │   ├── evaluation/         # Evaluation metric configurations
 │   ├── generation/         # Generation pipeline configs
-│   ├── logger/             # Logging configurations (W&B)
+│   ├── logger/             # Logging configurations
 │   ├── lora/               # LoRA fine-tuning configs
 │   ├── model/              # Model architecture configs
 │   ├── paths/              # Path configurations
@@ -85,11 +77,6 @@ dataset = load_dataset("bsienkiewicz/ConceptCaps", "audio")
 │   └── trainer/            # PyTorch Lightning trainer configs
 │
 ├── data/                   # Datasets and intermediate data
-│   ├── concepts_to_tags.json           # Concept taxonomy mapping
-│   ├── musiccaps_tag_frequencies.csv   # Tag frequency analysis
-│   ├── evaluation_results/             # Evaluation outputs
-│   ├── generated_captions/             # Generated caption datasets
-│   └── mtg_jamendo/                    # MTG-Jamendo data
 │
 ├── docs/                   # Documentation
 │   ├── DATASET_CARD.md     # Dataset card for Hugging Face
@@ -101,13 +88,6 @@ dataset = load_dataset("bsienkiewicz/ConceptCaps", "audio")
 │   └── vae_final.pth                   # Final VAE model
 │
 ├── notebooks/              # Jupyter notebooks for analysis
-│   ├── 1. Taxonomy and dataset distillation.ipynb
-│   ├── 2. VAE aspect modeling.ipynb
-│   ├── 3. MusicCaps and VAE generated dataset comparison.ipynb
-│   ├── 4. Conditioned caption inference.ipynb
-│   ├── 5. Audio generation analysis.ipynb
-│   ├── 6. Create final datasets.ipynb
-│   └── 7. TCAV for genre classification.ipynb
 │
 ├── scripts/                # Executable scripts
 │   ├── caption/            # Caption generation scripts
@@ -117,29 +97,9 @@ dataset = load_dataset("bsienkiewicz/ConceptCaps", "audio")
 │
 ├── src/                    # Source code
 │   ├── caption/            # Caption generation module
-│   │   ├── data.py         # Data loading and processing
-│   │   ├── model.py        # Model definitions
-│   │   ├── inference.py    # Inference pipeline
-│   │   ├── evaluation.py   # Caption evaluation metrics
-│   │   └── lightning_*.py  # PyTorch Lightning components
-│   │
 │   ├── vae/                # Variational Autoencoder module
-│   │   ├── data.py         # VAE data processing
-│   │   ├── model.py        # VAE architecture
-│   │   ├── inference.py    # VAE sampling/generation
-│   │   ├── evaluation.py   # VAE evaluation
-│   │   └── lightning_module.py
-│   │
 │   ├── tcav/               # TCAV analysis module
-│   │   ├── model.py        # Classifier for TCAV
-│   │   └── tcav.py         # TCAV implementation
-│   │
 │   ├── tta/                # Text-to-audio module
-│   │   ├── audio.py        # Audio processing utilities
-│   │   ├── data.py         # TTA data handling
-│   │   └── evaluation.py   # Audio evaluation metrics
-│   │
-│   ├── data/               # Common data utilities
 │   ├── utils/              # Shared utilities
 │   └── constants.py        # Project constants
 │
@@ -147,6 +107,16 @@ dataset = load_dataset("bsienkiewicz/ConceptCaps", "audio")
 ├── environment.yml         # Conda environment specification
 ├── Makefile                # Common development commands
 └── mkdocs.yml              # Documentation configuration
+```
+
+Every module in `src` directory follows roughly this file structure:
+
+```
+├──<module>/
+│   ├── data.py         # data processing
+│   ├── model.py        # model architecture
+│   ├── inference.py    # sampling/generation
+│   ├── evaluation.py   # evaluation metrics
 ```
 
 ## Installation
@@ -161,8 +131,8 @@ dataset = load_dataset("bsienkiewicz/ConceptCaps", "audio")
 
 ```bash
 # Clone the repository
-git clone https://github.com/bsienkiewicz/music-gen-interpretability
-cd music-gen-interpretability
+git clone https://github.com/BrunoSienkiewicz/ConceptCaps
+cd ConceptCaps
 
 # Create conda environment
 conda env create -f environment.yml
@@ -173,36 +143,10 @@ conda activate conceptcaps
 
 ## Usage
 
-### VAE Training
-
-Train the VAE for learning attribute co-occurrence patterns:
+### Run Script with Default Parameters
 
 ```bash
-python -m src.scripts.vae_training
-```
 
-### Caption Generation
-
-Generate captions from attribute lists using the fine-tuned LLM:
-
-```bash
-python -m src.scripts.caption_inference
-```
-
-### Caption Model Fine-tuning
-
-Fine-tune the caption generation model:
-
-```bash
-python -m src.scripts.caption_fine_tuning
-```
-
-### Text-to-Audio Inference
-
-Generate audio from captions using MusicGen:
-
-```bash
-python -m src.scripts.tta_inference
 ```
 
 ### Configuration Override
@@ -211,6 +155,12 @@ Override any parameter from command line:
 
 ```bash
 python -m src.scripts.vae_training trainer.max_epochs=100 data.batch_size=64
+```
+
+### Run Configuration Preset
+
+```bash
+
 ```
 
 ## Notebooks
@@ -226,14 +176,6 @@ The repository includes Jupyter notebooks demonstrating each pipeline stage:
 | `5. Audio generation analysis.ipynb` | MusicGen audio synthesis |
 | `6. Create final datasets.ipynb` | Final dataset preparation |
 | `7. TCAV for genre classification.ipynb` | TCAV interpretability analysis |
-
-## Evaluation Metrics
-
-ConceptCaps is validated through:
-
-- **Audio-Text Alignment**: CLAP scores
-- **Linguistic Quality**: BERTScore, MAUVE
-- **Interpretability**: TCAV analysis confirming concept probes recover musically meaningful patterns
 
 ## License
 
@@ -258,6 +200,6 @@ If you use ConceptCaps in your research, please cite:
 
 ## Authors
 
-- [Bruno Sienkiewicz](https://github.com/bsienkiewicz)
+- [Bruno Sienkiewicz](https://arxiv.org/search/cs?searchtype=author&query=Sienkiewicz,+B)
 - [Łukasz Neumann](https://arxiv.org/search/cs?searchtype=author&query=Neumann,+%C5%81)
 - [Mateusz Modrzejewski](https://arxiv.org/search/cs?searchtype=author&query=Modrzejewski,+M)

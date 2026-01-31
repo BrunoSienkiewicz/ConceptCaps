@@ -22,7 +22,6 @@ channels:
 
 dependencies:
   - python=3.12
-  - torchaudio=2.6.*
   - lightning=2.*
   - torchmetrics=0.*
   - transformers=4.*
@@ -34,6 +33,7 @@ dependencies:
   - sentencepiece=0.2.*
   - hydra-core=1.*
   - libmamba=2.*
+  - ffmpeg=6.*
 
   # --------- loggers --------- #
   - wandb
@@ -63,3 +63,7 @@ dependencies:
       - bert-score
       - psutil
       - mauve-text
+      - jupyterlab
+      - notebook
+      - ipython
+      - torchcodec

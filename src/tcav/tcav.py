@@ -168,7 +168,7 @@ class TCAV:
         if len(cavs) == 0:
             log.warning(f"No CAVs with accuracy > {MIN_CAV_ACCURACY} found")
             return {
-                "cav": None,
+                "cav": 0.0,
                 "accuracy": 0.0,
                 "accuracy_std": 0.0,
                 "num_successful_runs": 0,
