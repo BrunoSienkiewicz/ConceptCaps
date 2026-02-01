@@ -6,14 +6,14 @@
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=16
 #SBATCH --time=03:00:00
-#SBATCH -A plgxailnpw25-gpu-a100
-#SBATCH -p plgrid-gpu-a100
+#SBATCH -A ${SLURM_ACCOUNT:-your-slurm-account}
+#SBATCH -p ${SLURM_PARTITION:-plgrid-gpu-a100}
 #SBATCH --output="output.out"
 #SBATCH --error="error.err"
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
-CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
+CONDA_DIR="${PLG_GROUPS_STORAGE:-/path/to/storage}/${PLG_GROUP:-your-group}/$USER/.conda"
 
 module load CUDA/12.8.0
 module load GCC/11.2.0

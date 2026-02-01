@@ -6,8 +6,8 @@
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --time=08:00:00
-#SBATCH -A plgxailnpw25-gpu-a100
-#SBATCH -p plgrid-gpu-a100
+#SBATCH -A ${SLURM_ACCOUNT:-your-slurm-account}
+#SBATCH -p ${SLURM_PARTITION:-plgrid-gpu-a100}
 #SBATCH --output="logs/jupyter_%j.out"
 #SBATCH --error="logs/jupyter_%j.err"
 

@@ -112,11 +112,11 @@ dataset = load_dataset("bsienkiewicz/ConceptCaps", "audio")
 Every module in `src` directory follows roughly this file structure:
 
 ```
-├──<module>/
-│   ├── data.py         # data processing
-│   ├── model.py        # model architecture
-│   ├── inference.py    # sampling/generation
-│   └── evaluation.py   # evaluation metrics
+<module>/
+├── data.py         # data processing
+├── model.py        # model architecture
+├── inference.py    # sampling/generation
+└── evaluation.py   # evaluation metrics
 ```
 
 ## Installation
@@ -139,6 +139,16 @@ conda env create -f environment.yml
 
 # Activate environment
 conda activate conceptcaps
+```
+
+Alternatively use provided `Makefile` to run the most used workflows
+
+```bash
+# Create conda environment
+make env
+
+# Show available options
+make help
 ```
 
 ## Usage

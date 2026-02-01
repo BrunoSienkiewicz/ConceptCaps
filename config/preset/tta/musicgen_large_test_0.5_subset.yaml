@@ -21,7 +21,7 @@ generation:
   use_accelerator: true
 evaluation:
   skip_evaluation: false
-  reference_audio_dir: /net/pr2/projects/plgrid/plggailpwln/plgbsienkiewicz/artifacts/data/GTZAN_all
+  reference_audio_dir: ${oc.env:REFERENCE_AUDIO_DIR,/path/to/reference/audio}
 
 logger:
   wandb:

@@ -6,8 +6,8 @@
 #SBATCH --gres=gpu:2
 #SBATCH --cpus-per-task=8
 #SBATCH --time=05:00:00
-#SBATCH -A plgxailnpw25-gpu-a100
-#SBATCH -p plgrid-gpu-a100
+#SBATCH -A ${SLURM_ACCOUNT:-your-slurm-account}
+#SBATCH -p ${SLURM_PARTITION:-plgrid-gpu-a100}
 #SBATCH --output="logs/tta_accelerate_%j.out"
 #SBATCH --error="logs/tta_accelerate_%j.err"
 
@@ -41,10 +41,10 @@ if [[ -n "$PRESET" ]]; then
   HYDRA_OVERRIDES+=("+preset=$PRESET")
 fi
 
-ROOT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
+ROOT_DIR="${PLG_GROUPS_STORAGE:-/path/to/storage}/${PLG_GROUP:-your-group}/$USER"
 OUT_DIR="$ROOT_DIR/caption_fine_tuning"
 PLGRID_ARTIFACTS_DIR="$ROOT_DIR/artifacts"
-CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
+CONDA_DIR="${PLG_GROUPS_STORAGE:-/path/to/storage}/${PLG_GROUP:-your-group}/$USER/.conda"
 ENV_DIR="$CONDA_DIR/envs/$(grep -E '^name:' environment.yml | awk '{print $2}')"
 
 export HYDRA_FULL_ERROR=1

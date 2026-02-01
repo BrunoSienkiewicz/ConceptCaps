@@ -6,16 +6,16 @@
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --time=06:00:00
-#SBATCH -A plgxailnpw25-gpu-a100
-#SBATCH -p plgrid-gpu-a100
+#SBATCH -A ${SLURM_ACCOUNT:-your-slurm-account}
+#SBATCH -p ${SLURM_PARTITION:-plgrid-gpu-a100}
 #SBATCH --output="logs/caption_sweep_%j.out"
 #SBATCH --error="logs/caption_sweep_%j.err"
 
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
-ROOT_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz"
+ROOT_DIR="${PLG_GROUPS_STORAGE:-/path/to/storage}/${PLG_GROUP:-your-group}/$USER"
 PLGRID_ARTIFACTS_DIR="$ROOT_DIR/artifacts"
-CONDA_DIR="$PLG_GROUPS_STORAGE/plggailpwln/plgbsienkiewicz/.conda"
+CONDA_DIR="${PLG_GROUPS_STORAGE:-/path/to/storage}/${PLG_GROUP:-your-group}/$USER/.conda"
 ENV_DIR="$CONDA_DIR/envs/$(grep -E '^name:' environment.yml | awk '{print $2}')"
 
 export HYDRA_FULL_ERROR=1
