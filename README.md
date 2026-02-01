@@ -16,7 +16,7 @@
 
 ## Overview
 
-ConceptCaps is a music captioning dataset derived from MusicCaps, specifically designed for concept-based interpretability research in text-to-audio (TTA) generation systems.
+ConceptCaps is a music captioning dataset derived from [MusicCaps](https://huggingface.co/datasets/google/MusicCaps), specifically designed for concept-based interpretability research in text-to-audio (TTA) generation systems.
 The dataset provides categorized musical concept annotations from distilled taxonomy (200 unique tags) alongside natural language captions, enabling fine-grained analysis of how TTA models represent and generate musical concepts.
 
 ## TL;DR
@@ -116,7 +116,7 @@ Every module in `src` directory follows roughly this file structure:
 │   ├── data.py         # data processing
 │   ├── model.py        # model architecture
 │   ├── inference.py    # sampling/generation
-│   ├── evaluation.py   # evaluation metrics
+│   └── evaluation.py   # evaluation metrics
 ```
 
 ## Installation
@@ -146,7 +146,7 @@ conda activate conceptcaps
 ### Run Script with Default Parameters
 
 ```bash
-
+python -m src.scripts.vae.train
 ```
 
 ### Configuration Override
@@ -154,13 +154,13 @@ conda activate conceptcaps
 Override any parameter from command line:
 
 ```bash
-python -m src.scripts.vae_training trainer.max_epochs=100 data.batch_size=64
+python -m src.scripts.vae.train trainer.max_epochs=100 data.batch_size=64
 ```
 
 ### Run Configuration Preset
 
 ```bash
-
+python -m src.scripts.vae.train +preset=vae/default
 ```
 
 ## Notebooks
@@ -169,8 +169,8 @@ The repository includes Jupyter notebooks demonstrating each pipeline stage:
 
 | Notebook | Description |
 |----------|-------------|
-| `1. Taxonomy and dataset distillation.ipynb` | Concept taxonomy creation and tag mapping |
-| `2. VAE aspect modeling.ipynb` | VAE training and attribute sampling |
+| `1. Taxonomy and dataset distillation.ipynb` | Methodology in taxonomy creation and tag mapping |
+| `2. VAE aspect modeling.ipynb` | VAE attribute sampling |
 | `3. MusicCaps and VAE generated dataset comparison.ipynb` | Dataset quality analysis |
 | `4. Conditioned caption inference.ipynb` | Caption generation from concepts |
 | `5. Audio generation analysis.ipynb` | MusicGen audio synthesis |
