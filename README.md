@@ -31,7 +31,7 @@ This pipeline resulted in large high-quality dataset that can be successfuly use
 
 ### Generation Pipeline
 
-![](./docs/assets/pipeline.pdf)
+![](./docs/assets/pipeline.png)
 
 ### Key Features
 
@@ -141,7 +141,7 @@ conda env create -f environment.yml
 conda activate conceptcaps
 ```
 
-Alternatively use provided `Makefile` to run the most used workflows
+Alternatively use provided `Makefile` to run the most repetative workflows
 
 ```bash
 # Create conda environment
@@ -150,6 +150,11 @@ make env
 # Show available options
 make help
 ```
+
+### Environment variables
+
+For some scripts required environment variables need to be set in `.env` file.
+Reference for used variables can be found in `.env.example`.
 
 ## Usage
 

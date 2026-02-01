@@ -149,7 +149,7 @@ ConceptCaps was created to enable interpretability research in text-to-audio gen
 
 ConceptCaps is derived from [MusicCaps](https://huggingface.co/datasets/google/MusicCaps), a dataset of 5,521 music clips with expert-written captions from YouTube. The original `aspect_list` annotations were systematically filtered and categorized into four concept categories to create a curated taxonomy. Using this taxonomy, we curated the original MusicCaps dataset to create pairs of `aspect_list` and `caption` used for downstream training tasks.
 
-![Dataset Generation Pipeline](./assets/pipeline.pdf)
+![Dataset Generation Pipeline](./assets/pipeline.png)
 
 #### Who are the source language producers?
 

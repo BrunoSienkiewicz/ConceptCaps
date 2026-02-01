@@ -8,8 +8,8 @@ from typing import Tuple
 
 REPO_ID = os.getenv("REPO_ID", "bsienkiewicz/ConceptCaps")
 
-METADATA_CSV_PATH = Path(os.getenv("METADATA_CSV_PATH", "../data/generated_audio_dataset/metadata.csv"))
-AUDIO_DATA_PATH = Path(os.getenv("AUDIO_DATA_PATH", "../data/generated_audio_dataset"))
+METADATA_CSV_PATH = Path(os.getenv("METADATA_CSV_PATH", "/path/to/samples/metadata.csv"))
+AUDIO_DATA_PATH = Path(os.getenv("AUDIO_DATA_PATH", "/path/to/samples/audio"))
 
 TCAV_RESULTS_PATH = Path(os.getenv("TCAV_RESULTS_PATH", "../data/tcav_genre_classification_results.json"))
 
@@ -24,14 +24,14 @@ MODELS_DIR = Path(os.getenv("MODELS_DIR", PROJECT_ROOT / "models"))
 OUTPUTS_DIR = Path(os.getenv("OUTPUTS_DIR", PROJECT_ROOT / "outputs"))
 LOGS_DIR = Path(os.getenv("LOGS_DIR", PROJECT_ROOT / "logs"))
 
-WANDB_PROJECT = os.getenv("WANDB_PROJECT", "music-gen-interpretability")
+WANDB_PROJECT = os.getenv("WANDB_PROJECT", "concept-caps")
 WANDB_ENTITY = os.getenv("WANDB_ENTITY", None)
 
 # ============================================================================
 # GTZAN Dataset Constants
 # ============================================================================
 
-GTZAN_PATH = Path(os.getenv("GTZAN_PATH", "../data/GTZAN/Data/genres_original"))
+GTZAN_PATH = Path(os.getenv("GTZAN_PATH", "/path/to/gtzan"))
 GTZAN_GENRES: Tuple[str, ...] = (
     "blues",
     "classical",
@@ -76,7 +76,7 @@ GENRE_CLASSIFIER_MODEL_CHECKPOINT_PATH = Path(os.getenv("GENRE_CLASSIFIER_MODEL_
 MIN_CAV_ACCURACY = 0.60
 DEFAULT_NUM_CAV_RUNS = 40
 DEFAULT_NUM_CONCEPT_SAMPLES = 50
-DEFAULT_NUM_RANDOM_SAMPLES = 100
+DEFAULT_NUM_RANDOM_SAMPLES = 150
 
 # ============================================================================
 # Text-to-Audio Generation Constants
