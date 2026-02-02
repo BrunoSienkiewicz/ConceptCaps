@@ -1,10 +1,23 @@
+"""Music genre classifier model for TCAV analysis.
+
+Provides a CNN-based classifier with exposed bottleneck layer for
+extracting activations used in Concept Activation Vector training.
+"""
+
 import pytorch_lightning as pl
 import torch
 import torchaudio
 
 
 class MusicGenreClassifier(pl.LightningModule):
-    """Simple CNN-based music genre classifier."""
+    """CNN-based music genre classifier with accessible bottleneck layer.
+
+    Architecture uses mel-spectrogram features with convolutional layers
+    followed by a bottleneck layer (256 units) for TCAV analysis.
+
+    Args:
+        num_genres: Number of genre classes (default: 10 for GTZAN).
+    """
 
     def __init__(self, num_genres: int = 10):
         super().__init__()

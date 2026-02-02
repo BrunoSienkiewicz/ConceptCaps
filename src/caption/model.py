@@ -1,3 +1,9 @@
+"""Caption model utilities for LLM fine-tuning.
+
+Provides functions to prepare language models with LoRA adapters and quantization
+for efficient caption generation fine-tuning.
+"""
+
 from __future__ import annotations
 
 from omegaconf import DictConfig, OmegaConf
@@ -12,6 +18,14 @@ log = RankedLogger(__name__, rank_zero_only=True)
 def build_quantization_config(
     model_cfg: DictConfig,
 ) -> BitsAndBytesConfig | None:
+    """Build BitsAndBytes quantization config from Hydra config.
+
+    Args:
+        model_cfg: Model configuration with optional quantization settings.
+
+    Returns:
+        Quantization config or None if not specified.
+    """
     quant_cfg = model_cfg.get("quantization")
     if not quant_cfg:
         return None
@@ -26,6 +40,14 @@ def build_quantization_config(
 
 
 def prepare_tokenizer(model_cfg: DictConfig) -> AutoTokenizer:
+    """Prepare tokenizer with custom padding configuration.
+
+    Args:
+        model_cfg: Model configuration with tokenizer settings.
+
+    Returns:
+        Configured tokenizer instance.
+    """
     tokenizer_kwargs: dict[str, object] = {}
     tokenizer_cfg = model_cfg.get("tokenizer", {})
     if tokenizer_cfg.get("use_fast") is not None:
@@ -49,6 +71,18 @@ def prepare_tokenizer(model_cfg: DictConfig) -> AutoTokenizer:
 def prepare_training_model(
     model_cfg: DictConfig, lora_cfg: DictConfig
 ) -> AutoModelForCausalLM:
+    """Prepare model for LoRA fine-tuning with optional quantization.
+
+    Loads a pretrained model, applies quantization if configured,
+    and adds LoRA adapters. Supports loading from existing checkpoints.
+
+    Args:
+        model_cfg: Model configuration (name, device_map, checkpoint_dir).
+        lora_cfg: LoRA adapter configuration.
+
+    Returns:
+        Model with LoRA adapters ready for fine-tuning.
+    """
     quantization_config = build_quantization_config(model_cfg)
     model = AutoModelForCausalLM.from_pretrained(
         model_cfg.name,

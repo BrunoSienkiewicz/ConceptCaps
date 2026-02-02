@@ -1,3 +1,9 @@
+"""Data processing utilities for caption fine-tuning.
+
+Provides functions to format prompts and prepare datasets for both
+training and inference using configurable prompt templates.
+"""
+
 from __future__ import annotations
 
 import os
@@ -11,6 +17,7 @@ from omegaconf import DictConfig
 def _format_prompt(
     prompt_cfg: DictConfig, aspects: Any, reference_caption: str
 ) -> str:
+    """Format a training prompt with aspects and reference caption."""
     user_prompt = prompt_cfg["user_prompt_template"].format(tags=aspects)
     return (
         prompt_cfg["template"]
@@ -24,6 +31,7 @@ def _format_prompt(
 
 
 def _format_eval_prompt(prompt_cfg: DictConfig, aspects: Any) -> str:
+    """Format an evaluation prompt (without reference caption)."""
     user_prompt = prompt_cfg["user_prompt_template"].format(tags=aspects)
     return (
         prompt_cfg["eval_template"]
@@ -38,6 +46,16 @@ def _format_eval_prompt(prompt_cfg: DictConfig, aspects: Any) -> str:
 def prepare_datasets(
     data_cfg, prompt_cfg, raw_dataset: DatasetDict
 ) -> DatasetDict:
+    """Prepare datasets for training by formatting prompts with reference captions.
+
+    Args:
+        data_cfg: Data configuration with column names.
+        prompt_cfg: Prompt template configuration.
+        raw_dataset: Raw HuggingFace DatasetDict.
+
+    Returns:
+        Processed DatasetDict with formatted text column.
+    """
     text_column = data_cfg.text_column
     caption_column = data_cfg.caption_column
     aspect_column = data_cfg.aspect_column
@@ -66,6 +84,16 @@ def prepare_inference_datasets(
     prompt_cfg,
     raw_dataset: DatasetDict,
 ) -> DatasetDict:
+    """Prepare datasets for inference (without reference captions).
+
+    Args:
+        data_cfg: Data configuration with column names.
+        prompt_cfg: Prompt template configuration.
+        raw_dataset: Raw HuggingFace DatasetDict.
+
+    Returns:
+        Processed DatasetDict with formatted prompts for generation.
+    """
     text_column = data_cfg.text_column
     aspect_column = data_cfg.aspect_column
     id_column = data_cfg.id_column

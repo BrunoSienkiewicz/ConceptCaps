@@ -6,28 +6,21 @@ Welcome to the ConceptCaps documentation. ConceptCaps is a distilled concept dat
 
 - **Paper**: [arXiv:2601.14157](https://arxiv.org/abs/2601.14157)
 - **Dataset**: [Hugging Face](https://huggingface.co/datasets/bsienkiewicz/ConceptCaps)
-- **Repository**: [GitHub](https://github.com/bsienkiewicz/music-gen-interpretability)
+- **Repository**: [GitHub](https://github.com/BrunoSienkiewicz/ConceptCaps)
 
 ## Documentation Contents
 
 ### Getting Started
 
-- [README](../README.md) - Project overview and installation
-- [Pipeline](pipeline.md) - Detailed pipeline documentation
-
-### Reference
-
-- [Configuration](configuration.md) - Configuration options reference
-- [Dataset Card](DATASET_CARD.md) - Dataset documentation for Hugging Face
+- [README](https://github.com/BrunoSienkiewicz/ConceptCaps/blob/main/README.md) - Project overview and installation
 
 ## Overview
 
 ConceptCaps is a concept-based music captioning dataset designed for interpretability research in text-to-audio (TTA) generation systems. The dataset provides:
 
-- **23,000+ music-caption-audio triplets** with explicit labels
+- **21,000+ music-caption-audio triplets** with explicit labels
 - **200-attribute taxonomy** covering genre, mood, instruments, and tempo
 - **Structured annotations** for concept-based analysis
-- **TCAV-compatible format** for interpretability research
 
 ## Pipeline Summary
 
@@ -69,7 +62,7 @@ All data is validated through:
 
 ```bibtex
 @article{sienkiewicz2026conceptcaps,
-  title={ConceptCaps -- a Distilled Concept Dataset for Interpretability in Music Models},
+  title={ConceptCaps: a Distilled Concept Dataset for Interpretability in Music Models},
   author={Sienkiewicz, Bruno and Neumann, Łukasz and Modrzejewski, Mateusz},
   journal={arXiv preprint arXiv:2601.14157},
   year={2026}

@@ -1,11 +1,27 @@
-site_name: "Praca inżynierska - Bruno Sienkiewicz"
+site_name: "ConceptCaps"
 
 theme:
   name: "material"
   features:
     - content.code.annotate
     - navigation.tabs
+    - navigation.sections
+    - navigation.expand
   palette: "dark"
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Configuration: config.md
+    - Data: data.md
+    - Notebooks: notebooks.md
+  - Code Reference:
+    - Overview: code/reference.md
+    - Caption: code/caption.md
+    - VAE: code/vae.md
+    - TCAV: code/tcav.md
+    - TTA: code/tta.md
+    - Utilities: code/utils.md
 
 plugins:
   - search
@@ -18,7 +34,7 @@ plugins:
           paths: [src]
           options:
             show_bases: true
-            show_source: true
+            show_source: false
             allow_inspection: true
             show_root_heading: true
             parameter_headings: true
@@ -27,7 +43,12 @@ plugins:
             summary: true
             show_symbol_type_toc: true
             show_symbol_type_heading: true
-            show_if_no_docstring: true
+            show_if_no_docstring: false
+            members_order: source
+            filters:
+              - "!^__all__$"
+              - "!^__version__$"
+              - "!^__author__$"
 
 markdown_extensions:
   - admonition
