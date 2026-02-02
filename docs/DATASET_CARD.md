@@ -16,6 +16,7 @@ source_datasets:
 task_categories:
 - text-generation
 - text-to-audio
+- multi-modal-learning
 task_ids:
 - natural-language-inference
 - semantic-similarity-classification
@@ -27,6 +28,11 @@ tags:
 - text-to-audio
 - music-generation
 - interpretability
+- synthetic
+- musicgen
+- concepts
+- tcav
+- audio-captioning
 ---
 
 # Dataset Card for ConceptCaps
@@ -36,18 +42,18 @@ tags:
   - [Table of Contents](#table-of-contents)
   - [Dataset Description](#dataset-description)
     - [Dataset Summary](#dataset-summary)
+    - [Key Features](#key-features)
     - [Supported Tasks and Leaderboards](#supported-tasks-and-leaderboards)
     - [Languages](#languages)
   - [Dataset Structure](#dataset-structure)
-    - [Data Instances](#data-instances)
-    - [Data Fields](#data-fields)
     - [Data Splits](#data-splits)
-  - [Dataset Creation](#dataset-creation)
-    - [Curation Rationale](#curation-rationale)
+    - [Data Fields](#data-fields)
+    - [Data Instances](#data-instances)
+    - [Data Fields](#data-fields-1)
     - [Source Data](#source-data)
       - [Initial Data Collection and Normalization](#initial-data-collection-and-normalization)
-      - [Who are the source language producers?](#who-are-the-source-language-producers)
     - [Annotations](#annotations)
+      - [Used Models](#used-models)
       - [Annotation process](#annotation-process)
       - [Who are the annotators?](#who-are-the-annotators)
     - [Personal and Sensitive Information](#personal-and-sensitive-information)
@@ -55,6 +61,19 @@ tags:
     - [Social Impact of Dataset](#social-impact-of-dataset)
     - [Discussion of Biases](#discussion-of-biases)
     - [Other Known Limitations](#other-known-limitations)
+  - [Considerations for Using the Data](#considerations-for-using-the-data-1)
+    - [Social Impact of Dataset](#social-impact-of-dataset-1)
+    - [Discussion of Biases](#discussion-of-biases-1)
+  - [Additional Information](#additional-information)
+    - [Dataset Curators](#dataset-curators)
+    - [Licensing Information](#licensing-information)
+    - [Citation Information](#citation-information)
+    - [Contributions](#contributions)
+  - [Usage Examples](#usage-examples)
+    - [Load the default configuration (captions only):](#load-the-default-configuration-captions-only)
+    - [Load with audio:](#load-with-audio)
+    - [Load smaller subsets for quick experimentation:](#load-smaller-subsets-for-quick-experimentation)
+>>>>>>> e41d49f (Dataset card update)
   - [Additional Information](#additional-information)
     - [Dataset Curators](#dataset-curators)
     - [Licensing Information](#licensing-information)
@@ -75,14 +94,23 @@ tags:
 
 ### Dataset Summary
 
+![](./assets/pipeline.pdf)
+
 ConceptCaps is a music captioning dataset derived from MusicCaps, specifically designed for concept-based interpretability research in text-to-audio (TTA) generation systems. The dataset provides categorized musical concept annotations from a distilled taxonomy (200 unique tags) alongside natural language captions, enabling fine-grained analysis of how TTA models represent and generate musical concepts.
 
-Key features include:
-- **21k music-caption-audio triplets** with explicit labels from a 200-attribute taxonomy
-- **178 hours of audio content** paired with textual descriptions
-- **Four concept categories**: genre, mood, instruments, tempo
-- **Separated semantic modeling from text generation**: VAE learns attribute co-occurrence, LLM generates descriptions
-- **Validated through multiple metrics**: CLAP alignment, BERTScore, MAUVE, and TCAV analysis
+Unlike existing datasets with noisy or sparse tags, ConceptCaps utilizes a novel generative pipeline separating semantic consistency (via VAE) from linguistic quality (via LLM) to create 21k high-quality music-caption-audio triplets.
+
+The dataset is available in **2 versions**: 
+1. **Default:** Text-only (captions + aspect lists).
+2. **Audio:** Full triplets including generated audio files.
+
+### Key Features
+
+- **21k music-caption-audio triplets** with explicit labels from a 200-attribute taxonomy.
+- **178 hours of audio content** paired with textual descriptions.
+- **Four concept categories**: Genre, Mood, Instruments, Tempo.
+- **Separated semantic modeling from text generation**: A Beta-VAE learns attribute co-occurrence, while a fine-tuned Llama 3.1 model generates descriptions.
+- **Validated through multiple metrics**: High audio-text alignment, linguistic quality and concept separability (verified via TCAV).
 
 The dataset is available in 2 versions: with and without audio. All captions are in English.
 
@@ -97,6 +125,29 @@ The dataset is available in 2 versions: with and without audio. All captions are
 The captions in ConceptCaps are in English (BCP-47: `en`).
 
 ## Dataset Structure
+
+### Data Splits
+
+| Configuration | Train | Validation | Test | Total |
+|--------------|-------|------------|------|-------|
+| default | 15003 | 3,215 | 3,215 | 21,433 |
+| 25pct | 3,750 | 803 | 803 | 5,356 |
+| 10pct | 1500 | 321 | 321 | 2,142 |
+
+Splits follow a standard **70/15/15** ratio for train/validation/test.
+
+### Data Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique identifier for the sample |
+| `caption` | string | Natural language description of the music |
+| `aspect_list` | string | Stringified list of all musical concept tags |
+| `genre_aspects` | list[string] | Genre-related tags (e.g., "jazz", "rock", "classical") |
+| `mood_aspects` | list[string] | Mood/emotion tags (e.g., "mellow", "energetic", "sad") |
+| `instrument_aspects` | list[string] | Instrument tags (e.g., "piano", "guitar", "drums") |
+| `tempo_aspects` | list[string] | Tempo-related tags (e.g., "slow", "fast", "moderate") |
+| `file_name` | Audio | (Audio versions only) Audio file data |
 
 ### Data Instances
 
@@ -118,46 +169,24 @@ For audio versions, an additional `file_name` field contains the audio data.
 
 ### Data Fields
 
-- `id` (string): Unique identifier for the sample
-- `caption` (string): Natural language description of the music
-- `aspect_list` (string): Stringified list of all musical concept tags
-- `genre_aspects` (list[string]): Genre-related tags (e.g., "jazz", "rock", "classical")
-- `mood_aspects` (list[string]): Mood/emotion tags (e.g., "mellow", "energetic", "sad")
-- `instrument_aspects` (list[string]): Instrument tags (e.g., "piano", "guitar", "drums")
-- `tempo_aspects` (list[string]): Tempo-related tags (e.g., "slow", "fast", "moderate")
-- `file_name` (Audio): (Audio versions only) Audio file data
-
-### Data Splits
-
-| Configuration | Train | Validation | Test | Total |
-|--------------|-------|------------|------|-------|
-| default | 15,003 | 3,215 | 3,215 | 21,433 |
-| 25pct | 3,750 | 803 | 803 | 5,356 |
-| 10pct | 1,500 | 321 | 321 | 2,142 |
-
-Splits follow a 70/15/15 ratio for train/validation/test.
-
-## Dataset Creation
-
-### Curation Rationale
-
-ConceptCaps was created to enable interpretability research in text-to-audio generation. Existing music captioning datasets contain noisy or sparse data, making it difficult to perform concept interpretability research. By distillation and categorization of musical aspects (genre, mood, instruments, tempo), ConceptCaps provides a strong foundation for various interpretability methods in music.
-
 ### Source Data
 
 #### Initial Data Collection and Normalization
 
-ConceptCaps is derived from [MusicCaps](https://huggingface.co/datasets/google/MusicCaps), a dataset of 5,521 music clips with expert-written captions from YouTube. The original `aspect_list` annotations were systematically filtered and categorized into four concept categories to create a curated taxonomy. Using this taxonomy, we curated the original MusicCaps dataset to create pairs of `aspect_list` and `caption` used for downstream training tasks.
+ConceptCaps is derived from [MusicCaps](https://huggingface.co/datasets/google/MusicCaps), a dataset of 5,521 music clips with expert-written captions from YouTube. The original `aspect_list` annotations were systematically filtered and categorized into four concept categories to create a curated taxonomy. Using this taxonomy, the authors distilled the original MusicCaps dataset to create clean pairs of `aspect_list` and `caption` used to train the downstream generative components.
 
 ![Dataset Generation Pipeline](./assets/pipeline.png)
 
-#### Who are the source language producers?
-
-The source data originates from MusicCaps, where captions were written by expert annotators. The tag combinations were then processed using machine learning models:
-- A custom VAE was trained to learn attribute co-occurrence patterns from the curated taxonomy
-- A fine-tuned LLM (language model) generated natural language captions conditioned on tag combinations
+ConceptCaps was created to enable interpretability research in text-to-audio generation. Existing music captioning datasets often contain noisy, synonyms-heavy, or sparse tags, making it difficult to perform concept interpretability research (e.g., using TCAV). By distilling and categorizing musical aspects (genre, mood, instruments, tempo), ConceptCaps provides a strong foundation for auditing how models learn specific musical concepts.
 
 ### Annotations
+
+#### Used Models
+
+The dataset generation relies on a three-stage pipeline using the following models:
+- **Semantic Modeling**: Custom **Beta-VAE** (β-VAE) with a 256-dimensional latent space to model attribute co-occurrences.
+- **Text Generation**: **Llama-3.1-8B-Instruct** fine-tuned with QLoRA on the distilled MusicCaps data.
+- **Audio Generation**: **MusicGen** (Facebook/Meta) used to synthesize audio conditioned on the generated captions.
 
 #### Annotation process
 
@@ -198,11 +227,22 @@ The dataset inherits potential biases from its source:
 - Audio versions require significant storage space (178 hours of audio content)
 - The taxonomy is limited to 200 tags across four categories, which may not capture all nuances of musical description
 
+## Considerations for Using the Data
+
+### Social Impact of Dataset
+ConceptCaps facilitates research into **interpretability** and **explainability** of audio generation models. By providing a controlled environment with explicit concept tags, it allows researchers to audit models for bias and concept erasure.
+
+### Discussion of Biases
+
+* **Source Bias:** As a derivative of MusicCaps (which is based on AudioSet/YouTube), the dataset likely retains Western-centric musical biases.
+* **Model Bias:** The audio is generated by MusicGen and the text by Llama 3. Any biases inherent in these models (e.g., specific associations between "sad" mood and "minor key") are baked into this dataset.
+* **Synthetic Nature:** Users should be aware that this is **synthetic data**. It represents the statistical likelihood of how MusicGen *interprets* concepts, not necessarily how real acoustic instruments always sound.
+
 ## Additional Information
 
 ### Dataset Curators
 
-This dataset was created by Bruno Sienkiewicz, Łukasz Neumann, and Mateusz Modrzejewski as part of research on interpretability in text-to-audio generation systems.
+This dataset was created by Bruno Sienkiewicz, Łukasz Neumann, and Mateusz Modrzejewski (Warsaw University of Technology) as part of research on interpretability in text-to-audio generation systems.
 
 ### Licensing Information
 
@@ -240,8 +280,11 @@ print(dataset["train"][0])
 
 ```python
 dataset = load_dataset("bsienkiewicz/ConceptCaps", "audio")
-# Access audio
-audio_data = dataset["train"][0]["file_name"]
+
+# access audio
+sample = dataset["train"][0]
+audio_array = sample["file_name"]["array"]
+sampling_rate = sample["file_name"]["sampling_rate"]
 ```
 
 ### Load smaller subsets for quick experimentation:
