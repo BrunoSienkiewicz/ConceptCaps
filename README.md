@@ -6,6 +6,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-2601.14157-b31b1b.svg?style=flat-square)](https://arxiv.org/abs/2601.14157)
 [![Dataset](https://img.shields.io/badge/🤗%20Dataset-ConceptCaps-yellow.svg?style=flat-square)](https://huggingface.co/datasets/bsienkiewicz/ConceptCaps)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18445830.svg)](https://doi.org/10.5281/zenodo.18445830)
 [![License](https://img.shields.io/badge/License-CC--BY--4.0-green.svg?style=flat-square)](https://creativecommons.org/licenses/by/4.0/)
 
 <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a>
