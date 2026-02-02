@@ -73,16 +73,6 @@ tags:
     - [Load the default configuration (captions only):](#load-the-default-configuration-captions-only)
     - [Load with audio:](#load-with-audio)
     - [Load smaller subsets for quick experimentation:](#load-smaller-subsets-for-quick-experimentation)
->>>>>>> e41d49f (Dataset card update)
-  - [Additional Information](#additional-information)
-    - [Dataset Curators](#dataset-curators)
-    - [Licensing Information](#licensing-information)
-    - [Citation Information](#citation-information)
-    - [Contributions](#contributions)
-  - [Usage Examples](#usage-examples)
-    - [Load the default configuration (captions only):](#load-the-default-configuration-captions-only)
-    - [Load with audio:](#load-with-audio)
-    - [Load smaller subsets for quick experimentation:](#load-smaller-subsets-for-quick-experimentation)
 
 ## Dataset Description
 
