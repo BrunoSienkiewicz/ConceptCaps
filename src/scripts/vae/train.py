@@ -19,9 +19,8 @@ from src.utils import (
 )
 from src.vae import BetaVAELightningModule, VAEDataModule
 from src.vae.config import VAEConfig
-from src.vae.inference import run_latent_inference
 from src.vae.evaluation import MetricsSaveCallback, MetricsSaver
-
+from src.vae.inference import run_latent_inference
 
 log = RankedLogger(__name__, rank_zero_only=True)
 

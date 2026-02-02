@@ -11,7 +11,6 @@ from src.tta.config import TTAConfig
 from src.tta.evaluation import TTAEvaluator
 from src.utils import RankedLogger, instantiate_loggers, print_config_tree
 
-
 log = RankedLogger(__name__, rank_zero_only=True)
 
 

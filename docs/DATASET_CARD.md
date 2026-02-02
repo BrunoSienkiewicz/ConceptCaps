@@ -90,7 +90,7 @@ ConceptCaps is a music captioning dataset derived from MusicCaps, specifically d
 
 Unlike existing datasets with noisy or sparse tags, ConceptCaps utilizes a novel generative pipeline separating semantic consistency (via VAE) from linguistic quality (via LLM) to create 21k high-quality music-caption-audio triplets.
 
-The dataset is available in **2 versions**: 
+The dataset is available in **2 versions**:
 1. **Default:** Text-only (captions + aspect lists).
 2. **Audio:** Full triplets including generated audio files.
 

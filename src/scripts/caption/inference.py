@@ -12,13 +12,12 @@ from datasets import load_dataset
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
-from src.caption.model import prepare_tokenizer
 from src.caption import CaptionGenerationConfig
 from src.caption.data import prepare_inference_datasets
 from src.caption.inference import generate_captions_batch
 from src.caption.lightning_module import CaptionFineTuningModule
+from src.caption.model import prepare_tokenizer
 from src.utils import RankedLogger, instantiate_loggers, print_config_tree
-
 
 log = RankedLogger(__name__, rank_zero_only=True)
 

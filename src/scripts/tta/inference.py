@@ -5,7 +5,6 @@ import hydra
 import pytorch_lightning as pl
 import rootutils
 import torch
-
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
@@ -15,7 +14,6 @@ from src.tta.config import TTAConfig
 from src.tta.data import prepare_dataloader, save_dataframe_metadata
 from src.tta.evaluation import TTAEvaluator
 from src.utils import RankedLogger, instantiate_loggers, print_config_tree
-
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
@@ -52,9 +50,7 @@ def main(cfg: TTAConfig):
 
     print_config_tree(cfg)
     log.info("Loading model...")
-    processor = AutoProcessor.from_pretrained(
-        cfg.model.name
-    )
+    processor = AutoProcessor.from_pretrained(cfg.model.name)
     model = MusicgenForConditionalGeneration.from_pretrained(
         cfg.model.name,
         device_map=cfg.model.device_map,
@@ -62,7 +58,9 @@ def main(cfg: TTAConfig):
     )
 
     # Compile model for faster inference (PyTorch 2.0+)
-    if cfg.generation.get("use_torch_compile", True) and hasattr(torch, "compile"):
+    if cfg.generation.get("use_torch_compile", True) and hasattr(
+        torch, "compile"
+    ):
         log.info("Compiling model with torch.compile...")
         model = torch.compile(model, mode="reduce-overhead")
 
@@ -86,8 +84,12 @@ def main(cfg: TTAConfig):
     if cfg.generation.get("warmup", True):
         log.info("Running warmup generation...")
         with torch.inference_mode():
-            dummy_input = processor(text=["warmup"], return_tensors="pt", padding=True)
-            dummy_input = {k: v.to(model.device) for k, v in dummy_input.items()}
+            dummy_input = processor(
+                text=["warmup"], return_tensors="pt", padding=True
+            )
+            dummy_input = {
+                k: v.to(model.device) for k, v in dummy_input.items()
+            }
             _ = model.generate(**dummy_input, max_new_tokens=10)
             del dummy_input
             torch.cuda.empty_cache()

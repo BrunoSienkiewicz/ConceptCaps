@@ -6,14 +6,17 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import scipy.io
-from src.constants import DEFAULT_GUIDANCE_SCALE, DEFAULT_TOP_P, DEFAULT_TOP_K, DEFAULT_SAMPLE_RATE
 import torch
 from accelerate import Accelerator
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-
-
+from src.constants import (
+    DEFAULT_GUIDANCE_SCALE,
+    DEFAULT_SAMPLE_RATE,
+    DEFAULT_TOP_K,
+    DEFAULT_TOP_P,
+)
 from src.utils import RankedLogger
 
 log = RankedLogger(__name__, rank_zero_only=True)
@@ -68,7 +71,7 @@ def generate_audio_samples(
         del audio_values
         del input_ids
         del attention_mask
-        
+
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 
@@ -167,7 +170,7 @@ def generate_audio_samples_accelerate(
         del audio_values
         del input_ids
         del attention_mask
-        
+
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 

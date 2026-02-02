@@ -270,6 +270,7 @@ class MetricComputer:
 
     def save_predictions(self, output_dir: Path) -> dict[str, Any]:
         """Save predictions and metrics to output directory.
+
         Files saved:
         - <output_dir>/evaluation_metrics.json
         - <output_dir>/all_predictions.csv

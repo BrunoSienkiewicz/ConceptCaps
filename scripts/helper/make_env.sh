@@ -34,7 +34,7 @@ conda activate "$(grep -E '^name:' environment.yml | awk '{print $2}')"
 pip install torch==2.6
 
 
-cd 
+cd
 if [ ! -d "bitsandbytes" ]; then
     git clone https://github.com/bitsandbytes-foundation/bitsandbytes.git
 fi
@@ -43,14 +43,14 @@ cmake -DCOMPUTE_BACKEND=cuda -DCOMPUTE_CAPABILITY=80 -S .
 make
 pip install -e .
 
-cd 
+cd
 if [ ! -d "peft" ]; then
     git clone https://github.com/huggingface/peft
 fi
 cd peft
 pip install -e .
 
-cd 
+cd
 if [ ! -d "trl" ]; then
     git clone https://github.com/huggingface/trl.git
 fi

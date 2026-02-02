@@ -10,19 +10,18 @@ from datasets import load_dataset
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
-from src.caption.model import prepare_tokenizer
 from src.caption import CaptionGenerationConfig
 from src.caption.data import prepare_datasets
 from src.caption.evaluation import MetricComputer
 from src.caption.lightning_datamodule import CaptionDataModule
 from src.caption.lightning_module import CaptionFineTuningModule
+from src.caption.model import prepare_tokenizer
 from src.utils import (
     RankedLogger,
     instantiate_callbacks,
     instantiate_loggers,
     print_config_tree,
 )
-
 
 log = RankedLogger(__name__, rank_zero_only=True)
 

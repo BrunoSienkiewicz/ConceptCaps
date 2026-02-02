@@ -8,16 +8,24 @@ from typing import Tuple
 
 REPO_ID = os.getenv("REPO_ID", "bsienkiewicz/ConceptCaps")
 
-METADATA_CSV_PATH = Path(os.getenv("METADATA_CSV_PATH", "/path/to/samples/metadata.csv"))
+METADATA_CSV_PATH = Path(
+    os.getenv("METADATA_CSV_PATH", "/path/to/samples/metadata.csv")
+)
 AUDIO_DATA_PATH = Path(os.getenv("AUDIO_DATA_PATH", "/path/to/samples/audio"))
 
-TCAV_RESULTS_PATH = Path(os.getenv("TCAV_RESULTS_PATH", "../data/tcav_genre_classification_results.json"))
+TCAV_RESULTS_PATH = Path(
+    os.getenv(
+        "TCAV_RESULTS_PATH", "../data/tcav_genre_classification_results.json"
+    )
+)
 
 # ============================================================================
 # Environment Variables
 # ============================================================================
 
-PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT", Path(__file__).parent.parent.absolute()))
+PROJECT_ROOT = Path(
+    os.getenv("PROJECT_ROOT", Path(__file__).parent.parent.absolute())
+)
 
 DATA_DIR = Path(os.getenv("DATA_DIR", PROJECT_ROOT / "data"))
 MODELS_DIR = Path(os.getenv("MODELS_DIR", PROJECT_ROOT / "models"))
@@ -71,7 +79,12 @@ DEFAULT_GRADIENT_CLIP_VAL = 1.0
 # TCAV Analysis Constants
 # ============================================================================
 
-GENRE_CLASSIFIER_MODEL_CHECKPOINT_PATH = Path(os.getenv("GENRE_CLASSIFIER_MODEL_CHECKPOINT_PATH", "../models/best-genre-classifier.ckpt"))
+GENRE_CLASSIFIER_MODEL_CHECKPOINT_PATH = Path(
+    os.getenv(
+        "GENRE_CLASSIFIER_MODEL_CHECKPOINT_PATH",
+        "../models/best-genre-classifier.ckpt",
+    )
+)
 
 MIN_CAV_ACCURACY = 0.60
 DEFAULT_NUM_CAV_RUNS = 40
