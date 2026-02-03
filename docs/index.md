@@ -18,15 +18,13 @@ Welcome to the ConceptCaps documentation. ConceptCaps is a distilled concept dat
 
 ConceptCaps is a concept-based music captioning dataset designed for interpretability research in text-to-audio (TTA) generation systems. The dataset provides:
 
-- **21,000+ music-caption-audio triplets** with explicit labels
+- **21,000+ music-caption-tags triplets** with explicit labels
 - **200-attribute taxonomy** covering genre, mood, instruments, and tempo
 - **Structured annotations** for concept-based analysis
 
 ## Pipeline Summary
 
-```
-MusicCaps → Taxonomy Extraction → VAE Sampling → LLM Captioning → MusicGen Audio
-```
+![](./assets/pipeline.png)
 
 1. **Taxonomy Extraction**: Map MusicCaps tags to structured categories
 2. **VAE Sampling**: Learn and sample plausible attribute combinations
@@ -38,6 +36,7 @@ MusicCaps → Taxonomy Extraction → VAE Sampling → LLM Captioning → MusicG
 ### Concept Separation
 
 Unlike existing datasets, ConceptCaps provides clean separation between:
+
 - Genre concepts (jazz, rock, classical, etc.)
 - Mood concepts (happy, sad, energetic, etc.)
 - Instrument concepts (piano, guitar, drums, etc.)
@@ -46,6 +45,7 @@ Unlike existing datasets, ConceptCaps provides clean separation between:
 ### TCAV Compatibility
 
 The dataset is designed for Testing with Concept Activation Vectors (TCAV), enabling:
+
 - Concept probe training
 - Model interpretability analysis
 - Controlled generation experiments

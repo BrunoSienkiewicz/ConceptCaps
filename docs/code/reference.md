@@ -12,17 +12,6 @@ API documentation for the ConceptCaps source code.
 | [TTA](tta.md) | Text-to-audio generation |
 | [Utilities](utils.md) | Logging and experiment tracking |
 
-## Pipeline Flow
-
-```
-┌─────────┐     ┌─────────┐     ┌─────────┐     ┌─────────┐
-│   VAE   │ ──▶ │ Caption │ ──▶ │   TTA   │ ──▶ │  TCAV   │
-│ (vae)   │     │(caption)│     │  (tta)  │     │ (tcav)  │
-└─────────┘     └─────────┘     └─────────┘     └─────────┘
-  Sample          Generate        Synthesize      Analyze
-  attributes      captions        audio           concepts
-```
-
 ## Constants
 
 Project-wide configuration values.

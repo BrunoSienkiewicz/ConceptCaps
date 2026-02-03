@@ -29,8 +29,8 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          import:
-            - https://docs.python.org/pl/3.12/objects.inv
+          # import:
+          #   - https://docs.python.org/pl/3.12/objects.inv
           paths: [src]
           options:
             show_bases: true

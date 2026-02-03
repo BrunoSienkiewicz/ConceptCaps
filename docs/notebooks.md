@@ -30,7 +30,6 @@ Creates the 200-tag taxonomy from MusicCaps annotations:
 Trains the Beta-VAE on tag distributions:
 
 - Prepare multi-hot encoded tag vectors
-- Train VAE with different β values
 - Visualize latent space
 - Sample new attribute combinations
 
@@ -48,10 +47,9 @@ Validates VAE sampling quality:
 
 **File**: `4. Conditioned caption inference.ipynb`
 
-Generates captions using the fine-tuned LLM:
+Evaluates captions from the fine-tuned LLM against baselines:
 
-- Load LoRA-adapted model
-- Generate captions from VAE-sampled attributes
+- Analyze generated captions from VAE-sampled attributes
 - Evaluate caption quality (perplexity, diversity)
 
 ### 5. Audio Generation Analysis
@@ -60,9 +58,7 @@ Generates captions using the fine-tuned LLM:
 
 Analyzes MusicGen audio synthesis:
 
-- Generate audio from captions
-- Compute CLAP scores
-- Visualize spectrograms
+- Compute CLAP and FAD scores
 - Quality assessment
 
 ### 6. Create Final Datasets
@@ -87,15 +83,3 @@ Interpretability analysis with TCAV:
 - Compute TCAV scores
 - Visualize concept importance
 
-## Running Notebooks
-
-```bash
-# Activate environment
-conda activate conceptcaps
-
-# Start Jupyter
-jupyter lab notebooks/
-```
-
-!!! note "GPU Requirements"
-    Notebooks 2, 4, 5, and 7 require GPU access for model training/inference.
