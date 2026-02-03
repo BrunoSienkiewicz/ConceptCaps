@@ -1,0 +1,4470 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../reference/">
+      
+      
+        <link rel="next" href="../vae/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Caption - ConceptCaps</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#caption-module" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="ConceptCaps" class="md-header__button md-logo" aria-label="ConceptCaps" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ConceptCaps
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Caption
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_2">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_3">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../config/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../reference/" class="md-tabs__link">
+          
+  
+  
+  Code Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="ConceptCaps" class="md-nav__button md-logo" aria-label="ConceptCaps" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ConceptCaps
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Code Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caption
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caption
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;config
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config.CaptionGenerationConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;CaptionGenerationConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config.ModelConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ModelConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config.DatasetConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;DatasetConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config.TrainerConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;TrainerConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config.LoRAConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;LoRAConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config.QuantizationConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;QuantizationConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#captionfinetuningmodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CaptionFineTuningModule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.lightning_module.CaptionFineTuningModule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;CaptionFineTuningModule
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" CaptionFineTuningModule">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.lightning_module.CaptionFineTuningModule.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;forward
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.lightning_module.CaptionFineTuningModule.training_step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;training_step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.lightning_module.CaptionFineTuningModule.validation_step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;validation_step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.lightning_module.CaptionFineTuningModule.configure_optimizers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;configure_optimizers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#captiondatamodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CaptionDataModule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.lightning_datamodule.CaptionDataModule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;CaptionDataModule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Processing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.data.prepare_datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;prepare_datasets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" prepare_datasets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.data.prepare_datasets(data_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;data_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.data.prepare_datasets(prompt_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;prompt_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.data.prepare_datasets(raw_dataset)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;raw_dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.data.prepare_inference_datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;prepare_inference_datasets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" prepare_inference_datasets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.data.prepare_inference_datasets(data_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;data_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.data.prepare_inference_datasets(prompt_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;prompt_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.data.prepare_inference_datasets(raw_dataset)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;raw_dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model Utilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.model.prepare_tokenizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;prepare_tokenizer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" prepare_tokenizer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.model.prepare_tokenizer(model_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;model_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.model.prepare_training_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;prepare_training_model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" prepare_training_model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.model.prepare_training_model(model_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;model_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.model.prepare_training_model(lora_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;lora_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.model.build_quantization_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;build_quantization_config
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" build_quantization_config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.model.build_quantization_config(model_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;model_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;evaluation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.evaluation.MetricComputer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MetricComputer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" MetricComputer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.MetricComputer._compute_metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;_compute_metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.MetricComputer.compute_metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;compute_metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.MetricComputer.save_predictions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;save_predictions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" save_predictions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.MetricComputer.save_predictions(output_dir)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;output_dir
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.evaluation.calculate_perplexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;calculate_perplexity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" calculate_perplexity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.calculate_perplexity(model)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.calculate_perplexity(tokenizer)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;tokenizer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.calculate_perplexity(text)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.calculate_perplexity(device)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;device
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.evaluation.evaluate_with_llm_judge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;evaluate_with_llm_judge
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" evaluate_with_llm_judge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.evaluate_with_llm_judge(captions)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;captions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.evaluate_with_llm_judge(prompts)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;prompts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.evaluate_with_llm_judge(judge_model_name)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;judge_model_name
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.evaluate_with_llm_judge(batch_size)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;batch_size
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.evaluate_with_llm_judge(device)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;device
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;generate_captions_batch
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" generate_captions_batch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(model)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(tokenizer)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;tokenizer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(prompts)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;prompts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(generate_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;generate_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(batch_size)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;batch_size
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(compute_perplexity)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;compute_perplexity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(compute_llm_judge)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;compute_llm_judge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(llm_judge_config)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;llm_judge_config
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vae/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VAE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tcav/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TCAV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tta/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TTA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;config
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config.CaptionGenerationConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;CaptionGenerationConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config.ModelConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ModelConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config.DatasetConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;DatasetConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config.TrainerConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;TrainerConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config.LoRAConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;LoRAConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.config.QuantizationConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;QuantizationConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#captionfinetuningmodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CaptionFineTuningModule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.lightning_module.CaptionFineTuningModule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;CaptionFineTuningModule
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" CaptionFineTuningModule">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.lightning_module.CaptionFineTuningModule.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;forward
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.lightning_module.CaptionFineTuningModule.training_step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;training_step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.lightning_module.CaptionFineTuningModule.validation_step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;validation_step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.lightning_module.CaptionFineTuningModule.configure_optimizers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;configure_optimizers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#captiondatamodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CaptionDataModule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.lightning_datamodule.CaptionDataModule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;CaptionDataModule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Processing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.data.prepare_datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;prepare_datasets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" prepare_datasets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.data.prepare_datasets(data_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;data_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.data.prepare_datasets(prompt_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;prompt_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.data.prepare_datasets(raw_dataset)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;raw_dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.data.prepare_inference_datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;prepare_inference_datasets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" prepare_inference_datasets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.data.prepare_inference_datasets(data_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;data_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.data.prepare_inference_datasets(prompt_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;prompt_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.data.prepare_inference_datasets(raw_dataset)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;raw_dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model Utilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.model.prepare_tokenizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;prepare_tokenizer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" prepare_tokenizer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.model.prepare_tokenizer(model_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;model_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.model.prepare_training_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;prepare_training_model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" prepare_training_model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.model.prepare_training_model(model_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;model_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.model.prepare_training_model(lora_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;lora_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.model.build_quantization_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;build_quantization_config
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" build_quantization_config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.model.build_quantization_config(model_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;model_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;evaluation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.evaluation.MetricComputer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MetricComputer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" MetricComputer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.MetricComputer._compute_metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;_compute_metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.MetricComputer.compute_metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;compute_metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.MetricComputer.save_predictions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;save_predictions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" save_predictions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.MetricComputer.save_predictions(output_dir)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;output_dir
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.evaluation.calculate_perplexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;calculate_perplexity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" calculate_perplexity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.calculate_perplexity(model)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.calculate_perplexity(tokenizer)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;tokenizer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.calculate_perplexity(text)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.calculate_perplexity(device)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;device
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.evaluation.evaluate_with_llm_judge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;evaluate_with_llm_judge
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" evaluate_with_llm_judge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.evaluate_with_llm_judge(captions)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;captions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.evaluate_with_llm_judge(prompts)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;prompts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.evaluate_with_llm_judge(judge_model_name)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;judge_model_name
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.evaluate_with_llm_judge(batch_size)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;batch_size
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.evaluation.evaluate_with_llm_judge(device)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;device
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;generate_captions_batch
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" generate_captions_batch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(model)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(tokenizer)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;tokenizer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(prompts)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;prompts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(generate_cfg)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;generate_cfg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(batch_size)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;batch_size
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(compute_perplexity)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;compute_perplexity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(compute_llm_judge)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;compute_llm_judge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caption.inference.generate_captions_batch(llm_judge_config)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;llm_judge_config
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="caption-module">Caption Module</h1>
+<p>LLM fine-tuning for music caption generation from concept tags.</p>
+<p>This module handles the conversion of structured music attributes (tags) into natural language descriptions using fine-tuned language models with LoRA adapters.</p>
+<h2 id="overview">Overview</h2>
+<p>The caption pipeline:</p>
+<ol>
+<li><strong>Data preparation</strong>: Format prompts with attribute lists</li>
+<li><strong>Fine-tuning</strong>: Train LLM with LoRA on MusicCaps-derived data  </li>
+<li><strong>Inference</strong>: Generate captions from new attribute combinations</li>
+</ol>
+<h2 id="configuration">Configuration</h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="caption.config"></a>
+    <div class="doc doc-contents first">
+
+        <p>Configuration dataclasses for audio caption generation.</p>
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              CaptionGenerationConfig(model, data, prompt, lora, trainer, evaluation, paths, generation, device='cuda', random_state=42, run_id='default_run', task_name='caption_generation')
+
+  
+      dataclass
+   (caption.config.CaptionGenerationConfig)" href="#caption.config.CaptionGenerationConfig">CaptionGenerationConfig</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              ModelConfig(name, checkpoint_dir='', device_map='auto', trust_remote_code=True, quantization=QuantizationConfig(), tokenizer=ModelTokenizerConfig())
+
+  
+      dataclass
+   (caption.config.ModelConfig)" href="#caption.config.ModelConfig">ModelConfig</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              DatasetConfig(dataset_name='', aspect_column='aspect_list', caption_column='caption', text_column='text', id_column='id', batch_size=DEFAULT_BATCH_SIZE, dataloader_num_workers=4, remove_columns=None, max_train_samples=None, max_val_samples=None, max_test_samples=None)
+
+  
+      dataclass
+   (caption.config.DatasetConfig)" href="#caption.config.DatasetConfig">DatasetConfig</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              TrainerConfig(max_epochs=3, dataloader_num_workers=1, accelerator='auto', devices='auto', strategy='ddp', precision='bf16', gradient_clip_val=DEFAULT_GRADIENT_CLIP_VAL, accumulate_grad_batches=1, log_every_n_steps=5, val_check_interval=1.0, check_val_every_n_epoch=1, enable_progress_bar=False, enable_model_summary=False, deterministic=False, optimizer=(lambda: DictConfig({}))(), lr_scheduler=(lambda: DictConfig({}))())
+
+  
+      dataclass
+   (caption.config.TrainerConfig)" href="#caption.config.TrainerConfig">TrainerConfig</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              LoRAConfig(r=16, lora_alpha=32, target_modules=list(), lora_dropout=0.05, bias='none', task_type='CAUSAL_LM')
+
+  
+      dataclass
+   (caption.config.LoRAConfig)" href="#caption.config.LoRAConfig">LoRAConfig</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              QuantizationConfig(load_in_4bit=True, bnb_4bit_use_double_quant=True, bnb_4bit_quant_type='nf4', bnb_4bit_compute_dtype='bfloat16')
+
+  
+      dataclass
+   (caption.config.QuantizationConfig)" href="#caption.config.QuantizationConfig">QuantizationConfig</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="caption.config.CaptionGenerationConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">CaptionGenerationConfig</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">lora</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">evaluation</span><span class="p">,</span> <span class="n">paths</span><span class="p">,</span> <span class="n">generation</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="s1">&#39;default_run&#39;</span><span class="p">,</span> <span class="n">task_name</span><span class="o">=</span><span class="s1">&#39;caption_generation&#39;</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="omegaconf.DictConfig">DictConfig</span></code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="caption.config.ModelConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">ModelConfig</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">checkpoint_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">device_map</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">trust_remote_code</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">quantization</span><span class="o">=</span><span class="n">QuantizationConfig</span><span class="p">(),</span> <span class="n">tokenizer</span><span class="o">=</span><span class="n">ModelTokenizerConfig</span><span class="p">())</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="caption.config.DatasetConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">DatasetConfig</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">aspect_column</span><span class="o">=</span><span class="s1">&#39;aspect_list&#39;</span><span class="p">,</span> <span class="n">caption_column</span><span class="o">=</span><span class="s1">&#39;caption&#39;</span><span class="p">,</span> <span class="n">text_column</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">id_column</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">DEFAULT_BATCH_SIZE</span><span class="p">,</span> <span class="n">dataloader_num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">remove_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_train_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_val_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_test_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="caption.config.TrainerConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">TrainerConfig</span><span class="p">(</span><span class="n">max_epochs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">dataloader_num_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">accelerator</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">devices</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;ddp&#39;</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="s1">&#39;bf16&#39;</span><span class="p">,</span> <span class="n">gradient_clip_val</span><span class="o">=</span><span class="n">DEFAULT_GRADIENT_CLIP_VAL</span><span class="p">,</span> <span class="n">accumulate_grad_batches</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">log_every_n_steps</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">val_check_interval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">check_val_every_n_epoch</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">enable_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">enable_model_summary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">({}))(),</span> <span class="n">lr_scheduler</span><span class="o">=</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">({}))())</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="caption.config.LoRAConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">LoRAConfig</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">lora_alpha</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">target_modules</span><span class="o">=</span><span class="nb">list</span><span class="p">(),</span> <span class="n">lora_dropout</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">task_type</span><span class="o">=</span><span class="s1">&#39;CAUSAL_LM&#39;</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="caption.config.QuantizationConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">QuantizationConfig</span><span class="p">(</span><span class="n">load_in_4bit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bnb_4bit_use_double_quant</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bnb_4bit_quant_type</span><span class="o">=</span><span class="s1">&#39;nf4&#39;</span><span class="p">,</span> <span class="n">bnb_4bit_compute_dtype</span><span class="o">=</span><span class="s1">&#39;bfloat16&#39;</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="captionfinetuningmodule">CaptionFineTuningModule</h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="caption.lightning_module.CaptionFineTuningModule" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">caption</span><span class="o">.</span><span class="n">lightning_module</span><span class="o">.</span><span class="n">CaptionFineTuningModule</span><span class="p">(</span><span class="n">model_cfg</span><span class="p">,</span> <span class="n">generation_cfg</span><span class="p">,</span> <span class="n">lora_cfg</span><span class="p">,</span> <span class="n">optimizer_cfg</span><span class="p">,</span> <span class="n">lr_scheduler_cfg</span><span class="p">,</span> <span class="n">prompt_cfg</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">metric_computer</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="lightning.LightningModule">LightningModule</span></code></p>
+
+
+
+        <p>PyTorch Lightning module for caption fine-tuning.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            forward(input_ids, attention_mask, labels=None) (caption.lightning_module.CaptionFineTuningModule.forward)" href="#caption.lightning_module.CaptionFineTuningModule.forward">forward</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Forward pass through the model.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            training_step(batch, batch_idx) (caption.lightning_module.CaptionFineTuningModule.training_step)" href="#caption.lightning_module.CaptionFineTuningModule.training_step">training_step</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Training step.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            validation_step(batch, batch_idx) (caption.lightning_module.CaptionFineTuningModule.validation_step)" href="#caption.lightning_module.CaptionFineTuningModule.validation_step">validation_step</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Validation step.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            configure_optimizers() (caption.lightning_module.CaptionFineTuningModule.configure_optimizers)" href="#caption.lightning_module.CaptionFineTuningModule.configure_optimizers">configure_optimizers</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Configure optimizer and learning rate scheduler.</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="caption.lightning_module.CaptionFineTuningModule.forward" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Forward pass through the model.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="caption.lightning_module.CaptionFineTuningModule.training_step" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">training_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Training step.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="caption.lightning_module.CaptionFineTuningModule.validation_step" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">validation_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Validation step.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="caption.lightning_module.CaptionFineTuningModule.configure_optimizers" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">configure_optimizers</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Configure optimizer and learning rate scheduler.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="captiondatamodule">CaptionDataModule</h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="caption.lightning_datamodule.CaptionDataModule" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">caption</span><span class="o">.</span><span class="n">lightning_datamodule</span><span class="o">.</span><span class="n">CaptionDataModule</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_cfg</span><span class="p">,</span> <span class="n">prompt_cfg</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">512</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="lightning.LightningDataModule">LightningDataModule</span></code></p>
+
+
+
+        <p>PyTorch Lightning DataModule for caption fine-tuning.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="data-processing">Data Processing</h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="caption.data"></a>
+    <div class="doc doc-contents first">
+
+        <p>Data processing utilities for caption fine-tuning.</p>
+<p>Provides functions to format prompts and prepare datasets for both
+training and inference using configurable prompt templates.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            prepare_datasets(data_cfg, prompt_cfg, raw_dataset) (caption.data.prepare_datasets)" href="#caption.data.prepare_datasets">prepare_datasets</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Prepare datasets for training by formatting prompts with reference captions.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            prepare_inference_datasets(data_cfg, prompt_cfg, raw_dataset) (caption.data.prepare_inference_datasets)" href="#caption.data.prepare_inference_datasets">prepare_inference_datasets</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Prepare datasets for inference (without reference captions).</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="caption.data.prepare_datasets" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">prepare_datasets</span><span class="p">(</span><span class="n">data_cfg</span><span class="p">,</span> <span class="n">prompt_cfg</span><span class="p">,</span> <span class="n">raw_dataset</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Prepare datasets for training by formatting prompts with reference captions.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.data.prepare_datasets(data_cfg)" class="doc doc-heading doc-heading-parameter">                  <code>data_cfg</code>
+</h3>            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Data configuration with column names.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.data.prepare_datasets(prompt_cfg)" class="doc doc-heading doc-heading-parameter">                  <code>prompt_cfg</code>
+</h3>            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Prompt template configuration.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.data.prepare_datasets(raw_dataset)" class="doc doc-heading doc-heading-parameter">                  <code>raw_dataset</code>
+</h3>            </td>
+            <td>
+                  <code><span title="datasets.DatasetDict">DatasetDict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Raw HuggingFace DatasetDict.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="datasets.DatasetDict">DatasetDict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Processed DatasetDict with formatted text column.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="caption.data.prepare_inference_datasets" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">prepare_inference_datasets</span><span class="p">(</span><span class="n">data_cfg</span><span class="p">,</span> <span class="n">prompt_cfg</span><span class="p">,</span> <span class="n">raw_dataset</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Prepare datasets for inference (without reference captions).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.data.prepare_inference_datasets(data_cfg)" class="doc doc-heading doc-heading-parameter">                  <code>data_cfg</code>
+</h3>            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Data configuration with column names.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.data.prepare_inference_datasets(prompt_cfg)" class="doc doc-heading doc-heading-parameter">                  <code>prompt_cfg</code>
+</h3>            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Prompt template configuration.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.data.prepare_inference_datasets(raw_dataset)" class="doc doc-heading doc-heading-parameter">                  <code>raw_dataset</code>
+</h3>            </td>
+            <td>
+                  <code><span title="datasets.DatasetDict">DatasetDict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Raw HuggingFace DatasetDict.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="datasets.DatasetDict">DatasetDict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Processed DatasetDict with formatted prompts for generation.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="model-utilities">Model Utilities</h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="caption.model"></a>
+    <div class="doc doc-contents first">
+
+        <p>Caption model utilities for LLM fine-tuning.</p>
+<p>Provides functions to prepare language models with LoRA adapters and quantization
+for efficient caption generation fine-tuning.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            prepare_tokenizer(model_cfg) (caption.model.prepare_tokenizer)" href="#caption.model.prepare_tokenizer">prepare_tokenizer</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Prepare tokenizer with custom padding configuration.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            prepare_training_model(model_cfg, lora_cfg) (caption.model.prepare_training_model)" href="#caption.model.prepare_training_model">prepare_training_model</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Prepare model for LoRA fine-tuning with optional quantization.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            build_quantization_config(model_cfg) (caption.model.build_quantization_config)" href="#caption.model.build_quantization_config">build_quantization_config</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Build BitsAndBytes quantization config from Hydra config.</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="caption.model.prepare_tokenizer" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">prepare_tokenizer</span><span class="p">(</span><span class="n">model_cfg</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Prepare tokenizer with custom padding configuration.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.model.prepare_tokenizer(model_cfg)" class="doc doc-heading doc-heading-parameter">                  <code>model_cfg</code>
+</h3>            </td>
+            <td>
+                  <code><span title="omegaconf.DictConfig">DictConfig</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Model configuration with tokenizer settings.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="transformers.AutoTokenizer">AutoTokenizer</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Configured tokenizer instance.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="caption.model.prepare_training_model" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">prepare_training_model</span><span class="p">(</span><span class="n">model_cfg</span><span class="p">,</span> <span class="n">lora_cfg</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Prepare model for LoRA fine-tuning with optional quantization.</p>
+<p>Loads a pretrained model, applies quantization if configured,
+and adds LoRA adapters. Supports loading from existing checkpoints.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.model.prepare_training_model(model_cfg)" class="doc doc-heading doc-heading-parameter">                  <code>model_cfg</code>
+</h3>            </td>
+            <td>
+                  <code><span title="omegaconf.DictConfig">DictConfig</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Model configuration (name, device_map, checkpoint_dir).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.model.prepare_training_model(lora_cfg)" class="doc doc-heading doc-heading-parameter">                  <code>lora_cfg</code>
+</h3>            </td>
+            <td>
+                  <code><span title="omegaconf.DictConfig">DictConfig</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>LoRA adapter configuration.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="transformers.AutoModelForCausalLM">AutoModelForCausalLM</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Model with LoRA adapters ready for fine-tuning.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="caption.model.build_quantization_config" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">build_quantization_config</span><span class="p">(</span><span class="n">model_cfg</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Build BitsAndBytes quantization config from Hydra config.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.model.build_quantization_config(model_cfg)" class="doc doc-heading doc-heading-parameter">                  <code>model_cfg</code>
+</h3>            </td>
+            <td>
+                  <code><span title="omegaconf.DictConfig">DictConfig</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Model configuration with optional quantization settings.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="transformers.BitsAndBytesConfig">BitsAndBytesConfig</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Quantization config or None if not specified.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="evaluation">Evaluation</h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="caption.evaluation"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              MetricComputer(metric_cfgs, tokenizer=None) (caption.evaluation.MetricComputer)" href="#caption.evaluation.MetricComputer">MetricComputer</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Computes evaluation metrics for generated captions.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            calculate_perplexity(model, tokenizer, text, device=None) (caption.evaluation.calculate_perplexity)" href="#caption.evaluation.calculate_perplexity">calculate_perplexity</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Calculate perplexity for a given text.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            evaluate_with_llm_judge(captions, prompts, judge_model_name='meta-llama/Llama-3.2-3B-Instruct', judge_template=None, batch_size=4, device='cuda') (caption.evaluation.evaluate_with_llm_judge)" href="#caption.evaluation.evaluate_with_llm_judge">evaluate_with_llm_judge</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Evaluate generated captions using an LLM as a judge.</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="caption.evaluation.MetricComputer" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">MetricComputer</span><span class="p">(</span><span class="n">metric_cfgs</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Computes evaluation metrics for generated captions.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            compute_metrics(predictions, references) (caption.evaluation.MetricComputer.compute_metrics)" href="#caption.evaluation.MetricComputer.compute_metrics">compute_metrics</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Compute metrics given model outputs and references.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            save_predictions(output_dir) (caption.evaluation.MetricComputer.save_predictions)" href="#caption.evaluation.MetricComputer.save_predictions">save_predictions</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Save predictions and metrics to output directory.</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="caption.evaluation.MetricComputer._compute_metrics" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">_compute_metrics</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">references</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate metrics comparing predictions to references.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="caption.evaluation.MetricComputer.compute_metrics" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">compute_metrics</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">references</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute metrics given model outputs and references.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="caption.evaluation.MetricComputer.save_predictions" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">save_predictions</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Save predictions and metrics to output directory.</p>
+<p>Files saved:
+- <output_dir>/evaluation_metrics.json
+- <output_dir>/all_predictions.csv</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="caption.evaluation.MetricComputer.save_predictions(output_dir)" class="doc doc-heading doc-heading-parameter">                  <code>output_dir</code>
+</h4>            </td>
+            <td>
+                  <code><span title="pathlib.Path">Path</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Directory to save predictions file</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dictionary with evaluation metrics</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="caption.evaluation.calculate_perplexity" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">calculate_perplexity</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate perplexity for a given text.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.evaluation.calculate_perplexity(model)" class="doc doc-heading doc-heading-parameter">                  <code>model</code>
+</h3>            </td>
+            <td>
+                  <code><span title="transformers.AutoModelForCausalLM">AutoModelForCausalLM</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Language model</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.evaluation.calculate_perplexity(tokenizer)" class="doc doc-heading doc-heading-parameter">                  <code>tokenizer</code>
+</h3>            </td>
+            <td>
+                  <code><span title="transformers.AutoTokenizer">AutoTokenizer</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tokenizer</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.evaluation.calculate_perplexity(text)" class="doc doc-heading doc-heading-parameter">                  <code>text</code>
+</h3>            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Text to calculate perplexity for</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.evaluation.calculate_perplexity(device)" class="doc doc-heading doc-heading-parameter">                  <code>device</code>
+</h3>            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Device to use (defaults to model's device)</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Perplexity score (lower is better)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="caption.evaluation.evaluate_with_llm_judge" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">evaluate_with_llm_judge</span><span class="p">(</span><span class="n">captions</span><span class="p">,</span> <span class="n">prompts</span><span class="p">,</span> <span class="n">judge_model_name</span><span class="o">=</span><span class="s1">&#39;meta-llama/Llama-3.2-3B-Instruct&#39;</span><span class="p">,</span> <span class="n">judge_template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Evaluate generated captions using an LLM as a judge.
+Based on: https://huggingface.co/learn/cookbook/llm_judge</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.evaluation.evaluate_with_llm_judge(captions)" class="doc doc-heading doc-heading-parameter">                  <code>captions</code>
+</h3>            </td>
+            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Generated captions to evaluate</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.evaluation.evaluate_with_llm_judge(prompts)" class="doc doc-heading doc-heading-parameter">                  <code>prompts</code>
+</h3>            </td>
+            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Original prompts used for generation</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.evaluation.evaluate_with_llm_judge(judge_model_name)" class="doc doc-heading doc-heading-parameter">                  <code>judge_model_name</code>
+</h3>            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the judge model to use</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;meta-llama/Llama-3.2-3B-Instruct&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.evaluation.evaluate_with_llm_judge(batch_size)" class="doc doc-heading doc-heading-parameter">                  <code>batch_size</code>
+</h3>            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Batch size for judge evaluation</p>
+              </div>
+            </td>
+            <td>
+                  <code>4</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.evaluation.evaluate_with_llm_judge(device)" class="doc doc-heading doc-heading-parameter">                  <code>device</code>
+</h3>            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Device to use</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;cuda&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dictionary with evaluation scores and reasoning</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="inference">Inference</h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="caption.inference"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            generate_captions_batch(model, tokenizer, prompts, batch_size=8, compute_perplexity=False, compute_llm_judge=False, llm_judge_config=None) (caption.inference.generate_captions_batch)" href="#caption.inference.generate_captions_batch">generate_captions_batch</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Generate captions for a batch of prompts efficiently with optional</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="caption.inference.generate_captions_batch" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">generate_captions_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">prompts</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">compute_perplexity</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compute_llm_judge</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">llm_judge_config</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Generate captions for a batch of prompts efficiently with optional
+quality metrics.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.inference.generate_captions_batch(model)" class="doc doc-heading doc-heading-parameter">                  <code>model</code>
+</h3>            </td>
+            <td>
+                  <code><span title="transformers.AutoModelForCausalLM">AutoModelForCausalLM</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Language model for generation</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.inference.generate_captions_batch(tokenizer)" class="doc doc-heading doc-heading-parameter">                  <code>tokenizer</code>
+</h3>            </td>
+            <td>
+                  <code><span title="transformers.AutoTokenizer">AutoTokenizer</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tokenizer for encoding/decoding</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.inference.generate_captions_batch(prompts)" class="doc doc-heading doc-heading-parameter">                  <code>prompts</code>
+</h3>            </td>
+            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List of input prompts</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.inference.generate_captions_batch(generate_cfg)" class="doc doc-heading doc-heading-parameter">                  <code>generate_cfg</code>
+</h3>            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Generation configuration</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.inference.generate_captions_batch(batch_size)" class="doc doc-heading doc-heading-parameter">                  <code>batch_size</code>
+</h3>            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of prompts to process per batch</p>
+              </div>
+            </td>
+            <td>
+                  <code>8</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.inference.generate_captions_batch(compute_perplexity)" class="doc doc-heading doc-heading-parameter">                  <code>compute_perplexity</code>
+</h3>            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to compute perplexity for each generated caption</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.inference.generate_captions_batch(compute_llm_judge)" class="doc doc-heading doc-heading-parameter">                  <code>compute_llm_judge</code>
+</h3>            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to evaluate with LLM-as-a-judge</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="caption.inference.generate_captions_batch(llm_judge_config)" class="doc doc-heading doc-heading-parameter">                  <code>llm_judge_config</code>
+</h3>            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Configuration for LLM judge (model_name, device, etc.)</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="list">list</span>[<span title="str">str</span>], <span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>] | None]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple of (generated captions, quality metrics dict or None)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "navigation.tabs", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,5539 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../caption/">
+      
+      
+        <link rel="next" href="../tcav/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>VAE - ConceptCaps</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#vae-module" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="ConceptCaps" class="md-header__button md-logo" aria-label="ConceptCaps" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ConceptCaps
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              VAE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_2">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_3">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../config/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../reference/" class="md-tabs__link">
+          
+  
+  
+  Code Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="ConceptCaps" class="md-nav__button md-logo" aria-label="ConceptCaps" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ConceptCaps
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Code Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caption/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caption
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VAE
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VAE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;config
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.config.VAEConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VAEConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.config.VAEModelConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VAEModelConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.config.VAEDataConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VAEDataConfig
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" VAEDataConfig">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.config.VAEDataConfig.__post_init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__post_init__
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.config.VAELossConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VAELossConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#betavae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BetaVAE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;BetaVAE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" BetaVAE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE.encode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;encode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE.decode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;decode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE.reparameterize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;reparameterize
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;forward
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE.sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE.reconstruct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;reconstruct
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#betavaelightningmodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BetaVAELightningModule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.lightning_module.BetaVAELightningModule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;BetaVAELightningModule
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" BetaVAELightningModule">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.lightning_module.BetaVAELightningModule.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;forward
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.lightning_module.BetaVAELightningModule.training_step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;training_step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.lightning_module.BetaVAELightningModule.validation_step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;validation_step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.lightning_module.BetaVAELightningModule.configure_optimizers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;configure_optimizers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vaedatamodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VAEDataModule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.data.VAEDataModule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VAEDataModule
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" VAEDataModule">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.data.VAEDataModule.setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.data.VAEDataModule.train_dataloader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;train_dataloader
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.data.VAEDataModule.val_dataloader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;val_dataloader
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.data.VAEDataModule.test_dataloader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;test_dataloader
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;evaluation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VAEMetrics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" VAEMetrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.hamming_loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;hamming_loss
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" hamming_loss">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.hamming_loss(recon)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;recon
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.hamming_loss(target)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.hamming_loss(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.jaccard_index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;jaccard_index
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" jaccard_index">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.jaccard_index(recon)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;recon
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.jaccard_index(target)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.jaccard_index(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.active_units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;active_units
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" active_units">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.active_units(latent)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;latent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.active_units(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cluster_separability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;cluster_separability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" cluster_separability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cluster_separability(latent)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;latent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cluster_separability(labels)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;labels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cluster_separability(metric)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;metric
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics._silhouette_score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;_silhouette_score
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_all_metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;compute_all_metrics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" compute_all_metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_all_metrics(recon)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;recon
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_all_metrics(target)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_all_metrics(latent)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;latent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_all_metrics(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.tag_combination_diversity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;tag_combination_diversity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" tag_combination_diversity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.tag_combination_diversity(predictions)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;predictions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.tag_combination_diversity(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.tag_cooccurrence_matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;tag_cooccurrence_matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" tag_cooccurrence_matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.tag_cooccurrence_matrix(predictions)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;predictions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.tag_cooccurrence_matrix(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cooccurrence_comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;cooccurrence_comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" cooccurrence_comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cooccurrence_comparison(predicted_cooccurrence)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;predicted_cooccurrence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cooccurrence_comparison(original_cooccurrence)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;original_cooccurrence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_diversity_metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;compute_diversity_metrics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" compute_diversity_metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_diversity_metrics(recon)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;recon
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_diversity_metrics(target)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_diversity_metrics(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MetricsSaver
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" MetricsSaver">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver(output_dir)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;output_dir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;update
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" update">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.update(stage)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;stage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.update(metrics)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver._clean_metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;_clean_metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.save" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;save
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" save">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.save(filename)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;filename
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.save_summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;save_summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" save_summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.save_summary(config)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.save_summary(filename)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;filename
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaveCallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MetricsSaveCallback
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" MetricsSaveCallback">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaveCallback(metrics_saver)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;metrics_saver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaveCallback.on_train_epoch_end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;on_train_epoch_end
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaveCallback.on_validation_epoch_end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;on_validation_epoch_end
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaveCallback.on_test_epoch_end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;on_test_epoch_end
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tcav/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TCAV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tta/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TTA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;config
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.config.VAEConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VAEConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.config.VAEModelConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VAEModelConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.config.VAEDataConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VAEDataConfig
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" VAEDataConfig">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.config.VAEDataConfig.__post_init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__post_init__
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.config.VAELossConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VAELossConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#betavae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BetaVAE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;BetaVAE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" BetaVAE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE.encode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;encode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE.decode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;decode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE.reparameterize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;reparameterize
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;forward
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE.sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;sample
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.model.BetaVAE.reconstruct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;reconstruct
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#betavaelightningmodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BetaVAELightningModule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.lightning_module.BetaVAELightningModule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;BetaVAELightningModule
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" BetaVAELightningModule">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.lightning_module.BetaVAELightningModule.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;forward
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.lightning_module.BetaVAELightningModule.training_step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;training_step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.lightning_module.BetaVAELightningModule.validation_step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;validation_step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.lightning_module.BetaVAELightningModule.configure_optimizers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;configure_optimizers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vaedatamodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VAEDataModule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.data.VAEDataModule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VAEDataModule
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" VAEDataModule">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.data.VAEDataModule.setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.data.VAEDataModule.train_dataloader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;train_dataloader
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.data.VAEDataModule.val_dataloader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;val_dataloader
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.data.VAEDataModule.test_dataloader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;test_dataloader
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;evaluation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VAEMetrics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" VAEMetrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.hamming_loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;hamming_loss
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" hamming_loss">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.hamming_loss(recon)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;recon
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.hamming_loss(target)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.hamming_loss(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.jaccard_index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;jaccard_index
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" jaccard_index">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.jaccard_index(recon)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;recon
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.jaccard_index(target)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.jaccard_index(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.active_units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;active_units
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" active_units">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.active_units(latent)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;latent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.active_units(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cluster_separability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;cluster_separability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" cluster_separability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cluster_separability(latent)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;latent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cluster_separability(labels)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;labels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cluster_separability(metric)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;metric
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics._silhouette_score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;_silhouette_score
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_all_metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;compute_all_metrics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" compute_all_metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_all_metrics(recon)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;recon
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_all_metrics(target)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_all_metrics(latent)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;latent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_all_metrics(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.tag_combination_diversity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;tag_combination_diversity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" tag_combination_diversity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.tag_combination_diversity(predictions)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;predictions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.tag_combination_diversity(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.tag_cooccurrence_matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;tag_cooccurrence_matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" tag_cooccurrence_matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.tag_cooccurrence_matrix(predictions)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;predictions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.tag_cooccurrence_matrix(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cooccurrence_comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;cooccurrence_comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" cooccurrence_comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cooccurrence_comparison(predicted_cooccurrence)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;predicted_cooccurrence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.cooccurrence_comparison(original_cooccurrence)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;original_cooccurrence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_diversity_metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;compute_diversity_metrics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" compute_diversity_metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_diversity_metrics(recon)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;recon
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_diversity_metrics(target)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.VAEMetrics.compute_diversity_metrics(threshold)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MetricsSaver
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" MetricsSaver">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver(output_dir)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;output_dir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;update
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" update">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.update(stage)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;stage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.update(metrics)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver._clean_metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;_clean_metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.save" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;save
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" save">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.save(filename)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;filename
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.save_summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;save_summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" save_summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.save_summary(config)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaver.save_summary(filename)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;filename
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaveCallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;MetricsSaveCallback
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" MetricsSaveCallback">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaveCallback(metrics_saver)" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;metrics_saver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaveCallback.on_train_epoch_end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;on_train_epoch_end
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaveCallback.on_validation_epoch_end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;on_validation_epoch_end
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vae.evaluation.MetricsSaveCallback.on_test_epoch_end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;on_test_epoch_end
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="vae-module">VAE Module</h1>
+<p>Beta-VAE for learning plausible music attribute co-occurrence patterns.</p>
+<p>This module implements a Variational Autoencoder that learns the joint distribution of music attributes from MusicCaps, enabling sampling of realistic attribute combinations.</p>
+<h2 id="overview">Overview</h2>
+<p>The VAE learns which attributes naturally co-occur in music (e.g., "jazz" often pairs with "saxophone" and "swing rhythm"). This prevents generating implausible combinations like "heavy metal lullaby".</p>
+<p><strong>Key insight</strong>: Separates semantic modeling (VAE) from text generation (LLM).</p>
+<h2 id="configuration">Configuration</h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="vae.config"></a>
+    <div class="doc doc-contents first">
+
+        <p>Configuration dataclasses for VAE training and inference.</p>
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              VAEConfig(model=VAEModelConfig(), data=VAEDataConfig(), trainer=VAETrainerConfig(), loss=VAELossConfig(), paths=VAEPathsConfig(), inference=VAEInferenceConfig(), random_state=42, device='cuda', run_id='${now:%Y-%m-%d_%H-%M-%S}', task_name='vae_training', model_name='vae_final', save_model=True)
+
+  
+      dataclass
+   (vae.config.VAEConfig)" href="#vae.config.VAEConfig">VAEConfig</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              VAEModelConfig(name='MultiLabelVAE', input_dim=0, latent_dim=DEFAULT_LATENT_DIM, hidden_dim=DEFAULT_HIDDEN_DIM, dropout_p=0.3, beta=1.0, use_batch_norm=False)
+
+  
+      dataclass
+   (vae.config.VAEModelConfig)" href="#vae.config.VAEModelConfig">VAEModelConfig</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              VAEDataConfig(taxonomy_path='data/concepts_to_tags.json', dataset_name='google/MusicCaps', dataset_split='train', aspect_column='aspect_list', batch_size=DEFAULT_BATCH_SIZE, dataloader_num_workers=4, shuffle=True, pin_memory=True, persistent_workers=False)
+
+  
+      dataclass
+   (vae.config.VAEDataConfig)" href="#vae.config.VAEDataConfig">VAEDataConfig</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              VAELossConfig(bce_weight=1.0, kld_weight=1.0, use_binary_cross_entropy=True)
+
+  
+      dataclass
+   (vae.config.VAELossConfig)" href="#vae.config.VAELossConfig">VAELossConfig</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="vae.config.VAEConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">VAEConfig</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">VAEModelConfig</span><span class="p">(),</span> <span class="n">data</span><span class="o">=</span><span class="n">VAEDataConfig</span><span class="p">(),</span> <span class="n">trainer</span><span class="o">=</span><span class="n">VAETrainerConfig</span><span class="p">(),</span> <span class="n">loss</span><span class="o">=</span><span class="n">VAELossConfig</span><span class="p">(),</span> <span class="n">paths</span><span class="o">=</span><span class="n">VAEPathsConfig</span><span class="p">(),</span> <span class="n">inference</span><span class="o">=</span><span class="n">VAEInferenceConfig</span><span class="p">(),</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="s1">&#39;${now:%Y-%m-</span><span class="si">%d</span><span class="s1">_%H-%M-%S}&#39;</span><span class="p">,</span> <span class="n">task_name</span><span class="o">=</span><span class="s1">&#39;vae_training&#39;</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;vae_final&#39;</span><span class="p">,</span> <span class="n">save_model</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="vae.config.VAEModelConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">VAEModelConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;MultiLabelVAE&#39;</span><span class="p">,</span> <span class="n">input_dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">latent_dim</span><span class="o">=</span><span class="n">DEFAULT_LATENT_DIM</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="o">=</span><span class="n">DEFAULT_HIDDEN_DIM</span><span class="p">,</span> <span class="n">dropout_p</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">use_batch_norm</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="vae.config.VAEDataConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">VAEDataConfig</span><span class="p">(</span><span class="n">taxonomy_path</span><span class="o">=</span><span class="s1">&#39;data/concepts_to_tags.json&#39;</span><span class="p">,</span> <span class="n">dataset_name</span><span class="o">=</span><span class="s1">&#39;google/MusicCaps&#39;</span><span class="p">,</span> <span class="n">dataset_split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="n">aspect_column</span><span class="o">=</span><span class="s1">&#39;aspect_list&#39;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">DEFAULT_BATCH_SIZE</span><span class="p">,</span> <span class="n">dataloader_num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">persistent_workers</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            __post_init__() (vae.config.VAEDataConfig.__post_init__)" href="#vae.config.VAEDataConfig.__post_init__">__post_init__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Validate and resolve paths.</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.config.VAEDataConfig.__post_init__" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">__post_init__</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Validate and resolve paths.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="vae.config.VAELossConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">VAELossConfig</span><span class="p">(</span><span class="n">bce_weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">kld_weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">use_binary_cross_entropy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="betavae">BetaVAE</h2>
+<p>The core model architecture with disentanglement via β-weighted KL divergence.</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="vae.model.BetaVAE" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">vae</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">BetaVAE</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">latent_dim</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">dropout_p</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">use_batch_norm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="torch.nn.Module">Module</span></code></p>
+
+
+
+        <p>Beta-VAE: Disentangled Variational Autoencoder with weighted KL divergence.</p>
+<p>Reference: Higgins et al., "beta-VAE: Learning Basic Visual Concepts with a
+Constrained Variational Framework"</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            encode(x) (vae.model.BetaVAE.encode)" href="#vae.model.BetaVAE.encode">encode</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Encode input to latent space.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            decode(z, temperature=1.0) (vae.model.BetaVAE.decode)" href="#vae.model.BetaVAE.decode">decode</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Decode from latent space to reconstruction.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            reparameterize(mu, logvar) (vae.model.BetaVAE.reparameterize)" href="#vae.model.BetaVAE.reparameterize">reparameterize</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Reparameterization trick for sampling from latent space.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            forward(x, temperature=1.0) (vae.model.BetaVAE.forward)" href="#vae.model.BetaVAE.forward">forward</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Forward pass through Beta-VAE.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            sample(num_samples, device='cpu') (vae.model.BetaVAE.sample)" href="#vae.model.BetaVAE.sample">sample</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Generate samples from the prior distribution.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            reconstruct(x) (vae.model.BetaVAE.reconstruct)" href="#vae.model.BetaVAE.reconstruct">reconstruct</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Reconstruct input without sampling.</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.model.BetaVAE.encode" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">encode</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Encode input to latent space.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.model.BetaVAE.decode" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">decode</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Decode from latent space to reconstruction.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.model.BetaVAE.reparameterize" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">reparameterize</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reparameterization trick for sampling from latent space.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.model.BetaVAE.forward" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Forward pass through Beta-VAE.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.model.BetaVAE.sample" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">sample</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Generate samples from the prior distribution.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.model.BetaVAE.reconstruct" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">reconstruct</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reconstruct input without sampling.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="betavaelightningmodule">BetaVAELightningModule</h2>
+<p>PyTorch Lightning wrapper for training.</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="vae.lightning_module.BetaVAELightningModule" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">vae</span><span class="o">.</span><span class="n">lightning_module</span><span class="o">.</span><span class="n">BetaVAELightningModule</span><span class="p">(</span><span class="n">model_cfg</span><span class="p">,</span> <span class="n">loss_cfg</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.0005</span><span class="p">,</span> <span class="n">betas</span><span class="o">=</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">),</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="lightning.LightningModule">LightningModule</span></code></p>
+
+
+
+        <p>Lightning module for training Beta-VAE on multi-label tag data.</p>
+<p>Beta-VAE uses a weighted KL divergence term to encourage disentangled
+representations of latent factors.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            forward(x) (vae.lightning_module.BetaVAELightningModule.forward)" href="#vae.lightning_module.BetaVAELightningModule.forward">forward</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Forward pass through Beta-VAE.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            training_step(batch, batch_idx) (vae.lightning_module.BetaVAELightningModule.training_step)" href="#vae.lightning_module.BetaVAELightningModule.training_step">training_step</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Training step.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            validation_step(batch, batch_idx) (vae.lightning_module.BetaVAELightningModule.validation_step)" href="#vae.lightning_module.BetaVAELightningModule.validation_step">validation_step</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Validation step.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            configure_optimizers() (vae.lightning_module.BetaVAELightningModule.configure_optimizers)" href="#vae.lightning_module.BetaVAELightningModule.configure_optimizers">configure_optimizers</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Configure optimizer and learning rate scheduler.</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.lightning_module.BetaVAELightningModule.forward" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Forward pass through Beta-VAE.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.lightning_module.BetaVAELightningModule.training_step" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">training_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Training step.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.lightning_module.BetaVAELightningModule.validation_step" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">validation_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Validation step.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.lightning_module.BetaVAELightningModule.configure_optimizers" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">configure_optimizers</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Configure optimizer and learning rate scheduler.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="vaedatamodule">VAEDataModule</h2>
+<p>Data loading for multi-label tag data.</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="vae.data.VAEDataModule" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">vae</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">VAEDataModule</span><span class="p">(</span><span class="n">data_cfg</span><span class="p">,</span> <span class="n">taxonomy_path</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">val_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">test_split</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="lightning.LightningDataModule">LightningDataModule</span></code></p>
+
+
+
+        <p>Lightning DataModule for VAE training on multi-label tag data.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            setup(stage=None) (vae.data.VAEDataModule.setup)" href="#vae.data.VAEDataModule.setup">setup</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Load and process data.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            train_dataloader() (vae.data.VAEDataModule.train_dataloader)" href="#vae.data.VAEDataModule.train_dataloader">train_dataloader</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            val_dataloader() (vae.data.VAEDataModule.val_dataloader)" href="#vae.data.VAEDataModule.val_dataloader">val_dataloader</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            test_dataloader() (vae.data.VAEDataModule.test_dataloader)" href="#vae.data.VAEDataModule.test_dataloader">test_dataloader</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.data.VAEDataModule.setup" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">setup</span><span class="p">(</span><span class="n">stage</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Load and process data.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.data.VAEDataModule.train_dataloader" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">train_dataloader</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.data.VAEDataModule.val_dataloader" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">val_dataloader</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.data.VAEDataModule.test_dataloader" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">test_dataloader</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="evaluation">Evaluation</h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="vae.evaluation"></a>
+    <div class="doc doc-contents first">
+
+        <p>Evaluation metrics for VAE training.</p>
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="            VAEMetrics (vae.evaluation.VAEMetrics)" href="#vae.evaluation.VAEMetrics">VAEMetrics</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Compute evaluation metrics for VAE training.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              MetricsSaver(output_dir) (vae.evaluation.MetricsSaver)" href="#vae.evaluation.MetricsSaver">MetricsSaver</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Utility class to save and manage training metrics.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="              MetricsSaveCallback(metrics_saver) (vae.evaluation.MetricsSaveCallback)" href="#vae.evaluation.MetricsSaveCallback">MetricsSaveCallback</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lightning callback to save metrics at the end of training.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="vae.evaluation.VAEMetrics" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>VAEMetrics</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Compute evaluation metrics for VAE training.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            hamming_loss(recon, target, threshold=0.5)
+
+  
+      staticmethod
+   (vae.evaluation.VAEMetrics.hamming_loss)" href="#vae.evaluation.VAEMetrics.hamming_loss">hamming_loss</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Compute Hamming loss: fraction of labels that are incorrectly predicted.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            jaccard_index(recon, target, threshold=0.5)
+
+  
+      staticmethod
+   (vae.evaluation.VAEMetrics.jaccard_index)" href="#vae.evaluation.VAEMetrics.jaccard_index">jaccard_index</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Compute Jaccard Index: intersection / union over all samples and labels.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            active_units(latent, threshold=0.0)
+
+  
+      staticmethod
+   (vae.evaluation.VAEMetrics.active_units)" href="#vae.evaluation.VAEMetrics.active_units">active_units</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Compute active units statistics in the latent space.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            cluster_separability(latent, labels, metric='silhouette')
+
+  
+      staticmethod
+   (vae.evaluation.VAEMetrics.cluster_separability)" href="#vae.evaluation.VAEMetrics.cluster_separability">cluster_separability</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Compute cluster separability in latent space using different metrics.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            compute_all_metrics(recon, target, latent, threshold=0.5)
+
+  
+      staticmethod
+   (vae.evaluation.VAEMetrics.compute_all_metrics)" href="#vae.evaluation.VAEMetrics.compute_all_metrics">compute_all_metrics</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Compute all evaluation metrics.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            tag_combination_diversity(predictions, threshold=0.5)
+
+  
+      staticmethod
+   (vae.evaluation.VAEMetrics.tag_combination_diversity)" href="#vae.evaluation.VAEMetrics.tag_combination_diversity">tag_combination_diversity</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Compute diversity metrics to detect model collapse (generating same</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            tag_cooccurrence_matrix(predictions, threshold=0.5)
+
+  
+      staticmethod
+   (vae.evaluation.VAEMetrics.tag_cooccurrence_matrix)" href="#vae.evaluation.VAEMetrics.tag_cooccurrence_matrix">tag_cooccurrence_matrix</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Compute co-occurrence matrix for tag pairs.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            cooccurrence_comparison(predicted_cooccurrence, original_cooccurrence)
+
+  
+      staticmethod
+   (vae.evaluation.VAEMetrics.cooccurrence_comparison)" href="#vae.evaluation.VAEMetrics.cooccurrence_comparison">cooccurrence_comparison</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Compare co-occurrence matrices between predictions and original data.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            compute_diversity_metrics(recon, target, threshold=0.5)
+
+  
+      staticmethod
+   (vae.evaluation.VAEMetrics.compute_diversity_metrics)" href="#vae.evaluation.VAEMetrics.compute_diversity_metrics">compute_diversity_metrics</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Compute all diversity-related metrics.</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.VAEMetrics.hamming_loss" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">hamming_loss</span><span class="p">(</span><span class="n">recon</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute Hamming loss: fraction of labels that are incorrectly predicted.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.hamming_loss(recon)" class="doc doc-heading doc-heading-parameter">                  <code>recon</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Reconstructed output (batch_size, num_labels)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.hamming_loss(target)" class="doc doc-heading doc-heading-parameter">                  <code>target</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Target labels (batch_size, num_labels)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.hamming_loss(threshold)" class="doc doc-heading doc-heading-parameter">                  <code>threshold</code>
+</h4>            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Threshold for binarizing reconstruction (default: 0.5)</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.5</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Hamming loss (lower is better)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.VAEMetrics.jaccard_index" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">jaccard_index</span><span class="p">(</span><span class="n">recon</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute Jaccard Index: intersection / union over all samples and labels.</p>
+<p>Also known as Intersection over Union (IoU).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.jaccard_index(recon)" class="doc doc-heading doc-heading-parameter">                  <code>recon</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Reconstructed output (batch_size, num_labels)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.jaccard_index(target)" class="doc doc-heading doc-heading-parameter">                  <code>target</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Target labels (batch_size, num_labels)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.jaccard_index(threshold)" class="doc doc-heading doc-heading-parameter">                  <code>threshold</code>
+</h4>            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Threshold for binarizing reconstruction (default: 0.5)</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.5</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Jaccard Index (higher is better, range [0, 1])</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.VAEMetrics.active_units" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">active_units</span><span class="p">(</span><span class="n">latent</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute active units statistics in the latent space.</p>
+<p>Active units are latent dimensions that have significant variance across the batch.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.active_units(latent)" class="doc doc-heading doc-heading-parameter">                  <code>latent</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Latent representations (batch_size, latent_dim)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.active_units(threshold)" class="doc doc-heading doc-heading-parameter">                  <code>threshold</code>
+</h4>            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Threshold for standard deviation to consider a unit active (default: 0.0)</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dictionary with:
+- 'num_active_units': Number of active units
+- 'pct_active_units': Percentage of active units
+- 'mean_variance': Mean variance across dimensions
+- 'min_variance': Minimum variance
+- 'max_variance': Maximum variance</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.VAEMetrics.cluster_separability" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">cluster_separability</span><span class="p">(</span><span class="n">latent</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;silhouette&#39;</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute cluster separability in latent space using different metrics.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.cluster_separability(latent)" class="doc doc-heading doc-heading-parameter">                  <code>latent</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Latent representations (batch_size, latent_dim)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.cluster_separability(labels)" class="doc doc-heading doc-heading-parameter">                  <code>labels</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Cluster labels (batch_size,) or multi-hot vectors (batch_size, num_labels)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.cluster_separability(metric)" class="doc doc-heading doc-heading-parameter">                  <code>metric</code>
+</h4>            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Metric to use - 'silhouette', 'calinski_harabasz', 'davies_bouldin'</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;silhouette&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Cluster separability score</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.VAEMetrics._silhouette_score" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">_silhouette_score</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute Silhouette Coefficient (higher is better, range [-1, 1]).</p>
+<p>Measures how similar an object is to its own cluster vs other clusters.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.VAEMetrics.compute_all_metrics" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">compute_all_metrics</span><span class="p">(</span><span class="n">recon</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">latent</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute all evaluation metrics.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.compute_all_metrics(recon)" class="doc doc-heading doc-heading-parameter">                  <code>recon</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Reconstructed output</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.compute_all_metrics(target)" class="doc doc-heading doc-heading-parameter">                  <code>target</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Target labels</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.compute_all_metrics(latent)" class="doc doc-heading doc-heading-parameter">                  <code>latent</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Latent representations</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.compute_all_metrics(threshold)" class="doc doc-heading doc-heading-parameter">                  <code>threshold</code>
+</h4>            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Threshold for binarization</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.5</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dictionary with all computed metrics</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.VAEMetrics.tag_combination_diversity" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">tag_combination_diversity</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute diversity metrics to detect model collapse (generating same
+tag combinations).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.tag_combination_diversity(predictions)" class="doc doc-heading doc-heading-parameter">                  <code>predictions</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Binary predictions (batch_size, num_tags)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.tag_combination_diversity(threshold)" class="doc doc-heading doc-heading-parameter">                  <code>threshold</code>
+</h4>            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Threshold for binarization</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.5</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dictionary with diversity metrics:
+- 'unique_combinations': Number of unique tag combinations
+- 'pct_unique_combinations': Percentage of unique combinations
+- 'entropy': Entropy of combination distribution (higher = more diverse)
+- 'gini_coefficient': Gini coefficient (0 = uniform, 1 = all in one)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.VAEMetrics.tag_cooccurrence_matrix" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">tag_cooccurrence_matrix</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute co-occurrence matrix for tag pairs.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.tag_cooccurrence_matrix(predictions)" class="doc doc-heading doc-heading-parameter">                  <code>predictions</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Binary predictions (batch_size, num_tags)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.tag_cooccurrence_matrix(threshold)" class="doc doc-heading doc-heading-parameter">                  <code>threshold</code>
+</h4>            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Threshold for binarization</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.5</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Co-occurrence matrix (num_tags, num_tags) where [i, j] = count of samples with both tag i and j</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.VAEMetrics.cooccurrence_comparison" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">cooccurrence_comparison</span><span class="p">(</span><span class="n">predicted_cooccurrence</span><span class="p">,</span> <span class="n">original_cooccurrence</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compare co-occurrence matrices between predictions and original data.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.cooccurrence_comparison(predicted_cooccurrence)" class="doc doc-heading doc-heading-parameter">                  <code>predicted_cooccurrence</code>
+</h4>            </td>
+            <td>
+                  <code><span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Co-occurrence matrix from model predictions</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.cooccurrence_comparison(original_cooccurrence)" class="doc doc-heading doc-heading-parameter">                  <code>original_cooccurrence</code>
+</h4>            </td>
+            <td>
+                  <code><span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Co-occurrence matrix from original dataset</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dictionary with comparison metrics:
+- 'cosine_similarity': Cosine similarity between flattened matrices
+- 'kl_divergence': KL divergence between normalized matrices
+- 'hellinger_distance': Hellinger distance between distributions
+- 'pearson_correlation': Pearson correlation between matrices</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.VAEMetrics.compute_diversity_metrics" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">compute_diversity_metrics</span><span class="p">(</span><span class="n">recon</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute all diversity-related metrics.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.compute_diversity_metrics(recon)" class="doc doc-heading doc-heading-parameter">                  <code>recon</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Reconstructed output</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.compute_diversity_metrics(target)" class="doc doc-heading doc-heading-parameter">                  <code>target</code>
+</h4>            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Target labels</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.VAEMetrics.compute_diversity_metrics(threshold)" class="doc doc-heading doc-heading-parameter">                  <code>threshold</code>
+</h4>            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Threshold for binarization</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.5</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dictionary with all diversity metrics</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="vae.evaluation.MetricsSaver" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">MetricsSaver</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Utility class to save and manage training metrics.</p>
+
+        <p>Initialize MetricsSaver.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="vae.evaluation.MetricsSaver(output_dir)" class="doc doc-heading doc-heading-parameter">                  <code>output_dir</code>
+</h3>            </td>
+            <td>
+                  <code><span title="pathlib.Path">Path</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Directory to save metrics files</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            update(stage, metrics) (vae.evaluation.MetricsSaver.update)" href="#vae.evaluation.MetricsSaver.update">update</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Update metrics for a specific stage.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            save(filename='metrics.json') (vae.evaluation.MetricsSaver.save)" href="#vae.evaluation.MetricsSaver.save">save</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Save metrics to JSON file.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            save_summary(config, filename='summary.json') (vae.evaluation.MetricsSaver.save_summary)" href="#vae.evaluation.MetricsSaver.save_summary">save_summary</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Save metrics summary with configuration.</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.MetricsSaver.update" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">update</span><span class="p">(</span><span class="n">stage</span><span class="p">,</span> <span class="n">metrics</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Update metrics for a specific stage.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.MetricsSaver.update(stage)" class="doc doc-heading doc-heading-parameter">                  <code>stage</code>
+</h4>            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Stage name ('train', 'val', 'test')</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.MetricsSaver.update(metrics)" class="doc doc-heading doc-heading-parameter">                  <code>metrics</code>
+</h4>            </td>
+            <td>
+                  <code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dictionary of metric values</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.MetricsSaver._clean_metrics" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">_clean_metrics</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Clean metrics to ensure JSON serializability.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.MetricsSaver.save" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;metrics.json&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Save metrics to JSON file.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.MetricsSaver.save(filename)" class="doc doc-heading doc-heading-parameter">                  <code>filename</code>
+</h4>            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the metrics file</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;metrics.json&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pathlib.Path">Path</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to saved metrics file</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.MetricsSaver.save_summary" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">save_summary</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;summary.json&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Save metrics summary with configuration.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.MetricsSaver.save_summary(config)" class="doc doc-heading doc-heading-parameter">                  <code>config</code>
+</h4>            </td>
+            <td>
+                  <code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Configuration dictionary</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+<h4 id="vae.evaluation.MetricsSaver.save_summary(filename)" class="doc doc-heading doc-heading-parameter">                  <code>filename</code>
+</h4>            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the summary file</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;summary.json&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pathlib.Path">Path</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to saved summary file</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="vae.evaluation.MetricsSaveCallback" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>              <code class="highlight language-python"><span class="n">MetricsSaveCallback</span><span class="p">(</span><span class="n">metrics_saver</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="lightning.Callback">Callback</span></code></p>
+
+
+
+        <p>Lightning callback to save metrics at the end of training.</p>
+
+        <p>Initialize callback.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+<h3 id="vae.evaluation.MetricsSaveCallback(metrics_saver)" class="doc doc-heading doc-heading-parameter">                  <code>metrics_saver</code>
+</h3>            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="              MetricsSaver(output_dir) (vae.evaluation.MetricsSaver)" href="#vae.evaluation.MetricsSaver">MetricsSaver</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>MetricsSaver instance</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            on_train_epoch_end(trainer, pl_module) (vae.evaluation.MetricsSaveCallback.on_train_epoch_end)" href="#vae.evaluation.MetricsSaveCallback.on_train_epoch_end">on_train_epoch_end</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Save train metrics at end of each epoch.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            on_validation_epoch_end(trainer, pl_module) (vae.evaluation.MetricsSaveCallback.on_validation_epoch_end)" href="#vae.evaluation.MetricsSaveCallback.on_validation_epoch_end">on_validation_epoch_end</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Save validation metrics at end of each epoch.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="            on_test_epoch_end(trainer, pl_module) (vae.evaluation.MetricsSaveCallback.on_test_epoch_end)" href="#vae.evaluation.MetricsSaveCallback.on_test_epoch_end">on_test_epoch_end</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Save test metrics at end of testing.</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.MetricsSaveCallback.on_train_epoch_end" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">on_train_epoch_end</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Save train metrics at end of each epoch.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.MetricsSaveCallback.on_validation_epoch_end" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">on_validation_epoch_end</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Save validation metrics at end of each epoch.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="vae.evaluation.MetricsSaveCallback.on_test_epoch_end" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">on_test_epoch_end</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Save test metrics at end of testing.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "navigation.tabs", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
