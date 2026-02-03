@@ -12,6 +12,14 @@ After generating captions from the LLM, this module:
 2. Generates audio in batches (with GPU memory optimization)
 3. Saves audio files and computes quality metrics (CLAP, FAD)
 
+## Configuration
+
+::: tta.config
+    options:
+      show_root_heading: false
+      members:
+        - TTAConfig
+
 ## Audio Generation
 
 ### Single-GPU Generation
@@ -42,10 +50,3 @@ After generating captions from the LLM, this module:
       members:
         - TTAEvaluator
 
-## Configuration
-
-::: tta.config
-    options:
-      show_root_heading: false
-      members:
-        - TTAConfig

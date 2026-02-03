@@ -10,6 +10,17 @@ The VAE learns which attributes naturally co-occur in music (e.g., "jazz" often 
 
 **Key insight**: Separates semantic modeling (VAE) from text generation (LLM).
 
+## Configuration
+
+::: vae.config
+    options:
+      show_root_heading: false
+      members:
+        - VAEConfig
+        - VAEModelConfig
+        - VAEDataConfig
+        - VAELossConfig
+
 ## BetaVAE
 
 The core model architecture with disentanglement via β-weighted KL divergence.
@@ -53,17 +64,6 @@ Data loading for multi-label tag data.
         - train_dataloader
         - val_dataloader
         - test_dataloader
-
-## Configuration
-
-::: vae.config
-    options:
-      show_root_heading: false
-      members:
-        - VAEConfig
-        - VAEModelConfig
-        - VAEDataConfig
-        - VAELossConfig
 
 ## Evaluation
 

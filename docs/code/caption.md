@@ -12,6 +12,19 @@ The caption pipeline:
 2. **Fine-tuning**: Train LLM with LoRA on MusicCaps-derived data  
 3. **Inference**: Generate captions from new attribute combinations
 
+## Configuration
+
+::: caption.config
+    options:
+      show_root_heading: false
+      members:
+        - CaptionGenerationConfig
+        - ModelConfig
+        - DatasetConfig
+        - TrainerConfig
+        - LoRAConfig
+        - QuantizationConfig
+
 ## CaptionFineTuningModule
 
 ::: caption.lightning_module.CaptionFineTuningModule
