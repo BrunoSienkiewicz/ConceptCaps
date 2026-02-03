@@ -53,6 +53,7 @@ The dataset is designed for Testing with Concept Activation Vectors (TCAV), enab
 ### Quality Validation
 
 All data is validated through:
+
 - **CLAP**: Audio-text alignment scores
 - **BERTScore**: Caption semantic quality
 - **MAUVE**: Distribution comparison
