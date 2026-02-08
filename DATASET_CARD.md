@@ -16,7 +16,6 @@ source_datasets:
 task_categories:
 - text-generation
 - text-to-audio
-- multi-modal-learning
 task_ids:
 - natural-language-inference
 - semantic-similarity-classification
@@ -33,6 +32,55 @@ tags:
 - concepts
 - tcav
 - audio-captioning
+configs:
+- config_name: default
+  data_files:
+  - split: train
+    path: default/train-*
+  - split: validation
+    path: default/validation-*
+  - split: test
+    path: default/test-*
+- config_name: 10pct
+  data_files:
+  - split: train
+    path: 10pct/train-*
+  - split: validation
+    path: 10pct/validation-*
+  - split: test
+    path: 10pct/test-*
+- config_name: 25pct
+  data_files:
+  - split: train
+    path: 25pct/train-*
+  - split: validation
+    path: 25pct/validation-*
+  - split: test
+    path: 25pct/test-*
+- config_name: audio
+  data_files:
+  - split: train
+    path: audio/train-*
+  - split: validation
+    path: audio/validation-*
+  - split: test
+    path: audio/test-*
+- config_name: 10pct-audio
+  data_files:
+  - split: train
+    path: 10pct-audio/train-*
+  - split: validation
+    path: 10pct-audio/validation-*
+  - split: test
+    path: 10pct-audio/test-*
+- config_name: 25pct-audio
+  data_files:
+  - split: train
+    path: 25pct-audio/train-*
+  - split: validation
+    path: 25pct-audio/validation-*
+  - split: test
+    path: 25pct-audio/test-*
 ---
 
 # Dataset Card for ConceptCaps
