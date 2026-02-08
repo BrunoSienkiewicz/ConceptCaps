@@ -49,4 +49,3 @@ After generating captions from the LLM, this module:
       show_root_heading: false
       members:
         - TTAEvaluator
-

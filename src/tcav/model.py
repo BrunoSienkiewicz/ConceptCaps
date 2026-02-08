@@ -1,7 +1,7 @@
 """Music genre classifier model for TCAV analysis.
 
-Provides a CNN-based classifier with exposed bottleneck layer for
-extracting activations used in Concept Activation Vector training.
+Provides a CNN-based classifier with exposed bottleneck layer for extracting
+activations used in Concept Activation Vector training.
 """
 
 import pytorch_lightning as pl

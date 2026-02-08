@@ -1,7 +1,7 @@
 """Data processing utilities for caption fine-tuning.
 
-Provides functions to format prompts and prepare datasets for both
-training and inference using configurable prompt templates.
+Provides functions to format prompts and prepare datasets for both training and
+inference using configurable prompt templates.
 """
 
 from __future__ import annotations
@@ -46,7 +46,8 @@ def _format_eval_prompt(prompt_cfg: DictConfig, aspects: Any) -> str:
 def prepare_datasets(
     data_cfg, prompt_cfg, raw_dataset: DatasetDict
 ) -> DatasetDict:
-    """Prepare datasets for training by formatting prompts with reference captions.
+    """Prepare datasets for training by formatting prompts with reference
+    captions.
 
     Args:
         data_cfg: Data configuration with column names.

@@ -98,7 +98,7 @@ lora:
 # tta_inference.yaml
 model:
   name: facebook/musicgen-small
-  
+
 generation:
   max_new_tokens: 512  # ~10 seconds of audio
   guidance_scale: 3.0  # Classifier-free guidance

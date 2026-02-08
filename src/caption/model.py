@@ -1,7 +1,7 @@
 """Caption model utilities for LLM fine-tuning.
 
-Provides functions to prepare language models with LoRA adapters and quantization
-for efficient caption generation fine-tuning.
+Provides functions to prepare language models with LoRA adapters and
+quantization for efficient caption generation fine-tuning.
 """
 
 from __future__ import annotations

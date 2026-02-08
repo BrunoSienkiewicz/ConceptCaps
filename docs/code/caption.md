@@ -9,7 +9,7 @@ This module handles the conversion of structured music attributes (tags) into na
 The caption pipeline:
 
 1. **Data preparation**: Format prompts with attribute lists
-2. **Fine-tuning**: Train LLM with LoRA on MusicCaps-derived data  
+2. **Fine-tuning**: Train LLM with LoRA on MusicCaps-derived data
 3. **Inference**: Generate captions from new attribute combinations
 
 ## Configuration

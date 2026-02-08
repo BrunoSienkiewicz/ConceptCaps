@@ -12,16 +12,16 @@ theme:
 nav:
   - Home: index.md
   - Getting Started:
-    - Configuration: config.md
-    - Data: data.md
-    - Notebooks: notebooks.md
+      - Configuration: config.md
+      - Data: data.md
+      - Notebooks: notebooks.md
   - Code Reference:
-    - Overview: code/reference.md
-    - Caption: code/caption.md
-    - VAE: code/vae.md
-    - TCAV: code/tcav.md
-    - TTA: code/tta.md
-    - Utilities: code/utils.md
+      - Overview: code/reference.md
+      - Caption: code/caption.md
+      - VAE: code/vae.md
+      - TCAV: code/tcav.md
+      - TTA: code/tta.md
+      - Utilities: code/utils.md
 
 plugins:
   - search

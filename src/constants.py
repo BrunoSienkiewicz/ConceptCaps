@@ -1,8 +1,8 @@
 """Project-wide constants and configuration paths.
 
-Contains default values for model architectures, training hyperparameters,
-and paths for data, models, and outputs. Most values can be overridden
-via environment variables.
+Contains default values for model architectures, training hyperparameters, and
+paths for data, models, and outputs. Most values can be overridden via
+environment variables.
 """
 
 import os
