@@ -132,11 +132,9 @@ configs:
 
 ### Dataset Summary
 
-![](./assets/pipeline.pdf)
-
 ConceptCaps is a music captioning dataset derived from MusicCaps, specifically designed for concept-based interpretability research in text-to-audio (TTA) generation systems. The dataset provides categorized musical concept annotations from a distilled taxonomy (200 unique tags) alongside natural language captions, enabling fine-grained analysis of how TTA models represent and generate musical concepts.
 
-Unlike existing datasets with noisy or sparse tags, ConceptCaps utilizes a novel generative pipeline separating semantic consistency (via VAE) from linguistic quality (via LLM) to create 21k high-quality music-caption-audio triplets.
+Unlike existing datasets with noisy or sparse tags, ConceptCaps utilizes a novel generative pipeline separating semantic consistency (via VAE) from linguistic quality (via LLM) to create 21k high-quality music-caption-tags triplets.
 
 The dataset is available in **2 versions**:
 1. **Default:** Text-only (captions + aspect lists).
