@@ -36,11 +36,11 @@ configs:
 - config_name: default
   data_files:
   - split: train
-    path: default/train-*
+    path: data/train-*
   - split: validation
-    path: default/validation-*
+    path: data/validation-*
   - split: test
-    path: default/test-*
+    path: data/test-*
 - config_name: 10pct
   data_files:
   - split: train
